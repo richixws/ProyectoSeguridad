@@ -1,6 +1,7 @@
 package pe.gob.bcrp.services.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 @AllArgsConstructor
 public class UsuarioServiceImpl implements IUsuarioService {
@@ -32,10 +34,17 @@ public class UsuarioServiceImpl implements IUsuarioService {
     @Override
     public List<UsuarioDTO> getUsuarios() {
 
-       List<Usuario> usuarios = iUsuarioRepository.findAll();
-       return usuarios.stream()
-               .map(usuario -> mapToDTO(usuario))
-               .collect(Collectors.toList());
+        try {
+            log.info("INI - getUsuarios");
+            List<Usuario> listUsuarios = iUsuarioRepository.findAll();
+            return listUsuarios.stream()
+                    .map(usuario -> mapToDTO(usuario))
+                    .collect(Collectors.toList());
+
+        }catch (Exception e){
+            log.error("ERROR - getUsuarios()" +e.getMessage());
+        }
+        return null;
     }
 
     @Override
@@ -73,6 +82,13 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public void delete(Integer id) {
           iUsuarioRepository.deleteById(id);
 
+    }
+
+    @Override
+    public UsuarioDTO buscarPorUsuarioLogin(String usuario) {
+        Usuario usuarioLogin=iUsuarioRepository.findByUsuario(usuario);
+        UsuarioDTO dto= mapToDTO(usuarioLogin);
+        return dto;
     }
 
 

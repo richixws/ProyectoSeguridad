@@ -1,18 +1,21 @@
 package pe.gob.bcrp.controllers;
 
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.UsuarioDTO;
 import pe.gob.bcrp.services.IUsuarioService;
 
 import java.util.List;
 
+@Log4j2
 @RestController
-@RequestMapping("/api")
-@PreAuthorize("hasRole('user_client_role') or hasRole('admin_client_role')")
+@RequestMapping("/api/v1")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+//@PreAuthorize("hasRole('user_client_role') or hasRole('admin_client_role')")
 public class UsuarioController {
 
 
@@ -21,7 +24,7 @@ public class UsuarioController {
 
     @GetMapping("/usuarios")
     public ResponseEntity<List<UsuarioDTO>> listaUsuarios() {
-
+          log.info("INI - listaUsuarios | requestURL=usuarios");
           List<UsuarioDTO> usuarioDTO=usuarioService.getUsuarios();
           return ResponseEntity.ok(usuarioDTO);
     }

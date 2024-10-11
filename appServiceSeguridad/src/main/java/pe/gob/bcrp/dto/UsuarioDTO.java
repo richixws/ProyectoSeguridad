@@ -20,6 +20,6 @@ public class UsuarioDTO {
     private String usuario;
     private String password;
     private Integer idPersona;
-
+    private Persona persona;
 
 }

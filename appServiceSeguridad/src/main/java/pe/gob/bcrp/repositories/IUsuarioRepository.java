@@ -5,5 +5,5 @@ import pe.gob.bcrp.entities.Usuario;
 
 public interface IUsuarioRepository extends JpaRepository<Usuario, Integer> {
 
-
+    Usuario findByUsuario(String usuario);
 }

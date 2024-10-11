@@ -45,18 +45,13 @@ public class Usuario implements Serializable {
     private String password;
 
     //mapeo realcionar con entidad persona
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_persona", nullable = false)
     private Persona persona;
 
     //mapeo relacional con perfil
-    @ManyToMany
-    @JoinTable(
-            name = "SW_PERFIL_USUARIO",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_perfil")
-    )
-    private Set<Perfil> perfiles;
+    @OneToMany(mappedBy = "usuario")
+    private Set<PerfilUsuario> perfilUsuarios;
 
 
 

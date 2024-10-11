@@ -19,20 +19,21 @@ public class Perfil {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "perfil_seq")
     @SequenceGenerator(name = "perfil_seq", sequenceName = "seq_sw_perfil", allocationSize = 1)
-    @Column(name = "id_perfil")
+    @Column(name = "id_perfil",nullable = false)
     private Integer idPerfil;
 
-    @Column(name = "id_entidad", nullable = false)
-    private Long idEntidad;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_entidad", nullable = false)
+    private Entidad entidad;
 
-  //  @ManyToOne
-  //  @JoinColumn(name = "id_rol", nullable = false)
-   // private Rol rol;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_rol", nullable = false)
+    private Rol rol;
 
     @Column(name = "nombre", nullable = false, length = 500)
     private String nombre;
 
-    @ManyToMany(mappedBy = "perfiles")
-    private Set<Usuario> usuarios;
+   @OneToMany(mappedBy = "perfil")
+    private Set<PerfilUsuario> perfilUsuarios;
 
 }

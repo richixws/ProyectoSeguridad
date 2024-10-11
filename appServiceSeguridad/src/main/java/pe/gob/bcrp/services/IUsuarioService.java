@@ -12,4 +12,6 @@ public interface IUsuarioService {
   public UsuarioDTO updateUsuario(Integer id, UsuarioDTO usuarioDTO);
   public void  delete(Integer id);
 
+  public UsuarioDTO buscarPorUsuarioLogin(String usuario );
+
 }

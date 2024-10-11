@@ -29,5 +29,10 @@ public class HistPassword {
     @Column(name = "fecha_hora")
     private Date fecha_hora;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
+
+
 
 }
