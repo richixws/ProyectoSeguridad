@@ -18,7 +18,7 @@ public class Perfil {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "perfil_seq")
-    @SequenceGenerator(name = "perfil_seq", sequenceName = "seq_sw_perfil", allocationSize = 1)
+    @SequenceGenerator(name = "perfil_seq", sequenceName = "bd_seguridad.seq_sw_perfil", allocationSize = 1)
     @Column(name = "id_perfil",nullable = false)
     private Integer idPerfil;
 
@@ -33,7 +33,7 @@ public class Perfil {
     @Column(name = "nombre", nullable = false, length = 500)
     private String nombre;
 
-   @OneToMany(mappedBy = "perfil")
-    private Set<PerfilUsuario> perfilUsuarios;
+   //@OneToMany(mappedBy = "perfil")
+   // private Set<PerfilUsuario> perfilUsuarios;
 
 }

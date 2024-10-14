@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.SistemaDTO;
+import pe.gob.bcrp.entities.Sistema;
 import pe.gob.bcrp.repositories.ISistemaRepository;
 import pe.gob.bcrp.services.ISistemaService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,7 +24,17 @@ public class SistemaServiceImpl implements ISistemaService {
 
     @Override
     public List<SistemaDTO> getSistemas() {
-        return List.of();
+        try {
+            log.info("INI -getSistemas ");
+            List<Sistema> listSistemas = sistemaRepository.findAll();
+            return listSistemas.stream()
+                    .map(sistema -> modelMapper.map(sistema,SistemaDTO.class))
+                    .collect(Collectors.toList());
+
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return null;
     }
 
     @Override

@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.JwtDTO;
 import pe.gob.bcrp.dto.LoginDTO;
+import pe.gob.bcrp.dto.TokenResponse;
 import pe.gob.bcrp.dto.UsuarioDTO;
 import pe.gob.bcrp.jwt.JwtService;
 import pe.gob.bcrp.jwt.JwtValidationService;
@@ -33,17 +34,8 @@ public class AuthController {
     @Autowired
     private IUsuarioService usuariosService;
 
-    //@Autowired
-    //private PerfilService perfilService;
-
-   // @Autowired
-   // private VariablesGlobalesService variablesGlobalesService;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncode;
-
-   // @Autowired
-   // private Utilidades utilidades;
 
     @Autowired
     private KeycloakRestService keycloakRestService;
@@ -62,8 +54,8 @@ public class AuthController {
 
     @PostMapping(value = "/login")
     public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws JsonMappingException, JsonProcessingException{
+
         log.info("INI - login | requestURL=login");
-      //UsuarioModel usuario = this.usuariosService.buscarPorCorreoLogin(dto.getCorreo());
         UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
 
         if (usuarioDTO == null) {
@@ -71,7 +63,8 @@ public class AuthController {
                     .body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
         }
 
-        if (!dto.getPassword().matches(usuarioDTO.getPassword())) {
+
+        if(this.passwordEncode.matches(usuarioDTO.getPassword(), dto.getPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
         }
@@ -90,13 +83,14 @@ public class AuthController {
             response.put("id", String.valueOf(usuarioDTO.getIdUsuario()));
             response.put("nombre", usuarioDTO.getPersona().getNombres());
             response.put("token", jwt.getAccess_token());
-
+            response.put("refreshToken",jwt.getRefresh_token());
             return ResponseEntity.ok(response);
     }
 
 
-    @PostMapping("/validar-token")
-    public String ValidarToken(@RequestHeader("Authorization") String authHeader) {
+    @PostMapping("oauth/validarToken")
+   public String ValidarToken(@RequestHeader("Authorization") String authHeader) {
+   // public String ValidarToken(@RequestParam("Authorization") String authHeader) {
         // El token viene en el formato "Bearer <token>", así que lo extraemos
         String token = authHeader.replace("Bearer ", "");
 
@@ -107,6 +101,25 @@ public class AuthController {
             return "Token inválido o expirado.";
         }
     }
+
+
+    @PostMapping("oauth/refreshToken")
+    public ResponseEntity<TokenResponse> refreshToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refresh_token");
+        TokenResponse newTokens = jwtValidationService.refreshAccessToken(refreshToken);
+        return ResponseEntity.ok(newTokens);
+    }
+
+    @PostMapping("oauth/cerrarSesion")
+    public ResponseEntity<?> cerrarSesion(@RequestParam("refreshToken") String refreshToken) {
+        if (refreshToken == null) {
+            return new ResponseEntity<>("Refresh token was expired. Please make a new signin request",
+                    HttpStatus.FORBIDDEN);
+        }
+        return null;
+      //  return authService.cerrarSesion(refreshToken);
+    }
+
 
   /**  @PostMapping("/refreshtoken")
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {

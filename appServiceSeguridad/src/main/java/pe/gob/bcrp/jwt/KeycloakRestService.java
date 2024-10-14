@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import pe.gob.bcrp.dto.TokenResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ public class KeycloakRestService {
 	
 	@Autowired
     private RestTemplate restTemplate;
+
 
     @Value("${keycloak.token-uri}")
     private String keycloakTokenUri;
@@ -55,6 +57,11 @@ public class KeycloakRestService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity(map, new HttpHeaders());
         return this.restTemplate.postForObject(this.keycloakTokenUri, request, String.class);
     }
+
+
+
+
+
 
 
 

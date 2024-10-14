@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,7 +22,7 @@ public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usuario_seq")
-    @SequenceGenerator(name = "usuario_seq", sequenceName = "seq_sw_usuario", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "usuario_seq", sequenceName = "bd_seguridad.seq_sw_usuario", allocationSize = 1, initialValue = 1)
     @Column(name = "id_usuario", nullable = false)
     private Integer idUsuario;
 
@@ -50,8 +51,13 @@ public class Usuario implements Serializable {
     private Persona persona;
 
     //mapeo relacional con perfil
-    @OneToMany(mappedBy = "usuario")
-    private Set<PerfilUsuario> perfilUsuarios;
+    //@OneToMany(mappedBy = "usuario")
+    //private Set<PerfilUsuario> perfilUsuarios;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "SW_PERFIL_USUARIO", schema = "bd_seguridad",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_perfil"))
+    private Set<Perfil> perfilUsuarios = new HashSet<>();
 
 
 
