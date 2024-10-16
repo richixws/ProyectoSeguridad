@@ -110,38 +110,28 @@ public class AuthController {
         return ResponseEntity.ok(newTokens);
     }
 
-    @PostMapping("oauth/cerrarSesion")
+
+
+    @PostMapping("oauth/logout")
     public ResponseEntity<?> cerrarSesion(@RequestParam("refreshToken") String refreshToken) {
-        if (refreshToken == null) {
-            return new ResponseEntity<>("Refresh token was expired. Please make a new signin request",
-                    HttpStatus.FORBIDDEN);
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            return new ResponseEntity<>("Refresh token was expired or missing. Please make a new signin request",HttpStatus.FORBIDDEN);
         }
-        return null;
-      //  return authService.cerrarSesion(refreshToken);
+
+        try {
+            // Llamar a Keycloak para revocar el refresh token
+            ResponseEntity<String> estado = keycloakRestService.logout(refreshToken);
+            return estado;
+
+        } catch (Exception e) {
+            log.error("Error during logout", e);
+            return new ResponseEntity<>("An error occurred while trying to logout", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-
-
-  /**  @PostMapping("/refreshtoken")
-    public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
-        String requestRefreshToken = request.getRefreshToken();
-
-        return refreshTokenService.findByToken(requestRefreshToken)
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
-                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
-                })
-                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
-                        "Refresh token is not in database!"));
-    }**/
-
 
 
    /** @PostMapping("/registro")
     public ResponseEntity<?> registro(@RequestBody RegistroDTO registroDTO){
-
-
           UsuarioDTO usuarioReg =this.usuariosService.buscarPorUsuarioLogin(registroDTO.getUsuario());
           if(usuarioReg!=null){
 

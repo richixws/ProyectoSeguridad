@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface IEntidadRepository extends JpaRepository<Entidad, Integer> {
 
-    public List<Entidad> findByNombre(String nombre);
+    public Entidad findByNombre(String nombre);
 
 }

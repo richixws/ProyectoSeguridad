@@ -39,9 +39,12 @@ public class SecurityConfig {
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/v1/**").permitAll()
                         .requestMatchers("/api/v1/login").permitAll()
                         .requestMatchers("/api/v1/oauth/validarToken").permitAll()
                         .requestMatchers("/api/v1/oauth/refreshToken").permitAll()
+                        .requestMatchers("/api/v1/oauth/logout").permitAll()
+                        .requestMatchers("/api/media/**").permitAll()
                         .anyRequest().authenticated()
                 );
 

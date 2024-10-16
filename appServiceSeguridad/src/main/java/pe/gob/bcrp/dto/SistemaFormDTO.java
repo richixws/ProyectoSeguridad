@@ -1,20 +1,17 @@
 package pe.gob.bcrp.dto;
 
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SistemaDTO {
-
-
-    @NotNull( message = "id sistema no puede ser nulo")
-    private Integer idSistema;
+public class SistemaFormDTO {
 
     @NotEmpty(message = "codigo no puede ser vacio")
+    @Column(unique = true, nullable = false)
     private String codigo;
 
     @NotEmpty(message = "nombre no puede ser vacio")
@@ -32,5 +29,13 @@ public class SistemaDTO {
     @NotEmpty(message = "url no puede ser vacio")
     private String url;
 
+    SistemaFormDTO(String nombre, String version, String logoMain, String logoHead, String url) {
 
+     this.nombre = nombre;
+      this.version = version;
+   this.logoMain = logoMain;
+     this.logoHead = logoHead;
+     this.url = url;
+
+    }
 }

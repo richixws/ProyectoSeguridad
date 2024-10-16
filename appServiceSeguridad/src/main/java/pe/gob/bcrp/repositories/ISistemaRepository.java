@@ -5,4 +5,5 @@ import pe.gob.bcrp.entities.Sistema;
 
 public interface ISistemaRepository extends JpaRepository<Sistema, Integer> {
 
+    public Sistema findByNombre(String nombre);
 }
