@@ -33,6 +33,12 @@ public class JwtValidationService {
     @Value("${keycloak.realm.name}")
     private String realm;
 
+    @Value("${keycloak.token-uri}")
+    private  String urlToken;
+
+    @Value("${keycloak.jwk-set-uri}")
+    private String urlCerts;
+
     @Value("${keycloak.client-id}")
     private String clientId;
 
@@ -46,8 +52,7 @@ public class JwtValidationService {
     private RSAPrivateKey privateKey;
 
 
-    private static final String TOKEN_ENDPOINT = "/protocol/openid-connect/token";
-
+    //private static final String TOKEN_ENDPOINT = "/protocol/openid-connect/token";
     public JwtValidationService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -91,14 +96,11 @@ public class JwtValidationService {
 
     private RSAPublicKey getKeycloakPublicKey() throws Exception {
         // URL del JWKSet de Keycloak
-        String jwkSetUrl = keycloakServerUrl + "/realms/" + realm + "/protocol/openid-connect/certs";
-
+        //String jwkSetUrl = keycloakServerUrl + "/realms/" + realm + "/protocol/openid-connect/certs";
         // Obtener el JWKSet desde Keycloak
-        JWKSet jwkSet = JWKSet.load(new URL(jwkSetUrl));
-
+        JWKSet jwkSet = JWKSet.load(new URL(urlCerts));
         // Obtener el primer JWK y convertirlo a RSAPublicKey
         JWK jwk = jwkSet.getKeys().get(0);
-
         // Asegúrate de que es una clave RSA
         if (jwk instanceof RSAKey) {
             return ((RSAKey) jwk).toRSAPublicKey();
@@ -122,16 +124,11 @@ public class JwtValidationService {
         body.add("client_secret", clientSecret);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
-        String url = keycloakServerUrl + "/realms/" + realm + TOKEN_ENDPOINT;
+        //String url = keycloakServerUrl + "/realms/" + realm + TOKEN_ENDPOINT;
 
-        ResponseEntity<TokenResponse> response = restTemplate.postForEntity(url, request, TokenResponse.class);
+        ResponseEntity<TokenResponse> response = restTemplate.postForEntity(urlToken, request, TokenResponse.class);
         return response.getBody();
     }
-
-
-
-
-
 
 
 /**

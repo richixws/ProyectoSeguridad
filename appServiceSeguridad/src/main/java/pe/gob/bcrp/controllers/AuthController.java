@@ -1,6 +1,7 @@
 package pe.gob.bcrp.controllers;
 
 
+import com.auth0.jwk.Jwk;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,7 +54,7 @@ public class AuthController {
 
 
     @PostMapping(value = "/login")
-    public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws JsonMappingException, JsonProcessingException{
+    public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
 
         log.info("INI - login | requestURL=login");
         UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
@@ -73,6 +74,8 @@ public class AuthController {
         JwtDTO jwt =new ObjectMapper().readValue(login, JwtDTO.class);
 
 
+        //Jwk jwk = this.jwtService.getJwk();
+        //String username = jwk.getClaimAsString("preferred_username");
         // Validar el token
         if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -81,7 +84,7 @@ public class AuthController {
 
             Map<String, String> response = new HashMap<>();
             response.put("id", String.valueOf(usuarioDTO.getIdUsuario()));
-            response.put("nombre", usuarioDTO.getPersona().getNombres());
+            response.put("nombre", usuarioDTO.getPersona().getNombres().concat(usuarioDTO.getPersona().getApellidoPaterno()));
             response.put("token", jwt.getAccess_token());
             response.put("refreshToken",jwt.getRefresh_token());
             return ResponseEntity.ok(response);
@@ -89,16 +92,20 @@ public class AuthController {
 
 
     @PostMapping("oauth/validarToken")
-   public String ValidarToken(@RequestHeader("Authorization") String authHeader) {
+   public ResponseEntity<?> ValidarToken(@RequestHeader("Authorization") String authHeader) {
    // public String ValidarToken(@RequestParam("Authorization") String authHeader) {
         // El token viene en el formato "Bearer <token>", así que lo extraemos
         String token = authHeader.replace("Bearer ", "");
 
         boolean isValid = jwtValidationService.validateToken(token);
+
+        Map<String, String> response = new HashMap<>();
         if (isValid) {
-            return "Token válido. Acceso permitido.";
+            response.put("message","Token valido");
+            return ResponseEntity.ok(response);
         } else {
-            return "Token inválido o expirado.";
+            response.put("message","Token Invalido o Expirado");
+            return ResponseEntity.badRequest().body(response);
         }
     }
 
@@ -120,7 +127,7 @@ public class AuthController {
 
         try {
             // Llamar a Keycloak para revocar el refresh token
-            ResponseEntity<String> estado = keycloakRestService.logout(refreshToken);
+            ResponseEntity<?> estado = keycloakRestService.logout(refreshToken);
             return estado;
 
         } catch (Exception e) {

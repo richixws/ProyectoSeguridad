@@ -5,9 +5,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.EntidadDTO;
+import pe.gob.bcrp.dto.EntidadResponse;
 import pe.gob.bcrp.dto.ResponseDTO;
+import pe.gob.bcrp.dto.SistemaFormDTO;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IEntidadService;
 
@@ -23,7 +26,7 @@ public class EntidadController {
     private IEntidadService entidadService;
 
 
-    @GetMapping("/entidades")
+    @GetMapping("/lista/entidades")
     public ResponseEntity<List<EntidadDTO>> listarEntidades(){
         log.info("INI - listarEntidades | requestURL=entidades");
         try {
@@ -35,25 +38,84 @@ public class EntidadController {
         }
     }
 
+
+    @GetMapping("/entidades")
+    public ResponseEntity<EntidadResponse> getAllEntidades(
+            @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = "50",   required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder){
+        log.info("INI - getAllEntidades | requestURL=entidades");
+        try {
+
+            EntidadResponse entidadResponse=entidadService.getAllEntidades(pageNumber, pageSize, sortBy, sortOrder);
+            return new ResponseEntity<>(entidadResponse, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("ERROR - listarEntidades | requestURL=entidades");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/entidad/{nombre}")
     public ResponseEntity<EntidadDTO> buscarEntidadPorNombre(@PathVariable String nombre){
         log.info("INI - listarEntidadesPorNombre | requestURL=nombre");
-        EntidadDTO entidadDto=entidadService.findEntidadByNombre(nombre);
-        return ResponseEntity.ok(entidadDto);
+        try {
+
+            EntidadDTO entidadDto=entidadService.findEntidadByNombre(nombre);
+            return new ResponseEntity<>(entidadDto, HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("ERROR - buscarEntidadPorNombre | requestURL=entidades");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     @PostMapping("/entidad")
-    public  ResponseEntity<EntidadDTO> guardarEntidad(@Valid @RequestBody  EntidadDTO entidadDto){
+    public  ResponseEntity<ResponseDTO<EntidadDTO>> guardarEntidad(@Valid @RequestBody  EntidadDTO entidadDto){
         log.info("INI - guardarEntidad | requestURL=entidadDto");
-        EntidadDTO entidadDTO=entidadService.saveEntidad(entidadDto);
-        return ResponseEntity.ok(entidadDTO);
+        ResponseDTO<EntidadDTO> response=new ResponseDTO();
+        try {
+            EntidadDTO entidadDTO=entidadService.saveEntidad(entidadDto);
+
+            response.setStatus(1);
+            response.setMessage("la Entidad fue guardado de manera exitosa");
+           // response.setBody(entidadDTO);
+
+        }catch (Exception e){
+            log.error("ERROR - guardarEntidad | requestURL=entidadDto");
+            response.setStatus(0);
+            response.setMessage("Error al guardar la Entidad"+e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     @PutMapping("/entidad/{id}")
-    public ResponseEntity<EntidadDTO> updateEntidad(@PathVariable("id") Integer id, @Valid EntidadDTO entidadDTO){
-        log.info("INI - updateEntidad | requestURL=entidadDto");
-        EntidadDTO entidadDto=entidadService.updateEntidad(id, entidadDTO);
-        return ResponseEntity.ok(entidadDto);
+    public ResponseEntity<ResponseDTO<EntidadDTO>> updateEntidad(@PathVariable("id") Integer id, @Validated @RequestBody EntidadDTO entidadDTO){
+        log.info("INI - updateEntidad | requestURL=entidad");
+        ResponseDTO<EntidadDTO> response=new ResponseDTO();
+        try {
+
+            EntidadDTO entidadDto=entidadService.updateEntidad(id, entidadDTO);
+            response.setStatus(1);
+            response.setMessage("la Entidad fue actualizado de manera exitosa");
+           // response.setBody(entidadDTO);
+
+        }catch (ResourceNotFoundException e) {
+            log.error("ERROR - updateEntidad No encontrado " + e.getMessage());
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
+        } catch (Exception e){
+            log.error("ERROR - updateEntidad | requestURL=entidad");
+            response.setStatus(0);
+            response.setMessage("Error al guardar la Entidad"+e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response,HttpStatus.OK);
+
     }
 
     @DeleteMapping("/entidad/{id}")
@@ -82,13 +144,5 @@ public class EntidadController {
             return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
-
-
-
-
-
-
-
+    
 }

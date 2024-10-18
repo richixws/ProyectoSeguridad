@@ -3,14 +3,23 @@ package pe.gob.bcrp.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.EntidadDTO;
+import pe.gob.bcrp.dto.EntidadResponse;
 import pe.gob.bcrp.entities.Entidad;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IEntidadRepository;
 import pe.gob.bcrp.services.IEntidadService;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -28,7 +37,7 @@ public class EntidadServiceImpl implements IEntidadService {
 
         try {
             log.info("INI - getEntidades");
-            List<Entidad> listEntidades=entidadRepository.findAll();
+            List<Entidad> listEntidades=entidadRepository.findByIsDeletedFalse();
             return listEntidades.stream()
                     .map(entidad -> modelMapper.map(entidad, EntidadDTO.class))
                     .collect(Collectors.toList());
@@ -40,18 +49,50 @@ public class EntidadServiceImpl implements IEntidadService {
     }
 
     @Override
+    public EntidadResponse getAllEntidades(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+
+        log.info("INI Service() - getAllProducts");
+
+        try {
+
+            Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                                                                                ? Sort.by(sortBy).ascending()
+                                                                                : Sort.by(sortBy).descending();
+
+            Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+
+            Page<Entidad> pageEntidades = entidadRepository.findByIsDeletedFalse(pageDetails);
+
+            List<Entidad> entidades = pageEntidades.getContent();
+
+            List<EntidadDTO> entidadDTOS = entidades.stream()
+                                                    .map(enti -> modelMapper.map(enti, EntidadDTO.class))
+                                                    .toList();
+
+            EntidadResponse entidadResponse = new EntidadResponse();
+            entidadResponse.setContent(entidadDTOS);
+            entidadResponse.setPageNumber(pageEntidades.getNumber());
+            entidadResponse.setPageSize(pageEntidades.getSize());
+            entidadResponse.setTotalElements(pageEntidades.getTotalElements());
+            entidadResponse.setTotalPages(pageEntidades.getTotalPages());
+            entidadResponse.setLastPage(pageEntidades.isLast());
+            return entidadResponse;
+
+        } catch (Exception e) {
+            log.error( "ERROR - getAllEntidades() "+e.getMessage() );
+            throw new RuntimeException(e);
+
+        }
+    }
+
+    @Override
     public EntidadDTO findEntidadByNombre(String nombre) {
         try {
             log.info("INI - findEntidadByNombre()");
-            Entidad entidad=entidadRepository.findByNombre(nombre);
-            if(entidad==null){
-                log.error("ERROR - findEntidadByNombre() "+nombre);
-                return null;
-            }
-
+           Entidad entidad=entidadRepository.findByNombre(nombre).orElseThrow(()-> new ResourceNotFoundException("Entidad no encontrado con nombre"+nombre));
             EntidadDTO dto=modelMapper.map(entidad, EntidadDTO.class);
             return dto;
-        }catch (Exception e){
+        }catch (ResourceNotFoundException e){
             log.error("ERROR - getEntidadByNombre() "+e.getMessage());
         }
         return null;
@@ -62,6 +103,8 @@ public class EntidadServiceImpl implements IEntidadService {
         try {
             log.info("INI - saveEntidad()");
             Entidad entidad=modelMapper.map(entidadDto,Entidad.class);
+            entidad.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+            //entidad.setUsuarioCreacion();
             Entidad entidadNew=entidadRepository.save(entidad);
             EntidadDTO entidadDtoNew=modelMapper.map(entidadNew, EntidadDTO.class);
             return entidadDtoNew;
@@ -77,22 +120,28 @@ public class EntidadServiceImpl implements IEntidadService {
 
         try {
             log.info("INI - updateUsuario()");
-            Entidad entidad=entidadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado con id :" + entidadDto.getIdEntidad()));
-            EntidadDTO entidadDtoNew=modelMapper.map(entidadDto,EntidadDTO.class);
 
+            Entidad entidad=entidadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado con id :" + entidadDto.getIdEntidad()));
             entidad.setNombre(entidadDto.getNombre());
-            entidad.setRuc(entidadDto.getRuc());
+            entidad.setTipoDocumento(entidadDto.getTipoDocumento());
+            entidad.setNumeroDocumento(entidadDto.getNumeroDocumento());
             entidad.setSigla(entidadDto.getSigla());
             entidad.setCodExterno(entidadDto.getCodExterno());
 
-            EntidadDTO updateEntidad=modelMapper.map(entidad,EntidadDTO.class);
+            entidad.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+            Entidad entidadNew=entidadRepository.save(entidad);
+            EntidadDTO updateEntidad=modelMapper.map(entidadNew,EntidadDTO.class);
             return  updateEntidad;
 
-        }catch (Exception e){
+        }catch (ResourceNotFoundException e){
             log.error("ERROR - updateEntidad() "+e.getMessage());
-
+            throw e;
         }
-        return null;
+        catch (Exception e){
+            log.error("ERROR - updateSistemas()"+e.getMessage());
+            throw new RuntimeException("Error al actualizar el sistema", e);
+        }
+
     }
 
     @Override
@@ -103,12 +152,15 @@ public class EntidadServiceImpl implements IEntidadService {
         try {
             Entidad entidad=entidadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Entidad con no encontrado"));
             if(entidad!=null){
-                entidadRepository.deleteById(id);
+                //entidadRepository.deleteById(id);
+                entidad.setDeleted(true);
+                entidad.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+                entidadRepository.save(entidad);
                 estado=true;
             }
 
 
-        }catch (Exception e){
+        }catch (ResourceNotFoundException e){
             log.error("ERROR - deleteEntidad() "+e.getMessage());
             e.printStackTrace();
             estado=false;

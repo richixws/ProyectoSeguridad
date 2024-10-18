@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -41,5 +42,26 @@ public class Sistema implements Serializable {
     @Column(name = "url",nullable = false, length = 500)
     private String url;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted=false;
+
+    //agregacion campos auditoria
+    @Column(name = "hora_creacion")
+    private LocalDateTime horaCreacion;
+
+    @Column(name = "hora_eliminacion")
+    private LocalDateTime horaDeEliminacion;
+
+    @Column(name = "hora_actualizacion")
+    private LocalDateTime horaActualizacion;
+
+    @Column(name = "usuario_creacion")
+    private String usuarioCreacion;
+
+    @Column(name = "usuario_eliminacion")
+    private String usuarioEliminacion;
+
+    @Column(name = "usuario_actualizacion")
+    private String usuarioActualizacion;
 
 }

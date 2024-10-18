@@ -1,19 +1,22 @@
 package pe.gob.bcrp.controllers;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
+import org.apache.http.auth.InvalidCredentialsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pe.gob.bcrp.dto.ResponseDTO;
-import pe.gob.bcrp.dto.SistemaDTO;
-import pe.gob.bcrp.dto.SistemaFormDTO;
+import org.springframework.web.multipart.MultipartFile;
+import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.ISistemaService;
 import pe.gob.bcrp.services.IUploadFileService;
@@ -46,8 +49,10 @@ public class SistemaController {
         return sistemaDTO != null ? ResponseEntity.ok().body(sistemaDTO) : ResponseEntity.notFound().build();
     }
 
-
-    @GetMapping("/sistemas")
+   /**
+    * Metodo Listar todos los Sistemas
+    * **/
+    @GetMapping("/sistemas2")
     public ResponseEntity<List<SistemaDTO>> listarSistemas(){
         log.info("Listando lista de sistemas");
         try {
@@ -59,19 +64,28 @@ public class SistemaController {
         }
     }
 
-    @GetMapping("/sistemas/page")
-    public ResponseEntity<Page<SistemaDTO>> paginate(@PageableDefault(sort = "nombre", direction = Sort.Direction.ASC, size = 5) Pageable pageable) {
-        log.info("Listando lista de sistemas");
+    @GetMapping("/sistemas")
+    public ResponseEntity<SistemaResponse> getAllSistemas(
+            @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = "50",   required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder){
+        log.info("INI - getAllSistemas | requestURL=entidades");
         try {
-            Page<SistemaDTO> page=sistemaService.listarSistemasPaginated(pageable);
-            return new ResponseEntity<>(page,HttpStatus.OK);
-        }catch (Exception e) {
-            log.error(" ERROR - listar sistema Paginado"+e.getMessage());
+
+            SistemaResponse sistemaResponse=sistemaService.getAllSistemas(pageNumber, pageSize, sortBy, sortOrder);
+            return new ResponseEntity<>(sistemaResponse, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("ERROR - listarEntidades | requestURL=entidades");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
+
+   /**
+    * Metodo Guardar sistema
+    * **/
    @PostMapping(value = "/sistema")
    public ResponseEntity<ResponseDTO<SistemaFormDTO>> guardarSistema(@Validated @RequestBody SistemaFormDTO sistemaDTO){
         log.info("INFO - Guardar Sistema");
@@ -81,7 +95,7 @@ public class SistemaController {
             SistemaFormDTO sistemaDto=sistemaService.createSistema(sistemaDTO);
             response.setStatus(1);
             response.setMessage("El Sistema fue guardado de manera exitosa");
-            response.setBody(sistemaDto);
+           // response.setBody(sistemaDto);
 
         }catch (Exception e ){
             log.error("ERROR - guardarSistema |", e.getMessage());
@@ -92,7 +106,9 @@ public class SistemaController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-
+    /**
+     * Metodo Actualizar sistema por Id
+     * **/
     @PutMapping("/sistema/{id}")
     public ResponseEntity<ResponseDTO<SistemaFormDTO>> actualizarSistema(@PathVariable Integer id, @Validated @RequestBody SistemaFormDTO sistemaDTO) {
 
@@ -108,7 +124,7 @@ public class SistemaController {
 
             response.setStatus(1);
             response.setMessage("Sistema actualizado con exito");
-            response.setBody(sistemaDto);
+          //  response.setBody(sistemaDto);
 
         }catch (Exception e){
             log.error("ERROR - actualizarSistema |", e);
@@ -119,6 +135,9 @@ public class SistemaController {
         return  new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * Metodo Eliminar sistema por id
+     * **/
     @DeleteMapping("/sistema/{id}")
     public ResponseEntity<ResponseDTO<?>> eliminarSistema(@PathVariable("id") Integer id) {
         ResponseDTO<SistemaFormDTO> response = new ResponseDTO<>();
@@ -144,7 +163,69 @@ public class SistemaController {
             response.setMessage("Error al eliminar el sistema");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
 
+    /**
+     * Metodo Guardar sistema por parametros
+     * **/
+    @PostMapping(value = "/sistemaPorParametro", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseDTO<SistemaFormDTO>> guardarSistema(@RequestParam @NotNull String codigo,
+                                                                      @RequestParam @NotNull String nombre,
+                                                                      @RequestParam @NotNull String version,
+                                                                      @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
+                                                                      @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead,
+                                                                      @RequestParam @NotNull String url ) throws InvalidCredentialsException {
+        log.info("INFO - Guardar Sistema con parametros ");
+        ResponseDTO<SistemaFormDTO> response=new ResponseDTO();
+        try {
+
+            SistemaFormDTO sistemaDto=sistemaService.guardarSistemaPorParametro(codigo,nombre,version, multiLogoMain,multiLogoHead,url);
+            response.setStatus(1);
+            response.setMessage("El Sistema fue guardado de manera exitosa");
+            response.setBody(sistemaDto);
+
+        }catch (Exception e ){
+            log.error("ERROR - guardarSistema |", e.getMessage());
+            response.setStatus(0);
+            response.setMessage("Error al guardar el Sistema : "+ e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+
+    @PutMapping(value = "/sistema/actualizar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseDTO<SistemaFormDTO>> actualizarSistema(@RequestParam Integer id,
+                                                                         @RequestParam String codigo,
+                                                                         @RequestParam String nombre,
+                                                                         @RequestParam String version,
+                                                                         @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
+                                                                         @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead,
+                                                                         @RequestParam String url) {
+        log.info("INFO - Actualizar Sistema");
+        ResponseDTO<SistemaFormDTO> response = new ResponseDTO<>();
+        try {
+            // Llamar al servicio de actualización
+            SistemaFormDTO sistemaDto = sistemaService.actualizarSistemaPorParametro(id, codigo, nombre, version, multiLogoMain, multiLogoHead, url);
+
+            response.setStatus(1);
+            response.setMessage("El Sistema fue actualizado de manera exitosa");
+            response.setBody(sistemaDto);
+
+        } catch (ResourceNotFoundException e) {
+            log.error("ERROR - El sistema no existe: ", e);
+            response.setStatus(0);
+            response.setMessage("El sistema con id " + id + " no existe.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
+        } catch (Exception e) {
+            log.error("ERROR - actualizarSistema | ", e);
+            response.setStatus(0);
+            response.setMessage("Error al actualizar el Sistema: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 

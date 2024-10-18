@@ -59,7 +59,7 @@ public class KeycloakRestService {
     }
 
 
-    public ResponseEntity<String> logout(String refreshToken) {
+    public ResponseEntity<?> logout(String refreshToken) {
 
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -75,9 +75,13 @@ public class KeycloakRestService {
 
             ResponseEntity<String> response = restTemplate.postForEntity(keycloakLogout, request, String.class);
 
+           Map<String, String> responseMsg = new HashMap<>();
             if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
-                return ResponseEntity.ok("Logout exitoso");
+
+                responseMsg.put("message","Logout exitoso");
+                return ResponseEntity.ok(responseMsg);
             } else {
+               // responseMsg.put("message","Logout exitoso");
                 return ResponseEntity.status(response.getStatusCode()).body("Error en el logout: " + response.getBody());
             }
         } catch (Exception e) {

@@ -26,6 +26,7 @@ public class MediaController {
         return Map.of("path", path);
     }
 
+
     @GetMapping("/{filename}")
     ResponseEntity<Resource> getResource(@PathVariable String filename) throws IOException {
         Resource resource = storageService.loadAsResource(filename);
