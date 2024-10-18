@@ -72,11 +72,15 @@ public class SistemaController {
             @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = "50",   required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
-            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder){
+            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "codigo", required = false) String codigo,
+            @RequestParam(name = "nombre", required = false) String nombre,
+            @RequestParam(name = "version", required = false) String version
+            ){
         log.info("INI - getAllSistemas | requestURL=entidades");
         try {
 
-            SistemaResponse sistemaResponse=sistemaService.getAllSistemas(pageNumber, pageSize, sortBy, sortOrder);
+            SistemaResponse sistemaResponse=sistemaService.getAllSistemas(pageNumber, pageSize, sortBy, sortOrder,codigo,nombre,version);
             return new ResponseEntity<>(sistemaResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - listarEntidades | requestURL=entidades");

@@ -81,15 +81,25 @@ public class SistemaServiceImpl implements ISistemaService {
     }
 
     @Override
-    public SistemaResponse getAllSistemas(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+    public SistemaResponse getAllSistemas(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String codigo, String nombre,String version) {
 
         log.info("INI Service() - getAllSistemas()");
         try {
 
             Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-
             Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
-            Page<Sistema> pageEntidades = sistemaRepository.findByIsDeletedFalse(pageDetails);
+
+            Page<Sistema> pageEntidades = null;
+
+            if(codigo!=null || nombre!=null ||  version!=null ){
+
+                pageEntidades = sistemaRepository.findByFilters(codigo, nombre, version, pageDetails);
+            }else{
+
+               pageEntidades = sistemaRepository.findByIsDeletedFalse(pageDetails);
+
+            }
+
             List<Sistema> sistemas = pageEntidades.getContent();
             var sistemaDtos = sistemas.stream()
                     .map(s -> modelMapper.map(s, SistemaDTO.class))
@@ -346,6 +356,9 @@ public class SistemaServiceImpl implements ISistemaService {
 
         return null;
     }
+
+
+
 
 
 }
