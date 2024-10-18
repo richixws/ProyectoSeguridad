@@ -13,11 +13,13 @@ import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.entities.Entidad;
 import pe.gob.bcrp.entities.Files;
 import pe.gob.bcrp.entities.Sistema;
+import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IFilesRepository;
 import pe.gob.bcrp.repositories.ISistemaRepository;
 import pe.gob.bcrp.services.ISistemaService;
 import pe.gob.bcrp.services.IUploadFileService;
+import pe.gob.bcrp.util.Util;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -38,6 +40,8 @@ public class SistemaServiceImpl implements ISistemaService {
     private IUploadFileService uploadFileService;
 
     private IFilesRepository  filesRepository;
+
+    private Util util;
 
 
     @Override
@@ -198,8 +202,9 @@ public class SistemaServiceImpl implements ISistemaService {
         log.info("INI -deleteSistemas() ");
         boolean estado=false;
         try {
+            Usuario usuario=util.getUsuario();
+
             Sistema sistema=sistemaRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Id de Sistema  no encontrado"));
-           // Files files=filesRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Id de Archivos no encontrado"));
             List<Files> listFiles=filesRepository.findAllByIdIdentidad(id);
 
             if(sistema!=null && !listFiles.isEmpty()){
@@ -213,6 +218,7 @@ public class SistemaServiceImpl implements ISistemaService {
 
                 sistema.setDeleted(true);
                 sistema.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+                sistema.setUsuarioEliminacion(usuario.getUsuario());
                 sistemaRepository.save(sistema);
                 //sistemaRepository.deleteById(id);
                 estado=true;
@@ -239,6 +245,8 @@ public class SistemaServiceImpl implements ISistemaService {
                                                      String url) throws IOException {
         try {
 
+            Usuario usuario=util.getUsuario();
+
             Sistema sistema=new Sistema();
             sistema.setCodigo(codigo);
             sistema.setNombre(nombre);
@@ -255,6 +263,7 @@ public class SistemaServiceImpl implements ISistemaService {
             }
 
             sistema.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+            sistema.setUsuarioCreacion(usuario.getUsuario());
             Sistema sistemaNew=sistemaRepository.save(sistema);
 
             //almacenarDatosDeArchivo(sistemaNew);
@@ -266,8 +275,8 @@ public class SistemaServiceImpl implements ISistemaService {
             return SistemaFormDTO;
         }catch (Exception e){
             log.error(e.getMessage());
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override
@@ -279,6 +288,7 @@ public class SistemaServiceImpl implements ISistemaService {
                                                         MultipartFile logoHead,
                                                         String url) throws IOException {
         try {
+            Usuario usuario=util.getUsuario();//obtener usuario del sistema
 
             Sistema sistemaExistente = sistemaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Sistema no encontrado con el id: " + id));
 
@@ -321,7 +331,7 @@ public class SistemaServiceImpl implements ISistemaService {
                 // 4. Guardar el sistema actualizado en la base de datos
 
                 sistemaExistente.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
-               // sistemaExistente.setUsuarioActualizacion();
+                sistemaExistente.setUsuarioActualizacion(usuario.getUsuario());
                 Sistema sistemaActualizado = sistemaRepository.save(sistemaExistente);
                 // 5. Mapear el sistema actualizado a un DTO
                 SistemaFormDTO sistemaFormDTO = modelMapper.map(sistemaActualizado, SistemaFormDTO.class);

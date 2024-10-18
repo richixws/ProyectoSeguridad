@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.EntidadDTO;
 import pe.gob.bcrp.dto.EntidadResponse;
 import pe.gob.bcrp.entities.Entidad;
+import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IEntidadRepository;
 import pe.gob.bcrp.services.IEntidadService;
+import pe.gob.bcrp.util.Util;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -31,6 +33,8 @@ public class EntidadServiceImpl implements IEntidadService {
     private final ModelMapper modelMapper;
 
     private IEntidadRepository entidadRepository;
+
+    private Util util;
 
     @Override
     public List<EntidadDTO> getEntidades() {
@@ -102,9 +106,11 @@ public class EntidadServiceImpl implements IEntidadService {
     public EntidadDTO saveEntidad(EntidadDTO entidadDto) {
         try {
             log.info("INI - saveEntidad()");
+            Usuario usuario=util.getUsuario();
+
             Entidad entidad=modelMapper.map(entidadDto,Entidad.class);
             entidad.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
-            //entidad.setUsuarioCreacion();
+            entidad.setUsuarioCreacion(usuario.getUsuario());
             Entidad entidadNew=entidadRepository.save(entidad);
             EntidadDTO entidadDtoNew=modelMapper.map(entidadNew, EntidadDTO.class);
             return entidadDtoNew;
@@ -120,6 +126,7 @@ public class EntidadServiceImpl implements IEntidadService {
 
         try {
             log.info("INI - updateUsuario()");
+            Usuario usuario=util.getUsuario();
 
             Entidad entidad=entidadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado con id :" + entidadDto.getIdEntidad()));
             entidad.setNombre(entidadDto.getNombre());
@@ -129,6 +136,7 @@ public class EntidadServiceImpl implements IEntidadService {
             entidad.setCodExterno(entidadDto.getCodExterno());
 
             entidad.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+            entidad.setUsuarioActualizacion(usuario.getUsuario());
             Entidad entidadNew=entidadRepository.save(entidad);
             EntidadDTO updateEntidad=modelMapper.map(entidadNew,EntidadDTO.class);
             return  updateEntidad;
@@ -150,11 +158,15 @@ public class EntidadServiceImpl implements IEntidadService {
         log.info("INI - deleteEntidad()");
         boolean estado=false;
         try {
+            Usuario usuario=util.getUsuario();
+
             Entidad entidad=entidadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Entidad con no encontrado"));
             if(entidad!=null){
                 //entidadRepository.deleteById(id);
                 entidad.setDeleted(true);
                 entidad.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+                entidad.setUsuarioEliminacion(usuario.getUsuario());
+
                 entidadRepository.save(entidad);
                 estado=true;
             }

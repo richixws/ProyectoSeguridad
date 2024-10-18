@@ -5,6 +5,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.EntidadDTO;
@@ -38,7 +41,7 @@ public class EntidadController {
         }
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/entidades")
     public ResponseEntity<EntidadResponse> getAllEntidades(
             @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
@@ -71,8 +74,13 @@ public class EntidadController {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/entidad")
     public  ResponseEntity<ResponseDTO<EntidadDTO>> guardarEntidad(@Valid @RequestBody  EntidadDTO entidadDto){
+
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //String nombreUsuario =  authentication.getName();
+
         log.info("INI - guardarEntidad | requestURL=entidadDto");
         ResponseDTO<EntidadDTO> response=new ResponseDTO();
         try {
@@ -90,7 +98,7 @@ public class EntidadController {
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/entidad/{id}")
     public ResponseEntity<ResponseDTO<EntidadDTO>> updateEntidad(@PathVariable("id") Integer id, @Validated @RequestBody EntidadDTO entidadDTO){
         log.info("INI - updateEntidad | requestURL=entidad");
@@ -117,7 +125,7 @@ public class EntidadController {
         return new ResponseEntity<>(response,HttpStatus.OK);
 
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/entidad/{id}")
     public ResponseEntity<ResponseDTO<EntidadDTO>> eliminarEntidad(@PathVariable("id") Integer id){
         ResponseDTO<EntidadDTO> response=new ResponseDTO<>();

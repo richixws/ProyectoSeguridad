@@ -6,9 +6,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.repositories.IFilesRepository;
 import pe.gob.bcrp.repositories.ISistemaRepository;
 import pe.gob.bcrp.services.IUploadFileService;
+import pe.gob.bcrp.util.Util;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +33,9 @@ public class IUploadFileServiceImpl implements IUploadFileService {
 
     @Autowired
     private ISistemaRepository isistemaRepository;
+
+    @Autowired
+    private Util util;
 
 
     private final String FOLDER = "src//main//resources//static//images//";
@@ -121,6 +126,8 @@ public class IUploadFileServiceImpl implements IUploadFileService {
             return null; // Si el archivo no está presente, no hacer nada
         }
 
+        Usuario usuario=util.getUsuario();
+
         // Generar un nombre único para evitar colisiones
         String uniqueFilename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
@@ -128,8 +135,8 @@ public class IUploadFileServiceImpl implements IUploadFileService {
         pe.gob.bcrp.entities.Files  files = new pe.gob.bcrp.entities.Files();
         files.setIdIdentidad(idSistema);
         files.setHoraFechaFile(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()) );
-       // files.setIdModulo();
-       // files.setIdUsuario();
+        files.setIdUsuario(usuario.getUsuario());
+        files.setIdModulo("modulo sistema");
 
         files.setFilename(file.getOriginalFilename());
         files.setPath(FOLDER + file.getOriginalFilename()); // Ajusta según tu lógica de almacenamiento
@@ -144,12 +151,16 @@ public class IUploadFileServiceImpl implements IUploadFileService {
     @Override
     public pe.gob.bcrp.entities.Files updateDatosFile(MultipartFile multipartFile, pe.gob.bcrp.entities.Files filesNew) throws IOException {
 
+        Usuario usuario=util.getUsuario();
         //uploadFileService.delete(files.getPath());
         //delete(filesNew.getPath());
          upload(multipartFile);
         // Luego, sube el nuevo archivo
         //uploadFileService.upload(newFile);
         // Actualizar los detalles del archivo
+        filesNew.setHoraFechaFile(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+        filesNew.setIdUsuario(usuario.getUsuario());
+        filesNew.setIdModulo("modulo sistema");  //aca falata agregar el lugar
         filesNew.setFilename(multipartFile.getOriginalFilename());
         filesNew.setPath(FOLDER + multipartFile.getOriginalFilename());
         filesNew.setExtension(getFileExtension(multipartFile.getOriginalFilename()));

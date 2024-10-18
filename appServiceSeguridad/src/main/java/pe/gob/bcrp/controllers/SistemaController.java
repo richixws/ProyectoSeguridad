@@ -20,6 +20,7 @@ import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.ISistemaService;
 import pe.gob.bcrp.services.IUploadFileService;
+import pe.gob.bcrp.util.Util;
 
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class SistemaController {
 
     @Autowired
     private IUploadFileService uploadFileService;
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/carousel/sistemas")
@@ -52,6 +54,7 @@ public class SistemaController {
    /**
     * Metodo Listar todos los Sistemas
     * **/
+   @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistemas2")
     public ResponseEntity<List<SistemaDTO>> listarSistemas(){
         log.info("Listando lista de sistemas");
@@ -63,7 +66,7 @@ public class SistemaController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistemas")
     public ResponseEntity<SistemaResponse> getAllSistemas(
             @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
@@ -86,7 +89,8 @@ public class SistemaController {
    /**
     * Metodo Guardar sistema
     * **/
-   @PostMapping(value = "/sistema")
+   @PreAuthorize("hasRole('ADMIN')")
+   @PostMapping(value = "/sistema2")
    public ResponseEntity<ResponseDTO<SistemaFormDTO>> guardarSistema(@Validated @RequestBody SistemaFormDTO sistemaDTO){
         log.info("INFO - Guardar Sistema");
         ResponseDTO<SistemaFormDTO> response=new ResponseDTO();
@@ -109,7 +113,8 @@ public class SistemaController {
     /**
      * Metodo Actualizar sistema por Id
      * **/
-    @PutMapping("/sistema/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/sistema2/{id}")
     public ResponseEntity<ResponseDTO<SistemaFormDTO>> actualizarSistema(@PathVariable Integer id, @Validated @RequestBody SistemaFormDTO sistemaDTO) {
 
         log.info("INFO - Actualizar Sistema");
@@ -138,6 +143,7 @@ public class SistemaController {
     /**
      * Metodo Eliminar sistema por id
      * **/
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/sistema/{id}")
     public ResponseEntity<ResponseDTO<?>> eliminarSistema(@PathVariable("id") Integer id) {
         ResponseDTO<SistemaFormDTO> response = new ResponseDTO<>();
@@ -168,7 +174,8 @@ public class SistemaController {
     /**
      * Metodo Guardar sistema por parametros
      * **/
-    @PostMapping(value = "/sistemaPorParametro", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDTO<SistemaFormDTO>> guardarSistema(@RequestParam @NotNull String codigo,
                                                                       @RequestParam @NotNull String nombre,
                                                                       @RequestParam @NotNull String version,
@@ -193,8 +200,8 @@ public class SistemaController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-
-    @PutMapping(value = "/sistema/actualizar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDTO<SistemaFormDTO>> actualizarSistema(@RequestParam Integer id,
                                                                          @RequestParam String codigo,
                                                                          @RequestParam String nombre,

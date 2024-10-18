@@ -24,9 +24,6 @@ public class KeycloakRestService {
     @Value("${keycloak.token-uri}")
     private String keycloakTokenUri;
 
-    @Value("${keycloak.user-info-uri}")
-    private String keycloakUserInfo;
-
     @Value("${keycloak.logout}")
     private String keycloakLogout;
 
@@ -87,6 +84,8 @@ public class KeycloakRestService {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error durante el logout: " + e.getMessage());
         }
+
+
 
       /**  try {
             RestTemplate restTemplate = new RestTemplate();

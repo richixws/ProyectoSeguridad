@@ -12,6 +12,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -26,12 +28,8 @@ import java.security.interfaces.RSAPublicKey;
 @Slf4j
 public class JwtValidationService {
 
-    @Value("${keycloak.auth-server-url}")
-    private String keycloakServerUrl;
-
-   // @Value("${keycloak.realm}")
-    @Value("${keycloak.realm.name}")
-    private String realm;
+    @Value("${kecloak.issuer}")
+    private String keycloakIssuerUrl;
 
     @Value("${keycloak.token-uri}")
     private  String urlToken;
@@ -76,7 +74,7 @@ public class JwtValidationService {
             Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
             // Crear el verificador del token
             JWTVerifier verifier = JWT.require(algorithm)
-                                      .withIssuer(keycloakServerUrl + "/realms/" + realm)
+                                      .withIssuer(this.keycloakIssuerUrl)
                                       .build();
             // Verificar y decodificar el token
             DecodedJWT jwt = verifier.verify(token);
@@ -129,6 +127,7 @@ public class JwtValidationService {
         ResponseEntity<TokenResponse> response = restTemplate.postForEntity(urlToken, request, TokenResponse.class);
         return response.getBody();
     }
+
 
 
 /**
