@@ -37,6 +37,8 @@ CREATE TABLE SW_SISTEMA (
     logo_head VARCHAR2(50) NOT NULL,
     url VARCHAR2(500) NOT NULL,
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,--DEFAULT 0 establece el valor predeterminado como false (no eliminado).
+    user_responsable varchar2(100)NOT NULL,
+    user_responsable_alterno varchar2(100) NOT NULL,
     
     hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
     hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
