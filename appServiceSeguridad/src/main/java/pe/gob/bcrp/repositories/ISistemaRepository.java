@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ISistemaRepository extends JpaRepository<Sistema, Integer> {
 
-    public Sistema findByNombre(String nombre);
+
 
     public List<Sistema> findByIsDeletedFalse();
 
@@ -20,11 +20,11 @@ public interface ISistemaRepository extends JpaRepository<Sistema, Integer> {
 
     // Consulta personalizada para buscar por código, nombre y versión
     @Query("SELECT s FROM Sistema s WHERE " +
-            "(:codigo IS NULL OR s.codigo = :codigo) AND " +
+           // "(:codigo IS NULL OR s.codigo = :codigo) AND " +
             "(:nombre IS NULL OR s.nombre = :nombre) AND " +
             "(:version IS NULL OR s.version = :version) AND " +
             "s.isDeleted = false")
-    Page<Sistema> findByFilters(@Param("codigo") String codigo,
+    Page<Sistema> findByFilters(//@Param("codigo") String codigo,
                                 @Param("nombre") String nombre,
                                 @Param("version") String version,
                                 Pageable pageable);

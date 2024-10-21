@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -81,7 +82,7 @@ public class SistemaServiceImpl implements ISistemaService {
     }
 
     @Override
-    public SistemaResponse getAllSistemas(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String codigo, String nombre,String version) {
+    public SistemaResponse getAllSistemas(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String nombre,String version) {
 
         log.info("INI Service() - getAllSistemas()");
         try {
@@ -91,9 +92,9 @@ public class SistemaServiceImpl implements ISistemaService {
 
             Page<Sistema> pageEntidades = null;
 
-            if(codigo!=null || nombre!=null ||  version!=null ){
+            if( nombre!=null ||  version!=null ){
 
-                pageEntidades = sistemaRepository.findByFilters(codigo, nombre, version, pageDetails);
+                pageEntidades = sistemaRepository.findByFilters( nombre, version, pageDetails);
             }else{
 
                pageEntidades = sistemaRepository.findByIsDeletedFalse(pageDetails);
@@ -102,8 +103,23 @@ public class SistemaServiceImpl implements ISistemaService {
 
             List<Sistema> sistemas = pageEntidades.getContent();
             var sistemaDtos = sistemas.stream()
-                    .map(s -> modelMapper.map(s, SistemaDTO.class))
+                    .map( s-> {
+                        SistemaDTO sistemaDTO=new SistemaDTO();
+                        sistemaDTO.setIdSistema(s.getIdSistema());
+                        sistemaDTO.setNombre(s.getNombre());
+                        sistemaDTO.setVersion(s.getVersion());
+                        sistemaDTO.setLogoMain(s.getLogoMain());
+                        sistemaDTO.setLogoHead(s.getLogoHead());
+                        sistemaDTO.setUrl(s.getUrl());
+                        return sistemaDTO;
+                    })
+
                     .toList();
+
+
+                   // .map(s -> modelMapper.map(s, SistemaDTO.class))
+                   // .filter( p -> p.getCodigo() )
+                   // .toList();
 
             SistemaResponse sistemaResponse = new SistemaResponse();
             sistemaResponse.setContent(sistemaDtos);
@@ -144,18 +160,6 @@ public class SistemaServiceImpl implements ISistemaService {
     }
 
 
-    @Override
-    public SistemaDTO findByNombre(String nombre) {
-        log.info("INI - findByNombre ");
-        try{
-            Sistema sistema = sistemaRepository.findByNombre(nombre);
-            SistemaDTO sistemaDTO= modelMapper.map(sistema, SistemaDTO.class);
-            return  sistemaDTO;
-        }catch (Exception e){
-            log.error("ERROR - findByNombre "+e.getMessage());
-        }
-        return null;
-    }
 
     @Override
     public SistemaFormDTO createSistema(SistemaFormDTO sistemaDTO) {
@@ -208,14 +212,14 @@ public class SistemaServiceImpl implements ISistemaService {
 
 
     @Override
-    public boolean deleteSistemas(Integer id) {
+    public boolean deleteSistemas(Integer idSistema) {
         log.info("INI -deleteSistemas() ");
         boolean estado=false;
         try {
             Usuario usuario=util.getUsuario();
 
-            Sistema sistema=sistemaRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Id de Sistema  no encontrado"));
-            List<Files> listFiles=filesRepository.findAllByIdIdentidad(id);
+            Sistema sistema=sistemaRepository.findById(idSistema).orElseThrow(()-> new ResourceNotFoundException("Id de Sistema  no encontrado"));
+            List<Files> listFiles=filesRepository.findAllByIdIdentidad(idSistema);
 
             if(sistema!=null && !listFiles.isEmpty()){
 
@@ -247,21 +251,29 @@ public class SistemaServiceImpl implements ISistemaService {
 
 
     @Override
-    public SistemaFormDTO guardarSistemaPorParametro(String codigo,
+    public SistemaFormDTO guardarSistemaPorParametro(
                                                      String nombre,
                                                      String version,
                                                      MultipartFile multiLogoMain,
                                                      MultipartFile multiLogoHead,
-                                                     String url) throws IOException {
+                                                     String url,
+                                                     String usuarioResponsable,
+                                                     String usuarioResponsableAlt) throws IOException {
         try {
 
             Usuario usuario=util.getUsuario();
 
+            UUID codigoUuid=UUID.randomUUID();
+            System.out.println(codigoUuid.toString());
+
             Sistema sistema=new Sistema();
-            sistema.setCodigo(codigo);
+           // sistema.setCodigo(codigo);
+            sistema.setCodigo(codigoUuid.toString());
             sistema.setNombre(nombre);
             sistema.setVersion(version);
             sistema.setUrl(url);
+            sistema.setUsuarioResponsable(usuarioResponsable);
+            sistema.setUsuarioResponsableAlterno(usuarioResponsableAlt);
 
             if(multiLogoMain != null){
                 sistema.setLogoMain(multiLogoMain.getOriginalFilename());
@@ -290,25 +302,28 @@ public class SistemaServiceImpl implements ISistemaService {
     }
 
     @Override
-    public SistemaFormDTO actualizarSistemaPorParametro(Integer id,
-                                                        String codigo,
+    public SistemaFormDTO actualizarSistemaPorParametro(Integer idSistema,
                                                         String nombre,
                                                         String version,
                                                         MultipartFile logoMain,
                                                         MultipartFile logoHead,
-                                                        String url) throws IOException {
+                                                        String url,
+                                                        String usuarioResponsable,
+                                                        String usuarioResponsableAlt) throws IOException {
         try {
             Usuario usuario=util.getUsuario();//obtener usuario del sistema
 
-            Sistema sistemaExistente = sistemaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Sistema no encontrado con el id: " + id));
+            Sistema sistemaExistente = sistemaRepository.findById(idSistema).orElseThrow(() -> new ResourceNotFoundException("Sistema no encontrado con el id: " + idSistema));
 
             if(sistemaExistente!=null) {
 
                 // 2. Actualizar campos del sistema
-                sistemaExistente.setCodigo(codigo);
+                //sistemaExistente.setCodigo(codigo);
                 sistemaExistente.setNombre(nombre);
                 sistemaExistente.setVersion(version);
                 sistemaExistente.setUrl(url);
+                sistemaExistente.setUsuarioResponsable(usuarioResponsable);
+                sistemaExistente.setUsuarioResponsableAlterno(usuarioResponsableAlt);
 
 
 
@@ -316,11 +331,10 @@ public class SistemaServiceImpl implements ISistemaService {
                 if (logoMain != null && !logoMain.isEmpty()) {
                     // String logoMainFilename = UUID.randomUUID().toString() + "_" + multiLogoMain.getOriginalFilename();
                     String filenameMain=sistemaExistente.getLogoMain();
-                  //  uploadFileService.upload(logoMain);
                     uploadFileService.delete(sistemaExistente.getLogoMain());
 
                     sistemaExistente.setLogoMain(logoMain.getOriginalFilename());
-                    Files fileLogoMain=filesRepository.findFileByIdIdentidadAndFilename(id,filenameMain);
+                    Files fileLogoMain=filesRepository.findFileByIdIdentidadAndFilename(idSistema,filenameMain);
                     if(fileLogoMain!=null){
                         uploadFileService.updateDatosFile(logoMain,fileLogoMain);
                     }
@@ -331,8 +345,8 @@ public class SistemaServiceImpl implements ISistemaService {
                     String filenameHead=sistemaExistente.getLogoHead();
                     uploadFileService.delete(sistemaExistente.getLogoHead());
 
-                    sistemaExistente.setLogoHead(logoMain.getOriginalFilename());
-                    Files fileLogoHead=filesRepository.findFileByIdIdentidadAndFilename(id,filenameHead);
+                    sistemaExistente.setLogoHead(logoHead.getOriginalFilename());
+                    Files fileLogoHead=filesRepository.findFileByIdIdentidadAndFilename(idSistema,filenameHead);
                     if(fileLogoHead!=null){
                         uploadFileService.updateDatosFile(logoHead,fileLogoHead);
                     }

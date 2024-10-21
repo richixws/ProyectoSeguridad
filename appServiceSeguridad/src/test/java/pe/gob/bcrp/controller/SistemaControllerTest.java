@@ -43,8 +43,8 @@ public class SistemaControllerTest {
     @Autowired
     private ModelMapper modelMapper;
 
-   @Test
-   public void givenSistemaObject_WhenCrearSistema_thenReturnSabedSistema() throws Exception {
+//   @Test
+//   public void givenSistemaObject_WhenCrearSistema_thenReturnSabedSistema() throws Exception {
 
        //given -  dado - condición previa
       /** Sistema sistema= Sistema.builder()
@@ -78,6 +78,6 @@ public class SistemaControllerTest {
                .andExpect(MockMvcResultMatchers.jsonPath("$.isDeleted", CoreMatchers.is(sistema.isDeleted())));
    }**/
 
-   }
+  // }
 
 }

@@ -36,21 +36,6 @@ public class SistemaController {
     private IUploadFileService uploadFileService;
 
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/carousel/sistemas")
-    public ResponseEntity<List<SistemaDTO>> listarCarouselSistemas() {
-
-        List<SistemaDTO> listSistemas=sistemaService.getSistemaCarousel();
-        return ResponseEntity.ok().body(listSistemas);
-    }
-
-
-    @GetMapping("/sistema/{nombre}")
-    public ResponseEntity<SistemaDTO> buscarSistemaPorNombre(@PathVariable String nombre){
-        SistemaDTO sistemaDTO=sistemaService.findByNombre(nombre);
-        return sistemaDTO != null ? ResponseEntity.ok().body(sistemaDTO) : ResponseEntity.notFound().build();
-    }
-
    /**
     * Metodo Listar todos los Sistemas
     * **/
@@ -73,14 +58,14 @@ public class SistemaController {
             @RequestParam(name = "pageSize", defaultValue = "50",   required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
             @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
-            @RequestParam(name = "codigo", required = false) String codigo,
+            //@RequestParam(name = "codigo", required = false) String codigo,
             @RequestParam(name = "nombre", required = false) String nombre,
             @RequestParam(name = "version", required = false) String version
             ){
         log.info("INI - getAllSistemas | requestURL=entidades");
         try {
 
-            SistemaResponse sistemaResponse=sistemaService.getAllSistemas(pageNumber, pageSize, sortBy, sortOrder,codigo,nombre,version);
+            SistemaResponse sistemaResponse=sistemaService.getAllSistemas(pageNumber, pageSize, sortBy, sortOrder,nombre,version);
             return new ResponseEntity<>(sistemaResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - listarEntidades | requestURL=entidades");
@@ -148,14 +133,14 @@ public class SistemaController {
      * Metodo Eliminar sistema por id
      * **/
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/sistema/{id}")
-    public ResponseEntity<ResponseDTO<?>> eliminarSistema(@PathVariable("id") Integer id) {
+    @DeleteMapping("/sistema/{idSistema}")
+    public ResponseEntity<ResponseDTO<?>> eliminarSistema(@PathVariable("idSistema") Integer idSistema) {
         ResponseDTO<SistemaFormDTO> response = new ResponseDTO<>();
         log.info("INFO - Eliminar Sistema");
         try {
-            boolean eliminado = sistemaService.deleteSistemas(id);
+            boolean eliminado = sistemaService.deleteSistemas(idSistema);
             if (!eliminado) {
-                throw new ResourceNotFoundException("El sistema a eliminar con ID " + id + " no existe");
+                throw new ResourceNotFoundException("El sistema a eliminar con ID " + idSistema + " no existe");
             }else{
                 response.setStatus(1);
                 response.setMessage("El sistema ha sido eliminado con éxito");
@@ -180,17 +165,19 @@ public class SistemaController {
      * **/
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO<SistemaFormDTO>> guardarSistema(@RequestParam @NotNull String codigo,
+    public ResponseEntity<ResponseDTO<SistemaFormDTO>> guardarSistema(//@RequestParam @NotNull String codigo,
                                                                       @RequestParam @NotNull String nombre,
                                                                       @RequestParam @NotNull String version,
+                                                                      @RequestParam @NotNull String usuarioResponsable,
+                                                                      @RequestParam @NotNull String usuarioResponsableAlt,
                                                                       @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
                                                                       @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead,
                                                                       @RequestParam @NotNull String url ) throws InvalidCredentialsException {
-        log.info("INFO - Guardar Sistema con parametros ");
+        log.info("INFO - Guardar Sistema ");
         ResponseDTO<SistemaFormDTO> response=new ResponseDTO();
         try {
 
-            SistemaFormDTO sistemaDto=sistemaService.guardarSistemaPorParametro(codigo,nombre,version, multiLogoMain,multiLogoHead,url);
+            SistemaFormDTO sistemaDto=sistemaService.guardarSistemaPorParametro(nombre,version, multiLogoMain,multiLogoHead,url, usuarioResponsable,usuarioResponsableAlt);
             response.setStatus(1);
             response.setMessage("El Sistema fue guardado de manera exitosa");
             response.setBody(sistemaDto);
@@ -206,18 +193,20 @@ public class SistemaController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO<SistemaFormDTO>> actualizarSistema(@RequestParam Integer id,
-                                                                         @RequestParam String codigo,
-                                                                         @RequestParam String nombre,
-                                                                         @RequestParam String version,
+    public ResponseEntity<ResponseDTO<SistemaFormDTO>> actualizarSistema(@RequestParam @NotNull Integer idSistema,
+                                                                         //@RequestParam String codigo,
+                                                                         @RequestParam @NotNull String nombre,
+                                                                         @RequestParam @NotNull String version,
+                                                                         @RequestParam @NotNull String usuarioResponsable,
+                                                                         @RequestParam @NotNull String usuarioResponsableAlt,
                                                                          @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
                                                                          @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead,
-                                                                         @RequestParam String url) {
+                                                                         @RequestParam @NotNull String url) {
         log.info("INFO - Actualizar Sistema");
         ResponseDTO<SistemaFormDTO> response = new ResponseDTO<>();
         try {
             // Llamar al servicio de actualización
-            SistemaFormDTO sistemaDto = sistemaService.actualizarSistemaPorParametro(id, codigo, nombre, version, multiLogoMain, multiLogoHead, url);
+            SistemaFormDTO sistemaDto = sistemaService.actualizarSistemaPorParametro(idSistema, nombre, version, multiLogoMain, multiLogoHead, url,usuarioResponsable,usuarioResponsableAlt);
 
             response.setStatus(1);
             response.setMessage("El Sistema fue actualizado de manera exitosa");
@@ -226,7 +215,7 @@ public class SistemaController {
         } catch (ResourceNotFoundException e) {
             log.error("ERROR - El sistema no existe: ", e);
             response.setStatus(0);
-            response.setMessage("El sistema con id " + id + " no existe.");
+            response.setMessage("El sistema con id " + idSistema + " no existe.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         } catch (Exception e) {
@@ -238,8 +227,4 @@ public class SistemaController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-
-
-
 }

@@ -19,8 +19,8 @@ public class SistemaDTO {
     @NotNull( message = "id sistema no puede ser nulo")
     private Integer idSistema;
 
-    @NotEmpty(message = "codigo no puede ser vacio")
-    private String codigo;
+   // @NotEmpty(message = "codigo no puede ser vacio")
+   // private String codigo;
 
     @NotEmpty(message = "nombre no puede ser vacio")
     private String nombre;

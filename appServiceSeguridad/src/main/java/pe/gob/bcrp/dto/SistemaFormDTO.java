@@ -33,13 +33,11 @@ public class SistemaFormDTO {
     @NotEmpty(message = "url no puede ser vacio")
     private String url;
 
-    SistemaFormDTO(String nombre, String version, String logoMain, String logoHead, String url) {
+    @NotEmpty(message = "usuario responsable no puede ser vacio")
+    private String usuarioResponsable;
 
-     this.nombre = nombre;
-      this.version = version;
-   this.logoMain = logoMain;
-     this.logoHead = logoHead;
-     this.url = url;
+    @NotEmpty(message = "usuario responsable alterno no puede ser vacio")
+    private String usuarioResponsableAlterno;
 
-    }
+
 }

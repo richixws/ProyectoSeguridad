@@ -1,6 +1,7 @@
 package pe.gob.bcrp.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -23,6 +24,8 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    @Value("${kecloak.issuer}")
+    private String keycloakIssuerUrl;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -69,8 +72,8 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder() {
         // Reemplaza esta URL con la URL correcta de tu Keycloak
-        String issuerUri = "http://localhost:8080/realms/ejemplo1";
-        return JwtDecoders.fromIssuerLocation(issuerUri);
+       // String issuerUri = "http://localhost:8080/realms/ejemplo1";
+        return JwtDecoders.fromIssuerLocation(keycloakIssuerUrl);
     }
 
 }
