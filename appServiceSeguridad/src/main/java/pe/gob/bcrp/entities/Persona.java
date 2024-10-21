@@ -36,4 +36,7 @@ public class Persona  implements Serializable {
 
     @Column(name = "nombres")
     private String nombres;
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted=false;
 }

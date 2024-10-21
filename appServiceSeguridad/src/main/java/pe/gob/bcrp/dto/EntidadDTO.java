@@ -9,11 +9,14 @@ public class EntidadDTO {
 
 
     private Integer idEntidad;
-    @NotEmpty(message = "tipo documento no puede ser vacio")
-    private String tipoDocumento;
+   // @NotEmpty(message = "tipo documento no puede ser vacio")
+   // private String tipoDocumento;
    // @Column(name = "numero_documento", length = 25,nullable = false )
+    private  DocumentoIdentidadDTO documentoIdentidad;
+
     @NotEmpty(message = "numero de documento no puede ser vacio")
     private String numeroDocumento;
+
     @NotEmpty(message = "nombre no puede ser vacio")
     private String nombre;
     @NotEmpty(message = "sigla no puede ser vacio")

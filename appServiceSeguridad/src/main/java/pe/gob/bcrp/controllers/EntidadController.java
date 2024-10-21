@@ -47,11 +47,12 @@ public class EntidadController {
             @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = "50",   required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
-            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder){
+            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "nombre", required = false) String nombre){
         log.info("INI - getAllEntidades | requestURL=entidades");
         try {
 
-            EntidadResponse entidadResponse=entidadService.getAllEntidades(pageNumber, pageSize, sortBy, sortOrder);
+            EntidadResponse entidadResponse=entidadService.getAllEntidades(pageNumber, pageSize, sortBy, sortOrder,nombre);
             return new ResponseEntity<>(entidadResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - listarEntidades | requestURL=entidades");
@@ -76,7 +77,8 @@ public class EntidadController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/entidad")
-    public  ResponseEntity<ResponseDTO<EntidadDTO>> guardarEntidad(@Valid @RequestBody  EntidadDTO entidadDto){
+    public  ResponseEntity<ResponseDTO<EntidadDTO>> guardarEntidad(@Valid @RequestBody  EntidadDTO entidadDto,
+                                                                          @RequestParam("tipoDocumento") String tipoDocumento){
 
         //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //String nombreUsuario =  authentication.getName();
@@ -84,7 +86,7 @@ public class EntidadController {
         log.info("INI - guardarEntidad | requestURL=entidadDto");
         ResponseDTO<EntidadDTO> response=new ResponseDTO();
         try {
-            EntidadDTO entidadDTO=entidadService.saveEntidad(entidadDto);
+            EntidadDTO entidadDTO=entidadService.saveEntidad(entidadDto,tipoDocumento);
 
             response.setStatus(1);
             response.setMessage("la Entidad fue guardado de manera exitosa");
@@ -99,13 +101,15 @@ public class EntidadController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/entidad/{id}")
-    public ResponseEntity<ResponseDTO<EntidadDTO>> updateEntidad(@PathVariable("id") Integer id, @Validated @RequestBody EntidadDTO entidadDTO){
+    @PutMapping("/entidad/{idEntidad}")
+    public ResponseEntity<ResponseDTO<EntidadDTO>> updateEntidad(@PathVariable("idEntidad") Integer idEntidad,
+                                                                 @Validated @RequestBody EntidadDTO entidadDTO,
+                                                                 @RequestParam("tipoDocumento") String tipoDocumento){
         log.info("INI - updateEntidad | requestURL=entidad");
         ResponseDTO<EntidadDTO> response=new ResponseDTO();
         try {
 
-            EntidadDTO entidadDto=entidadService.updateEntidad(id, entidadDTO);
+            EntidadDTO entidadDto=entidadService.updateEntidad(idEntidad, entidadDTO,tipoDocumento);
             response.setStatus(1);
             response.setMessage("la Entidad fue actualizado de manera exitosa");
            // response.setBody(entidadDTO);
@@ -126,15 +130,15 @@ public class EntidadController {
 
     }
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/entidad/{id}")
-    public ResponseEntity<ResponseDTO<EntidadDTO>> eliminarEntidad(@PathVariable("id") Integer id){
+    @DeleteMapping("/entidad/{idEntidad}")
+    public ResponseEntity<ResponseDTO<EntidadDTO>> eliminarEntidad(@PathVariable("idEntidad") Integer idEntidad){
         ResponseDTO<EntidadDTO> response=new ResponseDTO<>();
         log.info("INI - eliminarEntidad | requestURL=entidadDto");
         try {
 
-           boolean eliminado= entidadService.deleteEntidad(id);
+           boolean eliminado= entidadService.deleteEntidad(idEntidad);
            if(!eliminado){
-               throw new ResourceNotFoundException("La Entidad a eliminar con Id "+id+" no existe");
+               throw new ResourceNotFoundException("La Entidad a eliminar con Id "+idEntidad+" no existe");
            }
             response.setStatus(1);
             response.setMessage("La Entidad ha sido eliminado con éxito");

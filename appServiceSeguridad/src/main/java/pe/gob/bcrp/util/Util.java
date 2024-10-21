@@ -74,10 +74,6 @@ public class Util {
 
     }
 
-    /**
-     * Obtener la tabla para el modulo
-     * @return
-     */
 
 
 }

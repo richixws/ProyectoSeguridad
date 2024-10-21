@@ -3,11 +3,15 @@ package pe.gob.bcrp.dto;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class SistemaFormDTO {
 
     @NotEmpty(message = "codigo no puede ser vacio")

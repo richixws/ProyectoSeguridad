@@ -14,6 +14,8 @@ CREATE SEQUENCE seq_sw_parametros START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE seq_sw_auditoria START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE seq_sw_files START WITH 1 INCREMENT BY 1;
 
+CREATE SEQUENCE seq_sw_documento_identidad START WITH 1 INCREMENT BY 1;
+
 -- Creación de tablas
 CREATE TABLE SW_PERSONA (
     id_persona NUMBER(10) DEFAULT seq_sw_persona.NEXTVAL NOT NULL,
@@ -22,6 +24,7 @@ CREATE TABLE SW_PERSONA (
     ap_pat VARCHAR2(50) NOT NULL,
     ap_mat VARCHAR2(50) NOT NULL,
     nombres VARCHAR2(50) NOT NULL,
+     is_deleted NUMBER(1) DEFAULT 0 NOT NULL
     CONSTRAINT PK_SW_PERSONA PRIMARY KEY (id_persona)
 );
 
@@ -52,10 +55,12 @@ CREATE TABLE SW_OPCION (
     CONSTRAINT PK_SW_OPCION PRIMARY KEY (id_opcion)
 );
 
+
+
 CREATE TABLE SW_ENTIDAD (
     id_entidad NUMBER(10) DEFAULT seq_sw_entidad.NEXTVAL NOT NULL,
-    tipo_documento VARCHAR2(25) NOT NULL,
-    numero_documento VARCHAR(25) NOT NULL,
+    id_documento NUMBER(10) NOT NULL,
+    numero_documento VARCHAR2(25) NOT NULL,
     nombre VARCHAR2(100) NOT NULL,
     sigla VARCHAR2(50),
     cod_externo VARCHAR2(50),
@@ -69,7 +74,8 @@ CREATE TABLE SW_ENTIDAD (
     usuario_actualizacion VARCHAR2(50) NULL, -- Permitir nulos para la actualización
     
     
-    CONSTRAINT PK_SW_ENTIDAD PRIMARY KEY (id_entidad)
+    CONSTRAINT PK_SW_ENTIDAD PRIMARY KEY (id_entidad),
+    CONSTRAINT FK_SW_ENTIDAD_DOCUMENTO FOREIGN KEY (id_documento) REFERENCES SW_DOCUMENTO_IDENTIDAD (id_documento)
 );
 
 CREATE TABLE SW_MODULO (
@@ -173,13 +179,19 @@ CREATE TABLE SW_FILES (
     extension VARCHAR2(50) NOT NULL,
     mime VARCHAR2(50) NOT NULL,
     sizes NUMBER(25) NOT NULL,
-    
-    
     id_modulo varchar2(50) NOT NULL,
     id_usuario varchar(50) NOT NULL,
     fecha_hora TIMESTAMP NOT NULL,
 
     CONSTRAINT PK_SW_FILES PRIMARY KEY (id_files)
+);
+
+
+CREATE TABLE SW_DOCUMENTO_IDENTIDAD (
+    id_documento NUMBER(10) DEFAULT seq_sw_documento_identidad.NEXTVAL NOT NULL,
+    tipo_documento VARCHAR2(25) NOT NULL,
+    CONSTRAINT UC_TIPO_NUMERO UNIQUE (tipo_documento),
+    CONSTRAINT PK_SW_DOCUMENTO_IDENTIDAD PRIMARY KEY (id_documento)
 );
 
 

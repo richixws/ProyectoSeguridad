@@ -21,8 +21,11 @@ public class Entidad implements Serializable {
     @Column(name = "id_entidad", nullable = false)
     private Integer idEntidad;
 
-    @Column(name = "tipo_documento", length = 25,nullable = false)
-    private String tipoDocumento;
+    //@Column(name = "tipo_documento", length = 25,nullable = false)
+    //private String tipoDocumento;
+    @ManyToOne
+    @JoinColumn(name = "id_documento", nullable = false)
+    private DocumentoIdentidad documentoIdentidad;
 
     @Column(name = "numero_documento", length = 25,nullable = false )
     private String numeroDocumento;
