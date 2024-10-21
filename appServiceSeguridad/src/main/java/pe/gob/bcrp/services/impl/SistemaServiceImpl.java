@@ -10,10 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
-import pe.gob.bcrp.entities.Entidad;
-import pe.gob.bcrp.entities.Files;
-import pe.gob.bcrp.entities.Sistema;
-import pe.gob.bcrp.entities.Usuario;
+import pe.gob.bcrp.entities.*;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IFilesRepository;
 import pe.gob.bcrp.repositories.ISistemaRepository;
@@ -52,16 +49,16 @@ public class SistemaServiceImpl implements ISistemaService {
     @Override
     public List<UsuarioResponsableDTO> listarUsuariosResponsable() {
         try {
-            log.info("INI - Service listarUsuariosResponsable ");
-            List<Usuario> listaUsuarios = iUsuarioRepository.findAll();
-
             List<UsuarioResponsableDTO> listUserResp = new ArrayList<>();
-
-            for (Usuario usuario : listaUsuarios) {
-                UsuarioResponsableDTO dto = new UsuarioResponsableDTO();
-                dto.setCodigo(usuario.getIdUsuario());
-                dto.setUsuario(usuario.getUsuario());
-                listUserResp.add(dto);
+            UsuarioResponsableDTO usuarioResponsableDTO = new UsuarioResponsableDTO();
+            log.info("INI - Service listarUsuariosResponsable ");
+            Usuario usuario=util.getUsuario();
+            if(usuario !=null && usuario.getPersona()!=null){
+                Persona persona=usuario.getPersona();
+                String nombreCompleto= persona.getNombres().concat(" "+persona.getApellidoPaterno());
+                usuarioResponsableDTO.setCodigo(persona.getIdPersona());
+                usuarioResponsableDTO.setUsuario(nombreCompleto);
+                listUserResp.add(usuarioResponsableDTO);
             }
 
             return listUserResp;
