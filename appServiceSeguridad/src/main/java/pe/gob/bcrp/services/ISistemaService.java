@@ -3,15 +3,14 @@ package pe.gob.bcrp.services;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-import pe.gob.bcrp.dto.EntidadResponse;
-import pe.gob.bcrp.dto.SistemaDTO;
-import pe.gob.bcrp.dto.SistemaFormDTO;
-import pe.gob.bcrp.dto.SistemaResponse;
+import pe.gob.bcrp.dto.*;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface ISistemaService {
+
+    public List<UsuarioResponsableDTO> listarUsuariosResponsable();
 
     public List<SistemaDTO> getSistemaCarousel();
     public List<SistemaDTO> listarSistemas();

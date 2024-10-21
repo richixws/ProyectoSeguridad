@@ -17,6 +17,7 @@ import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IFilesRepository;
 import pe.gob.bcrp.repositories.ISistemaRepository;
+import pe.gob.bcrp.repositories.IUsuarioRepository;
 import pe.gob.bcrp.services.ISistemaService;
 import pe.gob.bcrp.services.IUploadFileService;
 import pe.gob.bcrp.util.Util;
@@ -24,6 +25,7 @@ import pe.gob.bcrp.util.Util;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -42,8 +44,34 @@ public class SistemaServiceImpl implements ISistemaService {
 
     private IFilesRepository  filesRepository;
 
+    private IUsuarioRepository iUsuarioRepository;
+
     private Util util;
 
+
+    @Override
+    public List<UsuarioResponsableDTO> listarUsuariosResponsable() {
+        try {
+            log.info("INI - Service listarUsuariosResponsable ");
+            List<Usuario> listaUsuarios = iUsuarioRepository.findAll();
+
+            List<UsuarioResponsableDTO> listUserResp = new ArrayList<>();
+
+            for (Usuario usuario : listaUsuarios) {
+                UsuarioResponsableDTO dto = new UsuarioResponsableDTO();
+                dto.setCodigo(usuario.getIdUsuario());
+                dto.setUsuario(usuario.getUsuario());
+                listUserResp.add(dto);
+            }
+
+            return listUserResp;
+
+        } catch (Exception e) {
+            log.error(" ERROR - Service listarUsuariosResponsable "+e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 
     @Override
     public List<SistemaDTO> getSistemaCarousel() {

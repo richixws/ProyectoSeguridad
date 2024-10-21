@@ -35,6 +35,21 @@ public class SistemaController {
     @Autowired
     private IUploadFileService uploadFileService;
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/sistema/usuarios")
+    public ResponseEntity<List<UsuarioResponsableDTO>> listadoDeUsuario(){
+
+       log.info("INFO - listado de usuarios");
+       try {
+
+           List<UsuarioResponsableDTO> listarUsuariosResponsable=sistemaService.listarUsuariosResponsable();
+           return new ResponseEntity<>(listarUsuariosResponsable,HttpStatus.OK);
+
+       } catch (Exception e) {
+           log.info("ERROR - listado de usuarios" +e.getMessage());
+           throw new RuntimeException(e);
+       }
+    }
 
    /**
     * Metodo Listar todos los Sistemas
