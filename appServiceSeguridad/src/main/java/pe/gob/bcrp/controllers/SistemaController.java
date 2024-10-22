@@ -37,7 +37,7 @@ public class SistemaController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistema/usuarios")
-    public ResponseEntity<List<UsuarioResponsableDTO>> listadoDeUsuario(){
+    public ResponseEntity<List<UsuarioResponsableDTO>> findAllUsuariosResponsables(){
 
        log.info("INFO - listado de usuarios");
        try {
@@ -45,9 +45,24 @@ public class SistemaController {
            return new ResponseEntity<>(listarUsuariosResponsable,HttpStatus.OK);
 
        } catch (Exception e) {
-           log.info("ERROR - listado de usuarios" +e.getMessage());
+           log.error("ERROR - listado de usuarios" +e.getMessage());
            throw new RuntimeException(e);
        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/sistema/estados")
+    public ResponseEntity<List<EstadoCriticoDto>> findAllEstadosCriticos(){
+
+        log.info("INFO - listado de estados criticos");
+        try {
+            List<EstadoCriticoDto> listEstadosCriticos=sistemaService.listarEstadosCriticos();
+            return new ResponseEntity<>(listEstadosCriticos,HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.error("ERROR - listado de estados criticos" +e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
    /**
@@ -188,12 +203,18 @@ public class SistemaController {
                                                                       @RequestParam          Integer idUsuarioResponsableAlt,
                                                                       @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
                                                                       @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead,
-                                                                      @RequestParam @NotNull String url ) throws InvalidCredentialsException {
+                                                                      @RequestParam @NotNull String url,
+                                                                      @RequestParam @NotNull String urlExterno,
+                                                                      @RequestParam @NotNull Integer idEstadoCritico,
+                                                                      @RequestParam @NotNull String unidOrganizacional) throws InvalidCredentialsException {
         log.info("INFO - Guardar Sistema ");
         ResponseDTO<SistemaFormDTO> response=new ResponseDTO();
         try {
 
-            SistemaFormDTO sistemaDto=sistemaService.guardarSistemaPorParametro(nombre,version, multiLogoMain,multiLogoHead,url, usuarioResponsable,usuarioResponsableAlt,idUsuarioResponsable,idUsuarioResponsableAlt);
+            SistemaFormDTO sistemaDto=sistemaService.guardarSistemaPorParametro(nombre,version,
+                                                                                multiLogoMain,multiLogoHead,url, usuarioResponsable,
+                                                                                usuarioResponsableAlt,idUsuarioResponsable,idUsuarioResponsableAlt,
+                                                                                urlExterno,idEstadoCritico,unidOrganizacional);
             response.setStatus(1);
             response.setMessage("El Sistema fue guardado de manera exitosa");
             response.setBody(sistemaDto);
@@ -219,12 +240,18 @@ public class SistemaController {
                                                                          @RequestParam          Integer idUsuarioResponsableAlt,
                                                                          @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
                                                                          @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead,
-                                                                         @RequestParam @NotNull String url) {
+                                                                         @RequestParam @NotNull String url,
+                                                                         @RequestParam @NotNull String urlExterno,
+                                                                         @RequestParam @NotNull Integer idEstadoCritico,
+                                                                         @RequestParam @NotNull String unidOrganizacional) {
         log.info("INFO - Actualizar Sistema");
         ResponseDTO<SistemaFormDTO> response = new ResponseDTO<>();
         try {
             // Llamar al servicio de actualización
-            SistemaFormDTO sistemaDto = sistemaService.actualizarSistemaPorParametro(idSistema, nombre, version, multiLogoMain, multiLogoHead, url,usuarioResponsable,usuarioResponsableAlt,idUsuarioResponsable,idUsuarioResponsableAlt);
+            SistemaFormDTO sistemaDto = sistemaService.actualizarSistemaPorParametro(idSistema, nombre, version, multiLogoMain,
+                                                                                    multiLogoHead, url,usuarioResponsable,usuarioResponsableAlt,
+                                                                                    idUsuarioResponsable,idUsuarioResponsableAlt,
+                                                                                    urlExterno,idEstadoCritico,unidOrganizacional);
 
             response.setStatus(1);
             response.setMessage("El Sistema fue actualizado de manera exitosa");

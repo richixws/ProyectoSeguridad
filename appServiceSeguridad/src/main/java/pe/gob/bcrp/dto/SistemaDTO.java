@@ -46,6 +46,16 @@ public class SistemaDTO {
 
     private Integer idUsuarioResponsableAlterno;
 
+   // @NotEmpty(message = "url externo no puede ser vacio")
+   // private String urlExterno;
+
+    @NotEmpty(message = "estado critico no puede ser vacio")
+    private String idEstadoCritico;
+
+    //@NotEmpty(message = "unidad organizacional no puede ser vacio")
+   // private String unidadOrganizacional;
+
+
 
 
 

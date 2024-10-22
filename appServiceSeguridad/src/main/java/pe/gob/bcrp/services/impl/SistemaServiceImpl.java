@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.entities.*;
+import pe.gob.bcrp.enumerador.EstadoCritico;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IFilesRepository;
 import pe.gob.bcrp.repositories.ISistemaRepository;
@@ -68,6 +69,29 @@ public class SistemaServiceImpl implements ISistemaService {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public List<EstadoCriticoDto> listarEstadosCriticos() {
+        log.info("INI - Service listarEstadosCriticos() ");
+        try {
+            List<EstadoCriticoDto> listEstados= new ArrayList<>();
+
+            for( EstadoCritico estadoCritico: EstadoCritico.values()){
+                EstadoCriticoDto estadoCriticoDto = new EstadoCriticoDto();
+                estadoCriticoDto.setCodigo(estadoCritico.getCodigo());
+                estadoCriticoDto.setEstCritico(estadoCritico.getDescripcion());
+                listEstados.add(estadoCriticoDto);
+            }
+
+            return listEstados;
+
+        } catch (Exception e) {
+            log.error(" ERROR - Service listarEstadosCriticos()  "+e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+
     }
 
     @Override
@@ -143,20 +167,10 @@ public class SistemaServiceImpl implements ISistemaService {
                         sistemaDTO.setIdUsuarioResponsable(s.getIdUsuarioResponsable());
                         sistemaDTO.setIdUsuarioResponsableAlterno(s.getIdUsuarioResponsableAlterno());
 
-                        // Crear la lista de usuarios responsables
-                  /**  List<UsuarioResponsableDTO> listUserResp = new ArrayList<>();
-                        Usuario usuario = util.getUsuario();
+                     //   sistemaDTO.setUrlExterno(s.getUrlExterno());
+                        sistemaDTO.setIdEstadoCritico(s.getEstadoCritico());
+                      //  sistemaDTO.setUnidadOrganizacional(s.getUnidadOrganizacional());
 
-                        if (usuario != null && usuario.getPersona() != null) {
-                            Persona persona = usuario.getPersona();
-                            String nombreCompleto = persona.getNombres().concat(" " + persona.getApellidoPaterno());
-
-                            UsuarioResponsableDTO usuarioResponsableDTO = new UsuarioResponsableDTO();
-                            usuarioResponsableDTO.setCodigo(persona.getIdPersona());
-                            usuarioResponsableDTO.setUsuario(nombreCompleto);
-                            listUserResp.add(usuarioResponsableDTO);
-                        }
-                        sistemaDTO.setUsuarioResponsable(listUserResp);**/
                         return sistemaDTO;
                     }).toList();
 
@@ -299,7 +313,10 @@ public class SistemaServiceImpl implements ISistemaService {
                                                      String usuarioResponsable,
                                                      String usuarioResponsableAlt,
                                                      Integer idUsuarioResponsable,
-                                                     Integer idUsuarioResponsableAlt) throws IOException {
+                                                     Integer idUsuarioResponsableAlt,
+                                                     String urlExterno,
+                                                     Integer idestadoCritico,
+                                                     String unidOrganizacional) throws IOException {
         try {
 
             Usuario usuario=util.getUsuario();
@@ -317,6 +334,10 @@ public class SistemaServiceImpl implements ISistemaService {
             sistema.setUsuarioResponsableAlterno(usuarioResponsableAlt);
             sistema.setIdUsuarioResponsable(idUsuarioResponsable);
             sistema.setIdUsuarioResponsableAlterno(idUsuarioResponsableAlt);
+
+            sistema.setUrlExterno(urlExterno);
+            sistema.setEstadoCritico(String.valueOf(idestadoCritico));
+            sistema.setUnidadOrganizacional(unidOrganizacional);
 
             if(multiLogoMain != null){
                 sistema.setLogoMain(multiLogoMain.getOriginalFilename());
@@ -354,7 +375,10 @@ public class SistemaServiceImpl implements ISistemaService {
                                                         String usuarioResponsable,
                                                         String usuarioResponsableAlt,
                                                         Integer idUsuarioResponsable,
-                                                        Integer idUsuarioResponsableAlt
+                                                        Integer idUsuarioResponsableAlt,
+                                                        String urlExterno,
+                                                        Integer idestadoCritico,
+                                                        String unidOrganizacional
                                                         ) throws IOException {
         try {
             Usuario usuario=util.getUsuario();//obtener usuario del sistema
@@ -372,6 +396,10 @@ public class SistemaServiceImpl implements ISistemaService {
                 sistemaExistente.setUsuarioResponsableAlterno(usuarioResponsableAlt);
                 sistemaExistente.setIdUsuarioResponsable(idUsuarioResponsable);
                 sistemaExistente.setIdUsuarioResponsableAlterno(idUsuarioResponsableAlt);
+
+                sistemaExistente.setUrlExterno(urlExterno);
+                sistemaExistente.setEstadoCritico(String.valueOf(idestadoCritico));
+                sistemaExistente.setUnidadOrganizacional(unidOrganizacional);
 
 
 

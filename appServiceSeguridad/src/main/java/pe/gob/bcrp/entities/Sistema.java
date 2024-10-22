@@ -79,4 +79,13 @@ public class Sistema implements Serializable {
     @Column(name = "id_user_responsable_alterno")
     private Integer idUsuarioResponsableAlterno;
 
+    @Column(name = "url_externo")
+    private String urlExterno;
+
+    @Column(name = "estado_critico")
+    private String estadoCritico;
+
+    @Column(name = "unidad_organizacional")
+    private String unidadOrganizacional;
+
 }

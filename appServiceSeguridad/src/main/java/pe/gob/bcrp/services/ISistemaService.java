@@ -11,6 +11,8 @@ import java.util.List;
 public interface ISistemaService {
 
     public List<UsuarioResponsableDTO> listarUsuariosResponsable();
+    public List<EstadoCriticoDto> listarEstadosCriticos();
+
 
     public List<SistemaDTO> getSistemaCarousel();
     public List<SistemaDTO> listarSistemas();
@@ -29,7 +31,10 @@ public interface ISistemaService {
                                                      String usuarioResponsable,
                                                      String usuarioResponsableAlt,
                                                      Integer idUsuarioResponsable,
-                                                     Integer idUsuarioResponsableAlt) throws IOException;
+                                                     Integer idUsuarioResponsableAlt,
+                                                     String urlExterno,
+                                                     Integer idEstadoCritico,
+                                                     String unidOrganizacional) throws IOException;
 
     public SistemaFormDTO actualizarSistemaPorParametro(Integer idSistema,
                                                         String nombre,
@@ -40,7 +45,9 @@ public interface ISistemaService {
                                                         String usuarioResponsable,
                                                         String usuarioResponsableAlt,
                                                         Integer idUsuarioResponsable,
-                                                        Integer idUsuarioResponsableAlt
-    )throws IOException;
+                                                        Integer idUsuarioResponsableAlt,
+                                                        String urlExterno,
+                                                        Integer idEstadoCritico,
+                                                        String unidOrganizacional)throws IOException;
     public boolean  deleteSistemas(Integer idSistema);
 }
