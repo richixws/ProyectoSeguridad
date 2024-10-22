@@ -10,10 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pe.gob.bcrp.dto.EntidadDTO;
-import pe.gob.bcrp.dto.EntidadResponse;
-import pe.gob.bcrp.dto.ResponseDTO;
-import pe.gob.bcrp.dto.SistemaFormDTO;
+import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IEntidadService;
 
@@ -27,6 +24,22 @@ public class EntidadController {
 
     @Autowired
     private IEntidadService entidadService;
+
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/entidad/documentos")
+    public ResponseEntity<List<DocumentoIdentidadDTO>> listarDocumentosIdentidad(){
+        log.info("INI - listarDocumentosIdentidad | requestURL=entidades");
+        try {
+            List<DocumentoIdentidadDTO> listDocumentos=entidadService.getAllDocumentos();
+            return new ResponseEntity<>(listDocumentos, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("ERROR - listarEntidades | requestURL=entidades");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 
     @GetMapping("/lista/entidades")
@@ -78,7 +91,9 @@ public class EntidadController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/entidad")
     public  ResponseEntity<ResponseDTO<EntidadDTO>> guardarEntidad(@Valid @RequestBody  EntidadDTO entidadDto,
-                                                                          @RequestParam("tipoDocumento") String tipoDocumento){
+                                                                          @RequestParam("idDocumento") Integer idDocumento
+                                                                          //@RequestParam("tipoDocumento") String tipoDocumento
+                                                                            ){
 
         //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //String nombreUsuario =  authentication.getName();
@@ -86,7 +101,7 @@ public class EntidadController {
         log.info("INI - guardarEntidad | requestURL=entidadDto");
         ResponseDTO<EntidadDTO> response=new ResponseDTO();
         try {
-            EntidadDTO entidadDTO=entidadService.saveEntidad(entidadDto,tipoDocumento);
+            EntidadDTO entidadDTO=entidadService.saveEntidad(entidadDto,idDocumento);
 
             response.setStatus(1);
             response.setMessage("la Entidad fue guardado de manera exitosa");
@@ -104,12 +119,12 @@ public class EntidadController {
     @PutMapping("/entidad/{idEntidad}")
     public ResponseEntity<ResponseDTO<EntidadDTO>> updateEntidad(@PathVariable("idEntidad") Integer idEntidad,
                                                                  @Validated @RequestBody EntidadDTO entidadDTO,
-                                                                 @RequestParam("tipoDocumento") String tipoDocumento){
+                                                                 @RequestParam("idDocumento") Integer IdDocumento){
         log.info("INI - updateEntidad | requestURL=entidad");
         ResponseDTO<EntidadDTO> response=new ResponseDTO();
         try {
 
-            EntidadDTO entidadDto=entidadService.updateEntidad(idEntidad, entidadDTO,tipoDocumento);
+            EntidadDTO entidadDto=entidadService.updateEntidad(idEntidad, entidadDTO,IdDocumento);
             response.setStatus(1);
             response.setMessage("la Entidad fue actualizado de manera exitosa");
            // response.setBody(entidadDTO);
