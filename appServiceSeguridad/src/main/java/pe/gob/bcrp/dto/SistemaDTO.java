@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -38,6 +39,8 @@ public class SistemaDTO {
     private String url;
 
    // private boolean isDeleted=false;
+    private List<UsuarioResponsableDTO> usuarioResponsable;
+
 
 
 

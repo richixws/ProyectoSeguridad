@@ -41,11 +41,11 @@ public class AuthController {
     @Autowired
     private KeycloakRestService keycloakRestService;
 
-    @Value("${keycloak.client-user}")
-    private String username;
+   // @Value("${keycloak.client-user}")
+   // private String username;
 
-    @Value("${keycloak.client-password}")
-    private String contrasena;
+  //  @Value("${keycloak.client-password}")
+  //  private String contrasena;
     @Autowired
     private JwtService jwtService;
 
@@ -57,38 +57,44 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
 
         log.info("INI - login | requestURL=login");
-        UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
 
-        if (usuarioDTO == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
-        }
+        try {
+
+            UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
+
+            if (usuarioDTO == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
+            }
+
+            if(!this.passwordEncode.matches(dto.getPassword(), usuarioDTO.getPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
+            }
+
+            //String login = this.keycloakRestService.login(this.username, this.contrasena);
+            String login = this.keycloakRestService.login(dto.getUsuario(), dto.getPassword());
+            JwtDTO jwt =new ObjectMapper().readValue(login, JwtDTO.class);
 
 
-        if(this.passwordEncode.matches(usuarioDTO.getPassword(), dto.getPassword())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
-        }
-
-        String login = this.keycloakRestService.login(this.username, this.contrasena);
-        JwtDTO jwt =new ObjectMapper().readValue(login, JwtDTO.class);
-
-
-
-        //Jwk jwk = this.jwtService.getJwk();
-        //String username = jwk.getClaimAsString("preferred_username");
-        // Validar el token
-        if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("mensaje", "Token inválido"));
-        }
+            // Validar el token
+            if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("mensaje", "Token inválido"));
+            }
 
             Map<String, String> response = new HashMap<>();
             response.put("id", String.valueOf(usuarioDTO.getIdUsuario()));
-            response.put("nombre", usuarioDTO.getPersona().getNombres().concat(usuarioDTO.getPersona().getApellidoPaterno()));
+            response.put("nombre", usuarioDTO.getPersona().getNombres().concat(" "+usuarioDTO.getPersona().getApellidoPaterno()));
             response.put("token", jwt.getAccess_token());
             response.put("refreshToken",jwt.getRefresh_token());
             return ResponseEntity.ok(response);
+
+
+        } catch (Exception e) {
+            log.error("Error en el login", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("mensaje", "Ocurrió un error interno en el sistema"));
+        }
+
     }
 
 

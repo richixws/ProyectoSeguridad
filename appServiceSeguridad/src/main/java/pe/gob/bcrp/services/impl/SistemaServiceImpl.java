@@ -136,15 +136,23 @@ public class SistemaServiceImpl implements ISistemaService {
                         sistemaDTO.setLogoMain(s.getLogoMain());
                         sistemaDTO.setLogoHead(s.getLogoHead());
                         sistemaDTO.setUrl(s.getUrl());
+
+                        // Crear la lista de usuarios responsables
+                        List<UsuarioResponsableDTO> listUserResp = new ArrayList<>();
+                        Usuario usuario = util.getUsuario();
+
+                        if (usuario != null && usuario.getPersona() != null) {
+                            Persona persona = usuario.getPersona();
+                            String nombreCompleto = persona.getNombres().concat(" " + persona.getApellidoPaterno());
+
+                            UsuarioResponsableDTO usuarioResponsableDTO = new UsuarioResponsableDTO();
+                            usuarioResponsableDTO.setCodigo(persona.getIdPersona());
+                            usuarioResponsableDTO.setUsuario(nombreCompleto);
+                            listUserResp.add(usuarioResponsableDTO);
+                        }
+                        sistemaDTO.setUsuarioResponsable(listUserResp);
                         return sistemaDTO;
-                    })
-
-                    .toList();
-
-
-                   // .map(s -> modelMapper.map(s, SistemaDTO.class))
-                   // .filter( p -> p.getCodigo() )
-                   // .toList();
+                    }).toList();
 
             SistemaResponse sistemaResponse = new SistemaResponse();
             sistemaResponse.setContent(sistemaDtos);

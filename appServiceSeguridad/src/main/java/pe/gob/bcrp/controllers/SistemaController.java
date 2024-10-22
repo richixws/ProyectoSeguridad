@@ -41,7 +41,6 @@ public class SistemaController {
 
        log.info("INFO - listado de usuarios");
        try {
-
            List<UsuarioResponsableDTO> listarUsuariosResponsable=sistemaService.listarUsuariosResponsable();
            return new ResponseEntity<>(listarUsuariosResponsable,HttpStatus.OK);
 
