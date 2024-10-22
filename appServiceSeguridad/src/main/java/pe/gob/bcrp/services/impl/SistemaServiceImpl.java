@@ -115,20 +115,6 @@ public class SistemaServiceImpl implements ISistemaService {
         return null;
     }
 
-    @Override
-    public List<SistemaDTO> listarSistemas() {
-        log.info("INI -listarSistemas ");
-        try {
-
-            List<Sistema> listSistemas = sistemaRepository.findByIsDeletedFalse();
-            return listSistemas.stream()
-                    .map( sistema -> modelMapper.map(sistema, SistemaDTO.class))
-                    .collect(Collectors.toList());
-        }catch (Exception e){
-            log.error("ERROR - listarSistemas() "+ e.getMessage());
-        }
-        return null;
-    }
 
     @Override
     public SistemaResponse getAllSistemas(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String nombre,String version) {
@@ -167,9 +153,9 @@ public class SistemaServiceImpl implements ISistemaService {
                         sistemaDTO.setIdUsuarioResponsable(s.getIdUsuarioResponsable());
                         sistemaDTO.setIdUsuarioResponsableAlterno(s.getIdUsuarioResponsableAlterno());
 
-                     //   sistemaDTO.setUrlExterno(s.getUrlExterno());
+                        sistemaDTO.setUrlExterno(s.getUrlExterno());
                         sistemaDTO.setIdEstadoCritico(s.getEstadoCritico());
-                      //  sistemaDTO.setUnidadOrganizacional(s.getUnidadOrganizacional());
+                        sistemaDTO.setUnidadOrganizacional(s.getUnidadOrganizacional());
 
                         return sistemaDTO;
                     }).toList();

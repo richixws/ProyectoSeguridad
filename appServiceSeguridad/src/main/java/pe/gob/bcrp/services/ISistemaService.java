@@ -15,7 +15,7 @@ public interface ISistemaService {
 
 
     public List<SistemaDTO> getSistemaCarousel();
-    public List<SistemaDTO> listarSistemas();
+
     public SistemaResponse getAllSistemas(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String nombre,String version);
     public Page<SistemaDTO> listarSistemasPaginated(Pageable pageable);
     public SistemaDTO findById(Integer id);

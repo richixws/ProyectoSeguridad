@@ -35,6 +35,9 @@ public class SistemaController {
     @Autowired
     private IUploadFileService uploadFileService;
 
+    /**
+     * Metodo Listar usuarios responsables del los Sistemas
+     * **/
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistema/usuarios")
     public ResponseEntity<List<UsuarioResponsableDTO>> findAllUsuariosResponsables(){
@@ -50,6 +53,9 @@ public class SistemaController {
        }
     }
 
+    /**
+     * Metodo Listar estados del los Sistemas
+     * **/
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistema/estados")
     public ResponseEntity<List<EstadoCriticoDto>> findAllEstadosCriticos(){
@@ -68,18 +74,7 @@ public class SistemaController {
    /**
     * Metodo Listar todos los Sistemas
     * **/
-   @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/sistemas2")
-    public ResponseEntity<List<SistemaDTO>> listarSistemas(){
-        log.info("Listando lista de sistemas");
-        try {
-            List<SistemaDTO> listSistemas=sistemaService.listarSistemas();
-            return new ResponseEntity<>(listSistemas,HttpStatus.OK);
-        }catch (Exception e) {
-            log.error(" ERROR - listar sistemas"+e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistemas")
     public ResponseEntity<SistemaResponse> getAllSistemas(
@@ -228,6 +223,9 @@ public class SistemaController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    /**
+     * Metodo Actualizar sistema por parametros
+     * **/
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDTO<SistemaFormDTO>> actualizarSistema(@RequestParam @NotNull Integer idSistema,
