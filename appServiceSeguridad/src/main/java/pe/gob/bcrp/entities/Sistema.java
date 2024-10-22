@@ -70,7 +70,13 @@ public class Sistema implements Serializable {
     @Column(name = "user_responsable")
     private String usuarioResponsable;
 
+    @Column(name = "id_user_responsable")
+    private Integer idUsuarioResponsable;
+
     @Column(name = "user_responsable_alterno")
     private String usuarioResponsableAlterno;
+
+    @Column(name = "id_user_responsable_alterno")
+    private Integer idUsuarioResponsableAlterno;
 
 }

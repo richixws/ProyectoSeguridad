@@ -183,7 +183,9 @@ public class SistemaController {
                                                                       @RequestParam @NotNull String nombre,
                                                                       @RequestParam @NotNull String version,
                                                                       @RequestParam @NotNull String usuarioResponsable,
-                                                                      @RequestParam @NotNull String usuarioResponsableAlt,
+                                                                      @RequestParam          String usuarioResponsableAlt,
+                                                                      @RequestParam          Integer idUsuarioResponsable,
+                                                                      @RequestParam          Integer idUsuarioResponsableAlt,
                                                                       @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
                                                                       @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead,
                                                                       @RequestParam @NotNull String url ) throws InvalidCredentialsException {
@@ -191,7 +193,7 @@ public class SistemaController {
         ResponseDTO<SistemaFormDTO> response=new ResponseDTO();
         try {
 
-            SistemaFormDTO sistemaDto=sistemaService.guardarSistemaPorParametro(nombre,version, multiLogoMain,multiLogoHead,url, usuarioResponsable,usuarioResponsableAlt);
+            SistemaFormDTO sistemaDto=sistemaService.guardarSistemaPorParametro(nombre,version, multiLogoMain,multiLogoHead,url, usuarioResponsable,usuarioResponsableAlt,idUsuarioResponsable,idUsuarioResponsableAlt);
             response.setStatus(1);
             response.setMessage("El Sistema fue guardado de manera exitosa");
             response.setBody(sistemaDto);
@@ -213,6 +215,8 @@ public class SistemaController {
                                                                          @RequestParam @NotNull String version,
                                                                          @RequestParam @NotNull String usuarioResponsable,
                                                                          @RequestParam @NotNull String usuarioResponsableAlt,
+                                                                         @RequestParam @NotNull Integer idUsuarioResponsable,
+                                                                         @RequestParam          Integer idUsuarioResponsableAlt,
                                                                          @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
                                                                          @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead,
                                                                          @RequestParam @NotNull String url) {
@@ -220,7 +224,7 @@ public class SistemaController {
         ResponseDTO<SistemaFormDTO> response = new ResponseDTO<>();
         try {
             // Llamar al servicio de actualización
-            SistemaFormDTO sistemaDto = sistemaService.actualizarSistemaPorParametro(idSistema, nombre, version, multiLogoMain, multiLogoHead, url,usuarioResponsable,usuarioResponsableAlt);
+            SistemaFormDTO sistemaDto = sistemaService.actualizarSistemaPorParametro(idSistema, nombre, version, multiLogoMain, multiLogoHead, url,usuarioResponsable,usuarioResponsableAlt,idUsuarioResponsable,idUsuarioResponsableAlt);
 
             response.setStatus(1);
             response.setMessage("El Sistema fue actualizado de manera exitosa");

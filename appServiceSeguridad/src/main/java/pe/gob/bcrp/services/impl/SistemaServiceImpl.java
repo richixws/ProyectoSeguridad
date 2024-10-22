@@ -137,8 +137,14 @@ public class SistemaServiceImpl implements ISistemaService {
                         sistemaDTO.setLogoHead(s.getLogoHead());
                         sistemaDTO.setUrl(s.getUrl());
 
+                        sistemaDTO.setUsuarioResponsable(s.getUsuarioResponsable());
+                        sistemaDTO.setUsuarioResponsableAlterno(s.getUsuarioResponsableAlterno());
+
+                        sistemaDTO.setIdUsuarioResponsable(s.getIdUsuarioResponsable());
+                        sistemaDTO.setIdUsuarioResponsableAlterno(s.getIdUsuarioResponsableAlterno());
+
                         // Crear la lista de usuarios responsables
-                        List<UsuarioResponsableDTO> listUserResp = new ArrayList<>();
+                  /**  List<UsuarioResponsableDTO> listUserResp = new ArrayList<>();
                         Usuario usuario = util.getUsuario();
 
                         if (usuario != null && usuario.getPersona() != null) {
@@ -150,7 +156,7 @@ public class SistemaServiceImpl implements ISistemaService {
                             usuarioResponsableDTO.setUsuario(nombreCompleto);
                             listUserResp.add(usuarioResponsableDTO);
                         }
-                        sistemaDTO.setUsuarioResponsable(listUserResp);
+                        sistemaDTO.setUsuarioResponsable(listUserResp);**/
                         return sistemaDTO;
                     }).toList();
 
@@ -291,7 +297,9 @@ public class SistemaServiceImpl implements ISistemaService {
                                                      MultipartFile multiLogoHead,
                                                      String url,
                                                      String usuarioResponsable,
-                                                     String usuarioResponsableAlt) throws IOException {
+                                                     String usuarioResponsableAlt,
+                                                     Integer idUsuarioResponsable,
+                                                     Integer idUsuarioResponsableAlt) throws IOException {
         try {
 
             Usuario usuario=util.getUsuario();
@@ -307,6 +315,8 @@ public class SistemaServiceImpl implements ISistemaService {
             sistema.setUrl(url);
             sistema.setUsuarioResponsable(usuarioResponsable);
             sistema.setUsuarioResponsableAlterno(usuarioResponsableAlt);
+            sistema.setIdUsuarioResponsable(idUsuarioResponsable);
+            sistema.setIdUsuarioResponsableAlterno(idUsuarioResponsableAlt);
 
             if(multiLogoMain != null){
                 sistema.setLogoMain(multiLogoMain.getOriginalFilename());
@@ -342,7 +352,10 @@ public class SistemaServiceImpl implements ISistemaService {
                                                         MultipartFile logoHead,
                                                         String url,
                                                         String usuarioResponsable,
-                                                        String usuarioResponsableAlt) throws IOException {
+                                                        String usuarioResponsableAlt,
+                                                        Integer idUsuarioResponsable,
+                                                        Integer idUsuarioResponsableAlt
+                                                        ) throws IOException {
         try {
             Usuario usuario=util.getUsuario();//obtener usuario del sistema
 
@@ -357,6 +370,8 @@ public class SistemaServiceImpl implements ISistemaService {
                 sistemaExistente.setUrl(url);
                 sistemaExistente.setUsuarioResponsable(usuarioResponsable);
                 sistemaExistente.setUsuarioResponsableAlterno(usuarioResponsableAlt);
+                sistemaExistente.setIdUsuarioResponsable(idUsuarioResponsable);
+                sistemaExistente.setIdUsuarioResponsableAlterno(idUsuarioResponsableAlt);
 
 
 

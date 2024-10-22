@@ -27,7 +27,9 @@ public interface ISistemaService {
                                                      MultipartFile multiLogoHead,
                                                      String url,
                                                      String usuarioResponsable,
-                                                     String usuarioResponsableAlt) throws IOException;
+                                                     String usuarioResponsableAlt,
+                                                     Integer idUsuarioResponsable,
+                                                     Integer idUsuarioResponsableAlt) throws IOException;
 
     public SistemaFormDTO actualizarSistemaPorParametro(Integer idSistema,
                                                         String nombre,
@@ -36,6 +38,9 @@ public interface ISistemaService {
                                                         MultipartFile logoHead,
                                                         String url,
                                                         String usuarioResponsable,
-                                                        String usuarioResponsableAlt )throws IOException;
+                                                        String usuarioResponsableAlt,
+                                                        Integer idUsuarioResponsable,
+                                                        Integer idUsuarioResponsableAlt
+    )throws IOException;
     public boolean  deleteSistemas(Integer idSistema);
 }

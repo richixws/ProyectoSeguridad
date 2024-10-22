@@ -38,9 +38,13 @@ public class SistemaDTO {
     @NotEmpty(message = "url no puede ser vacio")
     private String url;
 
-   // private boolean isDeleted=false;
-    private List<UsuarioResponsableDTO> usuarioResponsable;
+    private String usuarioResponsable;
 
+    private Integer idUsuarioResponsable;
+
+    private String usuarioResponsableAlterno;
+
+    private Integer idUsuarioResponsableAlterno;
 
 
 
