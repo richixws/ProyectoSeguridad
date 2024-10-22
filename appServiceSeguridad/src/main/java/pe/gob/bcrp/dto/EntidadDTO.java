@@ -12,7 +12,9 @@ public class EntidadDTO {
    // @NotEmpty(message = "tipo documento no puede ser vacio")
    // private String tipoDocumento;
    // @Column(name = "numero_documento", length = 25,nullable = false )
-    private  DocumentoIdentidadDTO documentoIdentidad;
+    //private  DocumentoIdentidadDTO documentoIdentidad;
+
+    private  Integer  idDocumento;
 
     @NotEmpty(message = "numero de documento no puede ser vacio")
     private String numeroDocumento;

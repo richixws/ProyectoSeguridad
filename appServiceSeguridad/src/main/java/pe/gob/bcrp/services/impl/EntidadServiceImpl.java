@@ -131,13 +131,12 @@ public class EntidadServiceImpl implements IEntidadService {
     }
 
     @Override
-    public EntidadDTO saveEntidad(EntidadDTO entidadDto, Integer idDocumento) {
+    public EntidadDTO saveEntidad(EntidadDTO entidadDto) {
         try {
             log.info("INI - saveEntidad()");
             Usuario usuario=util.getUsuario();
 
-           // DocumentoIdentidad documento=documentoIdentidadRepository.findByTipoDocumentoIdentidad(tipoDocumento);
-            DocumentoIdentidad doc=documentoIdentidadRepository.findById(idDocumento).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
+            DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
 
             Entidad entidad=modelMapper.map(entidadDto,Entidad.class);
             entidad.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
@@ -159,7 +158,7 @@ public class EntidadServiceImpl implements IEntidadService {
     }
 
     @Override
-    public EntidadDTO updateEntidad(Integer id, EntidadDTO entidadDto, Integer idDocumento) {
+    public EntidadDTO updateEntidad(Integer id, EntidadDTO entidadDto) {
 
         try {
             log.info("INI - updateUsuario()");
@@ -168,11 +167,11 @@ public class EntidadServiceImpl implements IEntidadService {
             Entidad entidad=entidadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado con id :" + entidadDto.getIdEntidad()));
 
           //  DocumentoIdentidad idocumento=documentoIdentidadRepository.findByTipoDocumentoIdentidad(tipoDocumento);
-            DocumentoIdentidad doc=documentoIdentidadRepository.findById(idDocumento).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
+             DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
 
-            DocumentoIdentidad identidad=new DocumentoIdentidad();
-            identidad.setIdDocumentoIdentidad(doc.getIdDocumentoIdentidad());
-            identidad.setTipoDocumentoIdentidad(doc.getTipoDocumentoIdentidad());
+             DocumentoIdentidad identidad=new DocumentoIdentidad();
+             identidad.setIdDocumentoIdentidad(doc.getIdDocumentoIdentidad());
+             identidad.setTipoDocumentoIdentidad(doc.getTipoDocumentoIdentidad());
 
             entidad.setDocumentoIdentidad(identidad);
             entidad.setNumeroDocumento(entidadDto.getNumeroDocumento());

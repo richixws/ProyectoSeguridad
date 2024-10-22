@@ -90,18 +90,12 @@ public class EntidadController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/entidad")
-    public  ResponseEntity<ResponseDTO<EntidadDTO>> guardarEntidad(@Valid @RequestBody  EntidadDTO entidadDto,
-                                                                          @RequestParam("idDocumento") Integer idDocumento
-                                                                          //@RequestParam("tipoDocumento") String tipoDocumento
-                                                                            ){
-
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //String nombreUsuario =  authentication.getName();
+    public  ResponseEntity<ResponseDTO<EntidadDTO>> guardarEntidad(@Valid @RequestBody  EntidadDTO entidadDto){
 
         log.info("INI - guardarEntidad | requestURL=entidadDto");
         ResponseDTO<EntidadDTO> response=new ResponseDTO();
         try {
-            EntidadDTO entidadDTO=entidadService.saveEntidad(entidadDto,idDocumento);
+            EntidadDTO entidadDTO=entidadService.saveEntidad(entidadDto);
 
             response.setStatus(1);
             response.setMessage("la Entidad fue guardado de manera exitosa");
@@ -115,16 +109,17 @@ public class EntidadController {
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
+
+
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/entidad/{idEntidad}")
     public ResponseEntity<ResponseDTO<EntidadDTO>> updateEntidad(@PathVariable("idEntidad") Integer idEntidad,
-                                                                 @Validated @RequestBody EntidadDTO entidadDTO,
-                                                                 @RequestParam("idDocumento") Integer IdDocumento){
+                                                                 @Validated @RequestBody EntidadDTO entidadDTO){
         log.info("INI - updateEntidad | requestURL=entidad");
         ResponseDTO<EntidadDTO> response=new ResponseDTO();
         try {
 
-            EntidadDTO entidadDto=entidadService.updateEntidad(idEntidad, entidadDTO,IdDocumento);
+            EntidadDTO entidadDto=entidadService.updateEntidad(idEntidad, entidadDTO);
             response.setStatus(1);
             response.setMessage("la Entidad fue actualizado de manera exitosa");
            // response.setBody(entidadDTO);

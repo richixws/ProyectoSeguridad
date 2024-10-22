@@ -12,7 +12,7 @@ public interface IEntidadService {
     public List<DocumentoIdentidadDTO> getAllDocumentos();
     public EntidadResponse getAllEntidades(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,String nombre);
     public EntidadDTO findEntidadByNombre(String nombre);
-    public EntidadDTO saveEntidad(EntidadDTO entidadDto, Integer idDocumento);
-    public EntidadDTO updateEntidad(Integer id, EntidadDTO entidadDto,Integer idDocumento);
+    public EntidadDTO saveEntidad(EntidadDTO entidadDto);
+    public EntidadDTO updateEntidad(Integer id, EntidadDTO entidadDto);
     public boolean deleteEntidad(Integer idEntidad);
 }
