@@ -18,7 +18,10 @@ public interface IEntidadRepository extends JpaRepository<Entidad, Integer> {
     public Page<Entidad> findByIsDeletedFalse(Pageable pageable);
 
 
-    @Query("SELECT s FROM Entidad s WHERE " + "(:nombre IS NULL OR s.nombre = :nombre) AND " + "s.isDeleted = false")
-    Page<Entidad> findByFilters( @Param("nombre") String nombre,Pageable pageable);
+    //@Query("SELECT s FROM Entidad s WHERE " + "(:nombre IS NULL OR s.nombre = :nombre) AND " + "s.isDeleted = false")
+    //Page<Entidad> findByFilters( @Param("nombre") String nombre,Pageable pageable);
+
+    @Query("SELECT s FROM Entidad s WHERE " + "(:nombre IS NULL OR LOWER(s.nombre) = LOWER(:nombre)) AND " + "s.isDeleted = false")
+    Page<Entidad> findByFilters(@Param("nombre") String nombre, Pageable pageable);
 
 }

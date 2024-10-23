@@ -20,12 +20,14 @@ CREATE SEQUENCE seq_sw_documento_identidad START WITH 1 INCREMENT BY 1;
 CREATE TABLE SW_PERSONA (
     id_persona NUMBER(10) DEFAULT seq_sw_persona.NEXTVAL NOT NULL,
     tipo_documento NUMBER(5) NOT NULL,
+    --id_documento NUMBER(10) NOT NULL,
     documento_identidad VARCHAR2(50) NOT NULL,
     ap_pat VARCHAR2(50) NOT NULL,
     ap_mat VARCHAR2(50) NOT NULL,
     nombres VARCHAR2(50) NOT NULL,
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
-    CONSTRAINT PK_SW_PERSONA PRIMARY KEY (id_persona)
+    CONSTRAINT PK_SW_PERSONA PRIMARY KEY (id_persona),
+   -- CONSTRAINT FK_SW_PERSONA_DOCUMENTO FOREIGN KEY (id_documento) REFERENCES SW_DOCUMENTO_IDENTIDAD (id_documento)
 );
 
 CREATE TABLE SW_SISTEMA (
@@ -198,8 +200,9 @@ CREATE TABLE SW_FILES (
 CREATE TABLE SW_DOCUMENTO_IDENTIDAD (
     id_documento NUMBER(10) DEFAULT seq_sw_documento_identidad.NEXTVAL NOT NULL,
     tipo_documento VARCHAR2(25) NOT NULL,
+    --grupo_documento number(10) NOT NULL,  --1 .- identidad  2.-financiero
     CONSTRAINT UC_TIPO_NUMERO UNIQUE (tipo_documento),
-    CONSTRAINT PK_SW_DOCUMENTO_IDENTIDAD PRIMARY KEY (id_documento)
+    CONSTRAINT PK_SW_DOCUMENTO_IDENTIDAD PRIMARY KEY (id_documento),
 );
 
 

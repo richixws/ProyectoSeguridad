@@ -31,7 +31,7 @@ public class PersonaController {
     public ResponseEntity<PersonaResponse> getAllPersonas(
             @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = "50",   required = false) Integer pageSize,
-            @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
+            @RequestParam(name = "sortBy", defaultValue = "nombres", required = false) String sortBy,
             @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
             @RequestParam(name = "nombre", required = false) String nombre){
        log.info(" INI - getAllPersonas | requestUrl=personas");
@@ -61,7 +61,7 @@ public class PersonaController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/persona/{idpersona}")
+    @PutMapping("/persona/{idPersona}")
     public ResponseEntity<ResponseDTO<PersonaDTO>> updatePersona(@PathVariable Integer idPersona,
                                                                 @Valid @RequestBody PersonaDTO personaDTO) {
         log.info(" INI - updatePersona | requestUrl=persona/idpersona");

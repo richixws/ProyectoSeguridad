@@ -20,6 +20,8 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI openAPI() {
         // Datos de los servidores
+        //http://localhost:8081/v3/api-docs
+        //http://localhost:8081/swagger-ui/index.html
         Server devServer = new Server();
         devServer.setUrl("http://localhost:8081");
         devServer.setDescription("URL del servidor de pruebas");
