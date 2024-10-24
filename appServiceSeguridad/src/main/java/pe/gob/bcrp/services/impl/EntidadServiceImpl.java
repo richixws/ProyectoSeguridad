@@ -75,7 +75,7 @@ public class EntidadServiceImpl implements IEntidadService {
     }
 
     @Override
-    public EntidadResponse getAllEntidades(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,String nombre,String tipoDocumento, String numeroDocumento) {
+    public EntidadResponse getAllEntidades(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,String nombre,Integer tipoDocumento, String numeroDocumento) {
 
         log.info("INI Service() - getAllProducts");
 

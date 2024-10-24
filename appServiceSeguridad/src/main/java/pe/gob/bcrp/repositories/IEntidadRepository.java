@@ -26,13 +26,18 @@ public interface IEntidadRepository extends JpaRepository<Entidad, Integer> {
    // Page<Entidad> findByFilters(@Param("nombre") String nombre, Pageable pageable);
 
 
+    /**@Query("SELECT s FROM Entidad s WHERE " +
+            "(:nombre IS NULL OR LOWER(s.nombre) = LOWER(:nombre)) AND " +
+            "(:tipoDocumento IS NULL OR LOWER(s.documentoIdentidad.idDocumentoIdentidad) = LOWER(:tipoDocumento)) AND " +
+            "(:numeroDocumento IS NULL OR s.numeroDocumento = :numeroDocumento) AND " +
+            "s.isDeleted = false")**/
     @Query("SELECT s FROM Entidad s WHERE " +
             "(:nombre IS NULL OR LOWER(s.nombre) = LOWER(:nombre)) AND " +
-            "(:tipoDocumento IS NULL OR LOWER(s.documentoIdentidad.tipoDocumentoIdentidad) = LOWER(:tipoDocumento)) AND " +
+            "(:tipoDocumento IS NULL OR s.documentoIdentidad.idDocumentoIdentidad = :tipoDocumento) AND " +
             "(:numeroDocumento IS NULL OR s.numeroDocumento = :numeroDocumento) AND " +
             "s.isDeleted = false")
     Page<Entidad> findByFilters(@Param("nombre") String nombre,
-                                @Param("tipoDocumento") String tipoDocumento,
+                                @Param("tipoDocumento") Integer tipoDocumento,
                                 @Param("numeroDocumento") String numeroDocumento,
                                 Pageable pageable);
 }

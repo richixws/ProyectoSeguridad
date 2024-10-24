@@ -80,7 +80,7 @@ public class EntidadController {
             @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
             @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
             @RequestParam(name = "nombre", required = false) String nombre,
-            @RequestParam(name = "tipoDocumento", required = false) String tipoDocumento,
+            @RequestParam(name = "tipoDocumento", required = false) Integer tipoDocumento,
             @RequestParam(name = "numeroDocumento", required = false) String numeroDocumento
             ){
         log.info("INI - getAllEntidades | requestURL=entidades");
