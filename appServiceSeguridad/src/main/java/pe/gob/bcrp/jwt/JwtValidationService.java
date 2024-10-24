@@ -17,12 +17,15 @@ import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import pe.gob.bcrp.dto.CaptchaResponse;
 import pe.gob.bcrp.dto.TokenResponse;
 import pe.gob.bcrp.excepciones.SeguridadAPIException;
 import java.net.URL;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -49,6 +52,13 @@ public class JwtValidationService {
 
     private RSAPrivateKey privateKey;
 
+
+    //recaptcha valores
+    @Value("${google.recaptcha.verification.endpoint}")
+    String recaptchaEndpoint;
+
+    @Value("${google.recaptcha.secret}")
+    String recaptchaSecret;
 
     //private static final String TOKEN_ENDPOINT = "/protocol/openid-connect/token";
     public JwtValidationService(RestTemplate restTemplate) {
@@ -149,6 +159,34 @@ public class JwtValidationService {
     }
 
   **/
+
+// method validate the captcha response coming from the client
+// and return either true or false after the validation.
+// reference url - https://developers.google.com/recaptcha/docs/verify
+public boolean validateCaptcha(final String captchaResponse) {
+    log.info("Going to validate the captcha response = {}", captchaResponse);
+    final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    // "secret" is a required param and it represents the shared key between your site
+    // and the recaptcha.
+    params.add("secret", recaptchaSecret);
+    // "response" is a required param and it represents the user token provided
+    // by the recaptcha client-side integration on your site.
+    params.add("response", captchaResponse);
+
+    CaptchaResponse apiResponse = null;
+    try {
+        apiResponse = restTemplate.postForObject(recaptchaEndpoint, params, CaptchaResponse.class);
+    } catch (final RestClientException e) {
+        log.error("Some exception occurred while binding to the recaptcha endpoint.", e);
+    }
+
+    if (Objects.nonNull(apiResponse) && apiResponse.isSuccess()) {
+        log.info("Captcha API response = {}", apiResponse.toString());
+        return true;
+    } else {
+        return false;
+    }
+}
 
 
 

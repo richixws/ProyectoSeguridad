@@ -17,11 +17,22 @@ public interface IEntidadRepository extends JpaRepository<Entidad, Integer> {
     public List<Entidad> findByIsDeletedFalse();
     public Page<Entidad> findByIsDeletedFalse(Pageable pageable);
 
+    boolean existsByNumeroDocumento(String numeroDocumento);
 
-    //@Query("SELECT s FROM Entidad s WHERE " + "(:nombre IS NULL OR s.nombre = :nombre) AND " + "s.isDeleted = false")
-    //Page<Entidad> findByFilters( @Param("nombre") String nombre,Pageable pageable);
+    boolean existsByNumeroDocumentoAndIdEntidadNot(String numeroDocumento, Integer idEntidad);
 
-    @Query("SELECT s FROM Entidad s WHERE " + "(:nombre IS NULL OR LOWER(s.nombre) = LOWER(:nombre)) AND " + "s.isDeleted = false")
-    Page<Entidad> findByFilters(@Param("nombre") String nombre, Pageable pageable);
 
+   // @Query("SELECT s FROM Entidad s WHERE " + "(:nombre IS NULL OR LOWER(s.nombre) = LOWER(:nombre)) AND " + "s.isDeleted = false")
+   // Page<Entidad> findByFilters(@Param("nombre") String nombre, Pageable pageable);
+
+
+    @Query("SELECT s FROM Entidad s WHERE " +
+            "(:nombre IS NULL OR LOWER(s.nombre) = LOWER(:nombre)) AND " +
+            "(:tipoDocumento IS NULL OR LOWER(s.documentoIdentidad.tipoDocumentoIdentidad) = LOWER(:tipoDocumento)) AND " +
+            "(:numeroDocumento IS NULL OR s.numeroDocumento = :numeroDocumento) AND " +
+            "s.isDeleted = false")
+    Page<Entidad> findByFilters(@Param("nombre") String nombre,
+                                @Param("tipoDocumento") String tipoDocumento,
+                                @Param("numeroDocumento") String numeroDocumento,
+                                Pageable pageable);
 }

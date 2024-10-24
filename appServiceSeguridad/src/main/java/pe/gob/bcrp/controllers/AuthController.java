@@ -1,23 +1,16 @@
 package pe.gob.bcrp.controllers;
 
 
-import com.auth0.jwk.Jwk;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 
+import jakarta.ws.rs.ForbiddenException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import pe.gob.bcrp.dto.JwtDTO;
-import pe.gob.bcrp.dto.LoginDTO;
-import pe.gob.bcrp.dto.TokenResponse;
-import pe.gob.bcrp.dto.UsuarioDTO;
+import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.jwt.JwtService;
 import pe.gob.bcrp.jwt.JwtValidationService;
 import pe.gob.bcrp.jwt.KeycloakRestService;
@@ -53,12 +46,24 @@ public class AuthController {
     private JwtValidationService jwtValidationService;
 
 
+
     @PostMapping(value = "/login")
     public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
 
         log.info("INI - login | requestURL=login");
 
         try {
+
+            /**if (jwtValidationService.verify(dto.getCaptchaToken()).isSuccess()) {
+                return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
+                        .body(Map.of("mensaje", "Captcha inválido"));
+            }**/
+
+             /**  final boolean isValidCaptcha = jwtValidationService.validateCaptcha(dto.getCaptchaResponse());
+            if (!isValidCaptcha) {
+                log.info("Throwing forbidden exception as the captcha is invalid.");
+                throw new ForbiddenException("INVALID_CAPTCHA");
+            }**/
 
             UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
 
@@ -120,7 +125,10 @@ public class AuthController {
     @PostMapping("oauth/refreshToken")
     public ResponseEntity<TokenResponse> refreshToken(@RequestBody Map<String, String> request) {
         String refreshToken = request.get("refresh_token");
-        TokenResponse newTokens = jwtValidationService.refreshAccessToken(refreshToken);
+         if(refreshToken ==null){
+            return new ResponseEntity<TokenResponse>(HttpStatus.FORBIDDEN);
+         }
+         TokenResponse newTokens = jwtValidationService.refreshAccessToken(refreshToken);
         return ResponseEntity.ok(newTokens);
     }
 
@@ -152,6 +160,7 @@ public class AuthController {
           }
 
     }**/
+
 
 
 

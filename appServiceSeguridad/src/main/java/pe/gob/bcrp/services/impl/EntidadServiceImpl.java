@@ -75,7 +75,7 @@ public class EntidadServiceImpl implements IEntidadService {
     }
 
     @Override
-    public EntidadResponse getAllEntidades(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,String nombre) {
+    public EntidadResponse getAllEntidades(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,String nombre,String tipoDocumento, String numeroDocumento) {
 
         log.info("INI Service() - getAllProducts");
 
@@ -89,17 +89,24 @@ public class EntidadServiceImpl implements IEntidadService {
 
             Page<Entidad> pageEntidades=null;
 
-            if(nombre!=null){
-                pageEntidades=entidadRepository.findByFilters(nombre,pageDetails);
+            if(nombre!=null || tipoDocumento !=null || numeroDocumento!=null  ){
+                pageEntidades=entidadRepository.findByFilters(nombre,tipoDocumento,numeroDocumento,pageDetails);
             }else{
                 pageEntidades = entidadRepository.findByIsDeletedFalse(pageDetails);
             }
 
             List<Entidad> entidades = pageEntidades.getContent();
-
-            List<EntidadDTO> entidadDTOS = entidades.stream()
+            /**List<EntidadDTO> entidadDTOS = entidades.stream()
                                                     .map(enti -> modelMapper.map(enti, EntidadDTO.class))
                                                     .toList();
+             **/
+            List<EntidadDTO> entidadDTOS = entidades.stream().map(enti -> {
+                EntidadDTO entidadDTO = modelMapper.map(enti, EntidadDTO.class);
+                if (enti.getDocumentoIdentidad() != null) { // Asignar tipoDocumento a partir de DocumentoIdentidad
+                    entidadDTO.setTipoDocumento(enti.getDocumentoIdentidad().getTipoDocumentoIdentidad());
+                }
+                return entidadDTO;
+            }).toList();
 
             EntidadResponse entidadResponse = new EntidadResponse();
             entidadResponse.setContent(entidadDTOS);
@@ -136,6 +143,11 @@ public class EntidadServiceImpl implements IEntidadService {
             log.info("INI - saveEntidad()");
             Usuario usuario=util.getUsuario();
 
+            boolean existeNumeroDocumento = entidadRepository.existsByNumeroDocumento(entidadDto.getNumeroDocumento());
+            if (existeNumeroDocumento) {
+                throw new IllegalArgumentException("El número de documento ya existe en el sistema.");
+            }
+
             DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
 
             Entidad entidad=modelMapper.map(entidadDto,Entidad.class);
@@ -151,27 +163,34 @@ public class EntidadServiceImpl implements IEntidadService {
             EntidadDTO entidadDtoNew=modelMapper.map(entidadNew, EntidadDTO.class);
             return entidadDtoNew;
 
-        }catch (Exception e){
-            log.error("ERROR - saveEntidad() "+e.getMessage());
+        }catch (IllegalArgumentException e){
+           throw  new IllegalArgumentException("El número de documento ya existe en el sistema");
         }
-        return null;
+
+        catch (Exception e){
+            log.error("ERROR - saveEntidad() "+e.getMessage());
+            throw new RuntimeException("Error al guardar el sistema " + e.getMessage());
+        }
     }
 
     @Override
-    public EntidadDTO updateEntidad(Integer id, EntidadDTO entidadDto) {
-
+    public EntidadDTO updateEntidad(Integer idEntidad, EntidadDTO entidadDto) {
+        log.info("INI - Service updateUsuario()");
         try {
-            log.info("INI - updateUsuario()");
+
             Usuario usuario=util.getUsuario();
 
-            Entidad entidad=entidadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado con id :" + entidadDto.getIdEntidad()));
+            boolean existeNumeroDocumento = entidadRepository.existsByNumeroDocumentoAndIdEntidadNot( entidadDto.getNumeroDocumento(), idEntidad);
+            if (existeNumeroDocumento) {
+                throw new IllegalArgumentException("El número de documento ya está registrado en otra entidad.");
+            }
 
-          //  DocumentoIdentidad idocumento=documentoIdentidadRepository.findByTipoDocumentoIdentidad(tipoDocumento);
-             DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
+            Entidad entidad=entidadRepository.findById(idEntidad).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado con id :" + entidadDto.getIdEntidad()));
+            DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
 
-             DocumentoIdentidad identidad=new DocumentoIdentidad();
-             identidad.setIdDocumentoIdentidad(doc.getIdDocumentoIdentidad());
-             identidad.setTipoDocumentoIdentidad(doc.getTipoDocumentoIdentidad());
+            DocumentoIdentidad identidad=new DocumentoIdentidad();
+            identidad.setIdDocumentoIdentidad(doc.getIdDocumentoIdentidad());
+            identidad.setTipoDocumentoIdentidad(doc.getTipoDocumentoIdentidad());
 
             entidad.setDocumentoIdentidad(identidad);
             entidad.setNumeroDocumento(entidadDto.getNumeroDocumento());
@@ -185,6 +204,9 @@ public class EntidadServiceImpl implements IEntidadService {
             EntidadDTO updateEntidad=modelMapper.map(entidadNew,EntidadDTO.class);
             return  updateEntidad;
 
+        } catch (IllegalArgumentException e) {
+            log.error("ERROR - updateEntidad() - " + e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
             log.error("ERROR - updateEntidad() "+e.getMessage());
             throw e;

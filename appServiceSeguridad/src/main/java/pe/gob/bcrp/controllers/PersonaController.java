@@ -56,7 +56,9 @@ public class PersonaController {
             return new ResponseEntity<>(response,HttpStatus.CREATED);
         }catch (Exception e){
             log.error(" ERROR - addPersona | requestUrl=persona");
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setStatus(0);
+            response.setMessage("Error al guardar la Persona "+ e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -77,7 +79,7 @@ public class PersonaController {
             log.error(" ERROR - updatePersona | requestUrl=persona/idpersona");
             response.setStatus(0);
             response.setMessage("Error al actualizar la Persona "+ e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }

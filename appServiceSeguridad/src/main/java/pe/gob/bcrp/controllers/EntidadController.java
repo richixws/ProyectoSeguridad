@@ -14,7 +14,10 @@ import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IEntidadService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Log4j2
 @RestController
@@ -25,6 +28,21 @@ public class EntidadController {
     @Autowired
     private IEntidadService entidadService;
 
+
+    @GetMapping("/generar-codigo")
+    public ResponseEntity<Map<String, Object>> generarCodigoExterno() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String uuid = UUID.randomUUID().toString();
+            //response.put("status", 1);
+            response.put("codigoUiid", uuid);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.put("status", 0);
+            response.put("message", "Error al generar código: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -61,11 +79,14 @@ public class EntidadController {
             @RequestParam(name = "pageSize", defaultValue = "50",   required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
             @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
-            @RequestParam(name = "nombre", required = false) String nombre){
+            @RequestParam(name = "nombre", required = false) String nombre,
+            @RequestParam(name = "tipoDocumento", required = false) String tipoDocumento,
+            @RequestParam(name = "numeroDocumento", required = false) String numeroDocumento
+            ){
         log.info("INI - getAllEntidades | requestURL=entidades");
         try {
 
-            EntidadResponse entidadResponse=entidadService.getAllEntidades(pageNumber, pageSize, sortBy, sortOrder,nombre);
+            EntidadResponse entidadResponse=entidadService.getAllEntidades(pageNumber, pageSize, sortBy, sortOrder,nombre,tipoDocumento,numeroDocumento);
             return new ResponseEntity<>(entidadResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - listarEntidades | requestURL=entidades");
@@ -104,7 +125,7 @@ public class EntidadController {
         }catch (Exception e){
             log.error("ERROR - guardarEntidad | requestURL=entidadDto");
             response.setStatus(0);
-            response.setMessage("Error al guardar la Entidad"+e.getMessage());
+            response.setMessage("Error al guardar la Entidad "+ e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
@@ -133,8 +154,8 @@ public class EntidadController {
         } catch (Exception e){
             log.error("ERROR - updateEntidad | requestURL=entidad");
             response.setStatus(0);
-            response.setMessage("Error al guardar la Entidad"+e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage("Error al Actualizar la Entidad "+e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
 

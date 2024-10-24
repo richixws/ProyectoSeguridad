@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Spring Boot and reCAPTCHA v3</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdZhGoqAAAAAGYqks043f8pONV69C-clXw7fUSu"></script>
+</head>
+<body>
+<script type="text/javascript">
+    function validateAndGetCaptchaResponse() {
+        return grecaptcha.execute('6LdZhGoqAAAAAGYqks043f8pONV69C-clXw7fUSu', {action: 'submit'}).then(function(token) {
+            return token;
+        });
+    }
+
+    $(document).ready(function () {
+        $("#button").click(function (event) {
+            event.preventDefault(); // Previene el envío del formulario
+            $("#captcha-error").html("");
+
+            validateAndGetCaptchaResponse().then(function(captchaResponse) {
+                if (captchaResponse) {
+                    console.log("Captcha code accepted.");
+                    let usuario = $("#usuario").val();
+                    let password = $("#password").val();
+                    let requestObj = {
+
+
+                        "usuario":name.length === 0 ? 'jgonzales' : name,
+                        "password":name.length === 0 ? '123456' : name,
+                        'captchaResponse': captchaResponse
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: JSON.stringify(requestObj),
+                        url: "http://localhost:8081/api/v1/login",
+                        success: function (data) {
+                            alert(data.token);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(error);
+                            $("#captcha-error").html("Error al enviar el formulario.");
+                        }
+                    });
+                } else {
+                    $("#captcha-error").html("Error al obtener el token del captcha.");
+                }
+            });
+        });
+    });
+</script>
+
+<div>
+    <h3>Spring Boot and Google reCAPTCHA v3 Example</h3>
+    <label for="usuario">Enter name:</label>
+    <input id="usuario" placeholder="say... Daniel" type="text"/>
+    <label for="password">Enter password:</label>
+    <input id="password" placeholder="password ...l" type="text"/>
+
+    <button id="button" type="submit">Submit</button>
+
+    <div>&nbsp;</div>
+    <span id="captcha-error" style="color:red"></span>
+</div>
+</body>
+</html>

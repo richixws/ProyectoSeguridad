@@ -16,6 +16,8 @@ public class EntidadDTO {
 
     private  Integer  idDocumento;
 
+    private String tipoDocumento;
+
     @NotEmpty(message = "numero de documento no puede ser vacio")
     private String numeroDocumento;
 

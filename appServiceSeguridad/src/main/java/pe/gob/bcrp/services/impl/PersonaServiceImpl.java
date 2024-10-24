@@ -69,26 +69,53 @@ public class PersonaServiceImpl  implements IPersonaService {
     public PersonaDTO addPersona(PersonaDTO personaDTO) {
         log.info("INFO - Service AddPersona() ");
         try {
+
+            boolean existeNumeroDocumento = iPersonaRepository.existsByDocumentoIdentidad(personaDTO.getDocumentoIdentidad());
+            if (existeNumeroDocumento) {
+                throw new IllegalArgumentException("El numero de documento de identidad ya existe en el sistema.");
+            }
+
             Persona persona=modelMapper.map(personaDTO,Persona.class);
             Persona newPersona=iPersonaRepository.save(persona);
             PersonaDTO newPersonaDTO=modelMapper.map(newPersona,PersonaDTO.class);
             return newPersonaDTO;
+
+
+        }catch (IllegalArgumentException e){
+            throw  new IllegalArgumentException("El numero de documento de identidad ya existe en el sistema.");
+
         }catch (Exception e) {
             throw new RuntimeException("ERROR Service - GetAllPersonas() "+e.getMessage());
         }
     }
 
     @Override
-    public PersonaDTO updatePersona(Integer id, PersonaDTO personaDTO) {
+    public PersonaDTO updatePersona(Integer idPersona, PersonaDTO personaDTO) {
 
-        Persona persona=iPersonaRepository.findById(id).orElseThrow( ()-> new RuntimeException("Persona no encontrada") );
-        persona.setApellidoMaterno(personaDTO.getApellidoMaterno());
-        persona.setNombres(personaDTO.getNombres());
-        persona.setApellidoPaterno(personaDTO.getApellidoPaterno());
-        persona.setTipoDocumento(personaDTO.getTipoDocumento());
-        persona.setDocumentoIdentidad(personaDTO.getDocumentoIdentidad());
-        PersonaDTO newPersonaDTO=modelMapper.map(persona,PersonaDTO.class);
-        return newPersonaDTO;
+        log.info("INFO - Service UpdatePersona() ");
+        try {
+
+            boolean existeDocumentoIdentidad = iPersonaRepository.existsByDocumentoIdentidadAndIdPersonaNot(personaDTO.getDocumentoIdentidad(), idPersona);
+            if (existeDocumentoIdentidad) {
+                throw new IllegalArgumentException("El número de documento identidad ya está registrado en otra Persona");
+            }
+
+
+            Persona persona=iPersonaRepository.findById(idPersona).orElseThrow( ()-> new RuntimeException("Persona no encontrada") );
+            persona.setApellidoMaterno(personaDTO.getApellidoMaterno());
+            persona.setNombres(personaDTO.getNombres());
+            persona.setApellidoPaterno(personaDTO.getApellidoPaterno());
+            persona.setTipoDocumento(personaDTO.getTipoDocumento());
+            persona.setDocumentoIdentidad(personaDTO.getDocumentoIdentidad());
+            PersonaDTO newPersonaDTO=modelMapper.map(persona,PersonaDTO.class);
+            return newPersonaDTO;
+
+        } catch (IllegalArgumentException e) {
+            log.error("ERROR - Service updatePersona() - " + e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
+        }catch (Exception e ){
+            throw new RuntimeException("ERROR Service - updatePersona() "+e.getMessage());
+        }
     }
 
     @Override
