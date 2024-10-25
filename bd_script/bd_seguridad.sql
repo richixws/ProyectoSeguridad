@@ -91,7 +91,16 @@ CREATE TABLE SW_ENTIDAD (
 CREATE TABLE SW_MODULO (
     id_modulo NUMBER(10) DEFAULT seq_sw_modulo.NEXTVAL NOT NULL,
     id_sistema NUMBER(10) NOT NULL,
+    nombre varchar(100) NOT NULL,
     order_date DATE NOT NULL,
+    is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
+    
+    hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
+    hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
+    hora_actualizacion TIMESTAMP NULL, -- Permitir nulos para la actualización
+    usuario_creacion VARCHAR2(50) NULL, -- Limitar la longitud a 50 caracteres
+    usuario_eliminacion VARCHAR2(50) NULL, -- Permitir nulos para la eliminación
+    usuario_actualizacion VARCHAR2(50) NULL, -- Permitir nulos para la actualización
     CONSTRAINT PK_SW_MODULO PRIMARY KEY (id_modulo),
     CONSTRAINT FK_SW_MODULO_SISTEMA FOREIGN KEY (id_sistema) REFERENCES SW_SISTEMA(id_sistema)
 );

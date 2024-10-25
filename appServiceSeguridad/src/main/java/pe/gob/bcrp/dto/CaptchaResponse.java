@@ -15,11 +15,9 @@ import java.util.List;
 @ToString
 public class CaptchaResponse {
 
-    boolean success;
-    LocalDateTime challenge_ts;
-    String hostname;
-    @JsonProperty("error-codes")
-    List<String> errorCodes;
+    private String captchaImage;
+    private String hiddenCaptcha;
+
 
 
 

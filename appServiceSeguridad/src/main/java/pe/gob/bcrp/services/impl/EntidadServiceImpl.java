@@ -25,6 +25,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -142,6 +143,7 @@ public class EntidadServiceImpl implements IEntidadService {
         try {
             log.info("INI - saveEntidad()");
             Usuario usuario=util.getUsuario();
+            String uuidCodExt = UUID.randomUUID().toString();
 
             boolean existeNumeroDocumento = entidadRepository.existsByNumeroDocumento(entidadDto.getNumeroDocumento());
             if (existeNumeroDocumento) {
@@ -153,6 +155,7 @@ public class EntidadServiceImpl implements IEntidadService {
             Entidad entidad=modelMapper.map(entidadDto,Entidad.class);
             entidad.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             entidad.setUsuarioCreacion(usuario.getUsuario());
+            entidad.setCodExterno(uuidCodExt);
 
             DocumentoIdentidad identidad=new DocumentoIdentidad();
             identidad.setTipoDocumentoIdentidad(doc.getTipoDocumentoIdentidad());
@@ -175,7 +178,7 @@ public class EntidadServiceImpl implements IEntidadService {
 
     @Override
     public EntidadDTO updateEntidad(Integer idEntidad, EntidadDTO entidadDto) {
-        log.info("INI - Service updateUsuario()");
+        log.info("INI - Service updateEntidad()");
         try {
 
             Usuario usuario=util.getUsuario();

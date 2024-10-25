@@ -25,6 +25,6 @@ public class EntidadDTO {
     private String nombre;
     @NotEmpty(message = "sigla no puede ser vacio")
     private String sigla;
-    @NotEmpty(message = "codigo externo no puede ser vacio")
+    //@NotEmpty(message = "codigo externo no puede ser vacio")
     private String codExterno;
 }

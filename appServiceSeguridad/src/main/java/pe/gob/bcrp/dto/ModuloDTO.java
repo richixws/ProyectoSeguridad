@@ -1,5 +1,6 @@
 package pe.gob.bcrp.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 import pe.gob.bcrp.entities.Sistema;
@@ -14,7 +15,10 @@ public class ModuloDTO implements Serializable {
 
     private Integer idModulo;
 
-    private Sistema sistema;
+    private Integer idSistema;
 
+    private String nombreModulo;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date orderDate;
 }

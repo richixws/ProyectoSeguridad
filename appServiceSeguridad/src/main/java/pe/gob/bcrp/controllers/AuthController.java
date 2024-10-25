@@ -1,6 +1,7 @@
 package pe.gob.bcrp.controllers;
 
 
+import cn.apiclub.captcha.Captcha;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 
@@ -15,6 +16,7 @@ import pe.gob.bcrp.jwt.JwtService;
 import pe.gob.bcrp.jwt.JwtValidationService;
 import pe.gob.bcrp.jwt.KeycloakRestService;
 import pe.gob.bcrp.services.IUsuarioService;
+import pe.gob.bcrp.util.CaptchaServiceGenerate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +55,10 @@ public class AuthController {
         log.info("INI - login | requestURL=login");
 
         try {
+
+          //  if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
+          //      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("INVALID CAPTCHA");
+          //  }
 
             /**if (jwtValidationService.verify(dto.getCaptchaToken()).isSuccess()) {
                 return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
@@ -150,6 +156,22 @@ public class AuthController {
             return new ResponseEntity<>("An error occurred while trying to logout", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("oauth/captcha")
+    public ResponseEntity<CaptchaResponse> getCaptcha() {
+
+        Captcha captcha = CaptchaServiceGenerate.createCaptcha(240, 70);
+        String encodedCaptcha = CaptchaServiceGenerate.encodeCaptcha(captcha);
+
+        CaptchaResponse response = new CaptchaResponse();
+        response.setCaptchaImage(encodedCaptcha);
+        response.setHiddenCaptcha(captcha.getAnswer());
+
+        return ResponseEntity.ok(response);
+
+    }
+
+
 
 
    /** @PostMapping("/registro")

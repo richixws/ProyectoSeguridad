@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/oauth/validarToken").permitAll()
                         .requestMatchers("/api/v1/oauth/refreshToken").permitAll()
                         .requestMatchers("/api/v1/oauth/logout").permitAll()
+                        .requestMatchers("/api/v1/oauth/captcha").permitAll()
                         .requestMatchers("/api/media/**").permitAll()
                         .anyRequest().authenticated()
                 );

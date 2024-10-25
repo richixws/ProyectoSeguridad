@@ -6,6 +6,9 @@ public class LoginDTO {
 
     private String usuario;
     private String password;
-   // private String captchaResponse;
+
+    //captcha
+    private String captcha;
+    private String hiddenCaptcha;
 
 }
