@@ -2,7 +2,7 @@ package pe.gob.bcrp.services;
 
 import pe.gob.bcrp.dto.DocumentoIdentidadDTO;
 import pe.gob.bcrp.dto.EntidadDTO;
-import pe.gob.bcrp.dto.EntidadResponse;
+import pe.gob.bcrp.dto.response.EntidadResponse;
 
 import java.util.List;
 

@@ -8,9 +8,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import pe.gob.bcrp.dto.EntidadDTO;
 import pe.gob.bcrp.dto.ModuloDTO;
-import pe.gob.bcrp.dto.ModuloResponse;
+import pe.gob.bcrp.dto.response.ModuloResponse;
 import pe.gob.bcrp.entities.*;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IModuloRepository;
@@ -56,14 +55,6 @@ public class ModuloServiceImpl implements IModuloService {
             List<ModuloDTO> moduloDTOS = modulo.stream()
                                                  .map(mod -> modelMapper.map(mod, ModuloDTO.class))
                                                  .toList();
-
-           /** List<ModuloDTO> entidadDTOS = modulo.stream().map(modu -> {
-                ModuloDTO moduloDTO = modelMapper.map(modu, ModuloDTO.class);
-                if (modu.getSistema() != null) { // Asignar tipoDocumento a partir de DocumentoIdentidad
-                    moduloDTO.setNombreModulo(modu.getSistema().getNombre());
-                }
-                return moduloDTO;
-            }).toList();**/
 
             ModuloResponse moduloResponse = new ModuloResponse();
             moduloResponse.setContent(moduloDTOS);
@@ -115,14 +106,10 @@ public class ModuloServiceImpl implements IModuloService {
 
             Modulo modulo=imoduloRepository.findById(idModulo).orElseThrow(() -> new ResourceNotFoundException("Modulo a actualizar no encontrado :" + idModulo));
 
-            modulo.setNombreModulo(moduloDto.getNombreModulo());
-            modulo.setOrderDate(moduloDto.getOrderDate());
-
             Sistema sistema=isistemaRepository.findById(moduloDto.getIdSistema()).orElseThrow(()->new ResourceNotFoundException(" Sistema no encontrando "));
 
             modulo.setSistema(sistema);
             modulo.setNombreModulo(moduloDto.getNombreModulo());
-            modulo.setOrderDate(moduloDto.getOrderDate());
             modulo.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             modulo.setUsuarioActualizacion(usuario.getUsuario());
 
@@ -131,14 +118,14 @@ public class ModuloServiceImpl implements IModuloService {
             return  moduloUpdt;
 
         } catch (IllegalArgumentException e) {
-            log.error("ERROR - updateEntidad() - " + e.getMessage());
+            log.error("ERROR - updateModulo() - {}", e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - updateEntidad() "+e.getMessage());
+            log.error("ERROR - updateModulo {}", e.getMessage());
             throw e;
         }
         catch (Exception e){
-            log.error("ERROR - updateSistemas()"+e.getMessage());
+            log.error("ERROR - updateSistemas(){}", e.getMessage());
             throw new RuntimeException("Error al actualizar el sistema", e);
         }
 

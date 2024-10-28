@@ -3,19 +3,15 @@ package pe.gob.bcrp.controllers;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.PersonaDTO;
-import pe.gob.bcrp.dto.PersonaResponse;
+import pe.gob.bcrp.dto.response.PersonaResponse;
 import pe.gob.bcrp.dto.ResponseDTO;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IPersonaService;
-
-import java.util.List;
 
 @Log4j2
 @RestController

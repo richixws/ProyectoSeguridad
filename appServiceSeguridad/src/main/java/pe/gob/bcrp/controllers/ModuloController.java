@@ -8,10 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.*;
+import pe.gob.bcrp.dto.response.ModuloResponse;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IModuloService;
-
-import java.util.List;
 
 @Log4j2
 @RestController

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
+import pe.gob.bcrp.dto.response.SistemaResponse;
 import pe.gob.bcrp.entities.*;
 import pe.gob.bcrp.enumerador.EstadoCritico;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
@@ -117,7 +118,7 @@ public class SistemaServiceImpl implements ISistemaService {
 
 
     @Override
-    public SistemaResponse getAllSistemas(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String nombre,String version) {
+    public SistemaResponse getAllSistemas(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String nombre, String version) {
 
         log.info("INI Service() - getAllSistemas()");
         try {

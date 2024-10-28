@@ -1,4 +1,4 @@
-package pe.gob.bcrp.dto;
+package pe.gob.bcrp.dto.response;
 
 import lombok.Data;
 

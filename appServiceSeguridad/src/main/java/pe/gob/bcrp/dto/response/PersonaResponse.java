@@ -1,17 +1,18 @@
-package pe.gob.bcrp.dto;
+package pe.gob.bcrp.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pe.gob.bcrp.dto.PersonaDTO;
 
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SistemaResponse {
+public class PersonaResponse {
 
-    private List<SistemaDTO> content;
+    private List<PersonaDTO> content;
     private Integer pageNumber;
     private Integer pageSize;
     private Long totalElements;

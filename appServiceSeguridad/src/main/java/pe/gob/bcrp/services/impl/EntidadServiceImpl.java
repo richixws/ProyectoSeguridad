@@ -10,7 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.DocumentoIdentidadDTO;
 import pe.gob.bcrp.dto.EntidadDTO;
-import pe.gob.bcrp.dto.EntidadResponse;
+import pe.gob.bcrp.dto.response.EntidadResponse;
 import pe.gob.bcrp.entities.DocumentoIdentidad;
 import pe.gob.bcrp.entities.Entidad;
 import pe.gob.bcrp.entities.Usuario;
@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 

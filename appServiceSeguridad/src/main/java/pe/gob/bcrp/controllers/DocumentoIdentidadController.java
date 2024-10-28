@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pe.gob.bcrp.dto.DocumentoIdentidadDTO;
-import pe.gob.bcrp.dto.EntidadDTO;
 import pe.gob.bcrp.services.IDocumentoIdentidadService;
 
 import java.util.List;
@@ -20,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
 @AllArgsConstructor
-public class DocumentoIdentidad {
+public class DocumentoIdentidadController {
 
 
     private IDocumentoIdentidadService documentoIdentidadService;

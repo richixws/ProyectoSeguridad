@@ -1,12 +1,7 @@
 package pe.gob.bcrp.services;
 
-import org.bouncycastle.math.raw.Mod;
-import pe.gob.bcrp.dto.EntidadResponse;
 import pe.gob.bcrp.dto.ModuloDTO;
-import pe.gob.bcrp.dto.ModuloResponse;
-import pe.gob.bcrp.entities.Modulo;
-
-import java.util.List;
+import pe.gob.bcrp.dto.response.ModuloResponse;
 
 public interface IModuloService {
 

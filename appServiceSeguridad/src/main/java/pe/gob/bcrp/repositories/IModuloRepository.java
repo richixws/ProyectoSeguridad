@@ -5,11 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import pe.gob.bcrp.dto.EntidadResponse;
-import pe.gob.bcrp.dto.ModuloResponse;
-import pe.gob.bcrp.entities.Entidad;
 import pe.gob.bcrp.entities.Modulo;
-import java.util.List;
 
 public interface IModuloRepository extends JpaRepository<Modulo, Integer> {
 

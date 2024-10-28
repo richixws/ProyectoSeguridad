@@ -62,6 +62,15 @@ CREATE TABLE SW_OPCION (
     id_modulo NUMBER(10) NOT NULL,
     nombre VARCHAR2(100) NOT NULL,
     url VARCHAR2(300) NOT NULL,
+    is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
+    
+    
+    hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
+    hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
+    hora_actualizacion TIMESTAMP NULL, -- Permitir nulos para la actualización
+    usuario_creacion VARCHAR2(50) NULL, -- Limitar la longitud a 50 caracteres
+    usuario_eliminacion VARCHAR2(50) NULL , -- Permitir nulos para la eliminación
+    usuario_actualizacion VARCHAR2(50) NULL, -- Permitir nulos para la actualización
     CONSTRAINT PK_SW_OPCION PRIMARY KEY (id_opcion)
 );
 
@@ -133,6 +142,14 @@ CREATE TABLE SW_ROL (
     nombre VARCHAR2(100) NOT NULL,
     estado NUMBER(1) NOT NULL,
     ultlin NUMBER(10) NOT NULL,
+    is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
+    
+    hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
+    hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
+    hora_actualizacion TIMESTAMP NULL, -- Permitir nulos para la actualización
+    usuario_creacion VARCHAR2(50) NULL, -- Limitar la longitud a 50 caracteres
+    usuario_eliminacion VARCHAR2(50) NULL, -- Permitir nulos para la eliminación
+    usuario_actualizacion VARCHAR2(50) NULL, -- Permitir nulos para la actualización
     CONSTRAINT PK_SW_ROL PRIMARY KEY (id_rol),
     CONSTRAINT FK_SW_ROL_SISTEMA FOREIGN KEY (id_sistema) REFERENCES SW_SISTEMA(id_sistema)
 );

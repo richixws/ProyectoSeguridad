@@ -12,20 +12,15 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import pe.gob.bcrp.dto.CaptchaResponse;
-import pe.gob.bcrp.dto.TokenResponse;
+import pe.gob.bcrp.dto.response.TokenResponse;
 import pe.gob.bcrp.excepciones.SeguridadAPIException;
 import java.net.URL;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Objects;
 
 @Service
 @Slf4j

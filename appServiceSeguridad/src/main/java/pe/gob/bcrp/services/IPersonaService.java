@@ -1,11 +1,7 @@
 package pe.gob.bcrp.services;
 
-import pe.gob.bcrp.dto.DocumentoIdentidadDTO;
 import pe.gob.bcrp.dto.PersonaDTO;
-import pe.gob.bcrp.dto.PersonaResponse;
-import pe.gob.bcrp.dto.UsuarioDTO;
-
-import java.util.List;
+import pe.gob.bcrp.dto.response.PersonaResponse;
 
 public interface IPersonaService {
 

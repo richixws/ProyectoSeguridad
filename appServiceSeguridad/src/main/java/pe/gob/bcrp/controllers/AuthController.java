@@ -5,13 +5,14 @@ import cn.apiclub.captcha.Captcha;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 
-import jakarta.ws.rs.ForbiddenException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.*;
+import pe.gob.bcrp.dto.response.CaptchaResponse;
+import pe.gob.bcrp.dto.response.TokenResponse;
 import pe.gob.bcrp.jwt.JwtService;
 import pe.gob.bcrp.jwt.JwtValidationService;
 import pe.gob.bcrp.jwt.KeycloakRestService;
@@ -56,9 +57,9 @@ public class AuthController {
 
         try {
 
-          //  if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
-          //      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("INVALID CAPTCHA");
-          //  }
+         //  if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
+         //      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("INVALID CAPTCHA");
+         //   }
 
             /**if (jwtValidationService.verify(dto.getCaptchaToken()).isSuccess()) {
                 return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
@@ -157,7 +158,7 @@ public class AuthController {
         }
     }
 
-    @GetMapping("oauth/captcha")
+    /**@GetMapping("oauth/captcha")
     public ResponseEntity<CaptchaResponse> getCaptcha() {
 
         Captcha captcha = CaptchaServiceGenerate.createCaptcha(240, 70);
@@ -169,21 +170,29 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
 
-    }
-
-
-
-
-   /** @PostMapping("/registro")
-    public ResponseEntity<?> registro(@RequestBody RegistroDTO registroDTO){
-          UsuarioDTO usuarioReg =this.usuariosService.buscarPorUsuarioLogin(registroDTO.getUsuario());
-          if(usuarioReg!=null){
-
-          }
-
     }**/
 
+    @GetMapping("oauth/captcha")
+    public ResponseEntity<CaptchaResponse> getCaptcha() {
 
+        Captcha captcha = CaptchaServiceGenerate.createCaptcha(240, 70);
+        String encodedCaptcha = CaptchaServiceGenerate.encodeCaptcha(captcha);
 
+        // Extraer la operación del captcha
+        String hiddenCaptcha = captcha.getAnswer();
+        int resultadoOperacion = evaluarOperacion(hiddenCaptcha); // Evalúa el resultado
+
+        CaptchaResponse response = new CaptchaResponse();
+        response.setCaptchaImage(encodedCaptcha);
+        response.setHiddenCaptcha(String.valueOf(resultadoOperacion)); // Almacena solo el resultado
+
+        return ResponseEntity.ok(response);
+    }
+
+    // Método para evaluar la operación de suma
+    public static int evaluarOperacion(String operacion) {
+        String[] numeros = operacion.split(" \\+ "); // Divide en los dos operandos
+        return Integer.parseInt(numeros[0].trim()) + Integer.parseInt(numeros[1].trim());
+    }
 
 }

@@ -3,21 +3,18 @@ package pe.gob.bcrp.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.PersonaDTO;
-import pe.gob.bcrp.dto.PersonaResponse;
+import pe.gob.bcrp.dto.response.PersonaResponse;
 import pe.gob.bcrp.entities.Persona;
-import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IPersonaRepository;
 import pe.gob.bcrp.services.IPersonaService;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
