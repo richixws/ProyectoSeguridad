@@ -10,8 +10,8 @@ public class RolDTO {
     private Integer idRol;
    // private Sistema sistema;
     private Integer  idSistema;
-    private String  nombre;
+    private String  nombreRol;
     private Integer estado;
-    private Integer ultLin;
+   // private Integer ultLin;
 
 }

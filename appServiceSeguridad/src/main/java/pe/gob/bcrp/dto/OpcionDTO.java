@@ -7,7 +7,6 @@ import pe.gob.bcrp.entities.Modulo;
 public class OpcionDTO {
 
     private Integer idOpcion;
-
     //private Modulo modulo;
     private Integer idModulo;
 

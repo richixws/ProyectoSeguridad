@@ -3,6 +3,7 @@ package pe.gob.bcrp.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "SW_DOCUMENTO_IDENTIDAD" , schema = "bd_seguridad")
 public class DocumentoIdentidad {
 

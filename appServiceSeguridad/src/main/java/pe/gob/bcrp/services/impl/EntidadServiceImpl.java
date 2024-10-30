@@ -77,7 +77,7 @@ public class EntidadServiceImpl implements IEntidadService {
     @Override
     public EntidadResponse getAllEntidades(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,String nombre,Integer tipoDocumento, String numeroDocumento) {
 
-        log.info("INI Service() - getAllProducts");
+        log.info("INI Service() - getAllEntidades");
 
         try {
 
@@ -207,7 +207,7 @@ public class EntidadServiceImpl implements IEntidadService {
             return  updateEntidad;
 
         } catch (IllegalArgumentException e) {
-            log.error("ERROR - updateEntidad() - " + e.getMessage());
+            log.error("ERROR - updateEntidad() " + e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
             log.error("ERROR - updateEntidad() "+e.getMessage());

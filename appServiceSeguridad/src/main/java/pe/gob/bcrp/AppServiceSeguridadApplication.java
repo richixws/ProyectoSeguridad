@@ -15,7 +15,7 @@ import java.util.Date;
 @SpringBootApplication
 public class AppServiceSeguridadApplication  implements CommandLineRunner {
 
-	@Autowired
+	/**@Autowired
 	private IPersonaRepository iPersonaRepository;
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
@@ -46,7 +46,7 @@ public class AppServiceSeguridadApplication  implements CommandLineRunner {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-
+	 **/
 	@Bean
 	public ModelMapper modelMapper(){
 		return new ModelMapper();

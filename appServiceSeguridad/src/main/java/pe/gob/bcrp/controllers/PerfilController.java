@@ -1,11 +1,130 @@
 package pe.gob.bcrp.controllers;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import pe.gob.bcrp.dto.OpcionDTO;
+import pe.gob.bcrp.dto.PerfilDTO;
+import pe.gob.bcrp.dto.ResponseDTO;
+import pe.gob.bcrp.dto.response.OpcionResponse;
+import pe.gob.bcrp.dto.response.PerfilResponse;
+import pe.gob.bcrp.excepciones.ResourceNotFoundException;
+import pe.gob.bcrp.services.IPerfilService;
 
+@Log4j2
 @RestController
 @RequestMapping("/api/v1")
+@CrossOrigin(origins ="*", allowedHeaders = "*")
 public class PerfilController {
+
+    private IPerfilService perfilService;
+
+    public PerfilController(IPerfilService perfilService) {
+        this.perfilService = perfilService;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/perfiles")
+    public ResponseEntity<PerfilResponse> getAllPerfiles(
+            @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = "10",   required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "idSistema", required = false) Integer idSistema,
+            @RequestParam(name = "idPerfil", required = false) Integer idPerfil ){
+
+        log.info("INI - getAllPerfiles | requestURL=perfiles");
+        try {
+
+            PerfilResponse perfilResponse=perfilService.getAllPerfiles(pageNumber, pageSize, sortBy, sortOrder,idSistema,idPerfil);//,nombre
+            return new ResponseEntity<>(perfilResponse, HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("ERROR - getAllPerfiles | requestURL=perfiles{}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/perfil")
+    public  ResponseEntity<ResponseDTO<PerfilDTO>> savePerfil(@Valid @RequestBody  PerfilDTO perfilDTO){
+
+        log.info("INI - guardarPerfil | requestURL=perfil");
+        ResponseDTO<PerfilDTO> response=new ResponseDTO<>();
+        try {
+            PerfilDTO moduloDto=perfilService.savePerfil(perfilDTO);
+            response.setStatus(1);
+            response.setMessage("El Perfil fue guardado de manera exitosa");
+            // response.setBody(entidadDTO);
+
+        }catch (Exception e){
+            log.error("ERROR - guardarPerfil | requestURL=perfil{}", e.getMessage());
+            response.setStatus(0);
+            response.setMessage("Error al guardar el Perfil "+ e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/perfil/{idPerfil}")
+    public ResponseEntity<ResponseDTO<PerfilDTO>> updatePerfil(@Valid @RequestBody  PerfilDTO perfilDTO,
+                                                               @PathVariable("idPerfil") Integer idPerfil){
+        log.info("INI - upodatePerfil | requestURL=perfil");
+        ResponseDTO<PerfilDTO> response=new ResponseDTO<>();
+        try {
+            PerfilDTO perfilDto=perfilService.updatePerfil(perfilDTO,idPerfil);
+            response.setStatus(1);
+            response.setMessage("El perfil fue actualizado exitosamente");
+
+        }catch ( ResourceNotFoundException e) {
+            log.error("ERROR - update perfil No encontrado " + e.getMessage());
+            response.setStatus(0);
+            response.setMessage("Error al actualizar el perfil "+e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
+        }catch (Exception e){
+            log.error("ERROR - update Perfil | requestURL=perfil{}", e.getMessage());
+            response.setStatus(0);
+            response.setMessage("Error al actualizar el perfil "+e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/perfil/{idPerfil}")
+    public ResponseEntity<ResponseDTO<PerfilDTO>> deletePerfil(@PathVariable("idPerfil") Integer idPerfil){
+        ResponseDTO<PerfilDTO> response=new ResponseDTO<>();
+        log.info("INI - eliminarPerfil | requestURL=perfil");
+        try {
+
+            boolean eliminado=perfilService.deletePerfil(idPerfil);
+            if(!eliminado){
+                throw new ResourceNotFoundException("El perfil a eliminar con Id "+idPerfil+" no existe");
+            }
+            response.setStatus(1);
+            response.setMessage("El perfil ha sido eliminado con éxito");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        }catch (ResourceNotFoundException e){
+            log.error("ERROR - eliminarPerfil No encontrado {}", e.getMessage());
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            log.error("ERROR - eliminarPerfil() {}", e.getMessage());
+            response.setStatus(0);
+            response.setMessage("Error al eliminar el perfil "+e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
 
 }

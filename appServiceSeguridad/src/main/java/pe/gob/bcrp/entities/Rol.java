@@ -35,8 +35,8 @@ public class Rol implements Serializable {
     @Column(name = "estado", nullable = false)
     private Integer estado;
 
-    @Column(name = "ultlin", nullable = false)
-    private Integer ultLin;
+   // @Column(name = "ultlin", nullable = false)
+   // private Integer ultLin;
 
     @Column(name = "is_deleted")
     private boolean isDeleted=false;

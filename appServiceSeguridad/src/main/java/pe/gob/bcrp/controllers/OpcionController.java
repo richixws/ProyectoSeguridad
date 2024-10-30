@@ -84,7 +84,7 @@ public class OpcionController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/opcion/{idOpcion}")
-    public ResponseEntity<ResponseDTO<OpcionDTO>> upodateOpcion(@Valid @RequestBody  OpcionDTO opcionDTO,
+    public ResponseEntity<ResponseDTO<OpcionDTO>> updateOpcion(@Valid @RequestBody  OpcionDTO opcionDTO,
                                                                 @PathVariable("idOpcion") Integer idOpcion){
         log.info("INI - upodateOpcion | requestURL=opcion");
         ResponseDTO<OpcionDTO> response=new ResponseDTO<>();
@@ -115,7 +115,7 @@ public class OpcionController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/opcion/{idOpcion}")
-    public ResponseEntity<ResponseDTO<OpcionDTO>> eliminarOpcion(@PathVariable("idOpcion") Integer idOpcion){
+    public ResponseEntity<ResponseDTO<OpcionDTO>> deleteOpcion(@PathVariable("idOpcion") Integer idOpcion){
         ResponseDTO<OpcionDTO> response=new ResponseDTO<>();
         log.info("INI - eliminarOpcion | requestURL=opcion");
         try {

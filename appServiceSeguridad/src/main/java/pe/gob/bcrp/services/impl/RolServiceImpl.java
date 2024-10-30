@@ -93,6 +93,7 @@ public class RolServiceImpl implements IRolService {
             Usuario usuario = util.getUsuario();
 
             Rol rol = modelMapper.map(rolDTO, Rol.class);
+            rol.setEstado(1);
             rol.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             rol.setUsuarioCreacion(usuario.getUsuario());
 
@@ -121,9 +122,9 @@ public class RolServiceImpl implements IRolService {
 
             Sistema sistema = sistemaRepository.findById(rolDto.getIdSistema()).orElseThrow(() -> new ResourceNotFoundException(" Sistema no encontrado "));
             rol.setSistema(sistema);
-            rol.setNombre(rolDto.getNombre());
-            rol.setEstado(rolDto.getEstado());
-            rol.setUltLin(rolDto.getUltLin());
+            rol.setNombre(rolDto.getNombreRol());
+           // rol.setEstado(rolDto.getEstado());
+           // rol.setUltLin(rolDto.getUltLin());
 
             rol.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             rol.setUsuarioActualizacion(usuario.getUsuario());

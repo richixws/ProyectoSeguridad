@@ -55,10 +55,6 @@ public class OpcionServiceImpl  implements IOpcionService {
 
             List<Opcion> opciones = pageOpciones.getContent();
 
-           /** List<OpcionDTO> opcionDTOS = opciones.stream()
-                    .map(opc -> modelMapper.map(opc, OpcionDTO.class))
-                    .toList();**/
-
             List<OpcionDTO> opcionDTOS = opciones.stream().map(opc -> {
                  OpcionDTO opcionDTO = modelMapper.map(opc, OpcionDTO.class);
                  if (opc.getModulo() != null) { // Asignar tipoDocumento a partir de DocumentoIdentidad

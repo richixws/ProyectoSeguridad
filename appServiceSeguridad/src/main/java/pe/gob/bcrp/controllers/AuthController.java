@@ -5,6 +5,7 @@ import cn.apiclub.captcha.Captcha;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -28,13 +29,13 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 public class AuthController {
 
-    @Autowired
+   // @Autowired
     private IUsuarioService usuariosService;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncode;
 
-    @Autowired
+   @Autowired
     private KeycloakRestService keycloakRestService;
 
    // @Value("${keycloak.client-user}")
@@ -48,7 +49,9 @@ public class AuthController {
     @Autowired
     private JwtValidationService jwtValidationService;
 
-
+    public AuthController(IUsuarioService usuariosService){
+        this.usuariosService = usuariosService;
+    }
 
     @PostMapping(value = "/login")
     public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
@@ -57,9 +60,11 @@ public class AuthController {
 
         try {
 
-         //  if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
-         //      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("INVALID CAPTCHA");
-         //   }
+        //   if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
+        //       Map<String, String> response = Map.of("mensaje", "Captcha inválido");
+        //       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        //   }
+
 
             /**if (jwtValidationService.verify(dto.getCaptchaToken()).isSuccess()) {
                 return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)

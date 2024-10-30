@@ -24,11 +24,15 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class SistemaController {
 
-    @Autowired
-    private ISistemaService sistemaService;
 
-    @Autowired
+    private ISistemaService sistemaService;
     private IUploadFileService uploadFileService;
+
+
+    private SistemaController(ISistemaService sistemaService, IUploadFileService uploadFileService) {
+        this.sistemaService = sistemaService;
+        this.uploadFileService = uploadFileService;
+    }
 
     /**
      * Metodo Listar usuarios responsables del los Sistemas
