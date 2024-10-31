@@ -141,7 +141,7 @@ CREATE TABLE SW_ROL (
     id_sistema NUMBER(10) NOT NULL,
     nombre VARCHAR2(100) NOT NULL,
     estado NUMBER(1) NOT NULL,
-    ultlin NUMBER(10) NOT NULL,
+  --  ultlin NUMBER(10) NOT NULL,
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
     
     hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
@@ -160,6 +160,17 @@ CREATE TABLE SW_PERFIL (
     id_entidad NUMBER(10) NOT NULL,
     id_rol NUMBER(10) NOT NULL,
     nombre VARCHAR2(500) NOT NULL,
+    is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
+    
+    
+    hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
+    hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
+    hora_actualizacion TIMESTAMP NULL, -- Permitir nulos para la actualización
+    usuario_creacion VARCHAR2(50) NULL, -- Limitar la longitud a 50 caracteres
+    usuario_eliminacion VARCHAR2(50) NULL, -- Permitir nulos para la eliminación
+    usuario_actualizacion VARCHAR2(50) NULL, -- Permitir nulos para la actualización
+    
+   
     CONSTRAINT PK_SW_PERFIL PRIMARY KEY (id_perfil),
     CONSTRAINT FK_SW_PERFIL_ROL FOREIGN KEY (id_rol) REFERENCES SW_ROL(id_rol)
 );

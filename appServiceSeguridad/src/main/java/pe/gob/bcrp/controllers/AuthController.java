@@ -60,10 +60,10 @@ public class AuthController {
 
         try {
 
-        //   if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
-        //       Map<String, String> response = Map.of("mensaje", "Captcha inválido");
-        //       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        //   }
+           if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
+               Map<String, String> response = Map.of("mensaje", "Captcha inválido");
+               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
 
 
             /**if (jwtValidationService.verify(dto.getCaptchaToken()).isSuccess()) {

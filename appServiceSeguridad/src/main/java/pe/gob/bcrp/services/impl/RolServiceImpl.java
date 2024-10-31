@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.ModuloDTO;
 import pe.gob.bcrp.dto.OpcionDTO;
 import pe.gob.bcrp.dto.RolDTO;
+import pe.gob.bcrp.dto.RolFormDTO;
 import pe.gob.bcrp.dto.response.OpcionResponse;
 import pe.gob.bcrp.dto.response.RolResponse;
 import pe.gob.bcrp.entities.Opcion;
@@ -66,6 +67,7 @@ public class RolServiceImpl implements IRolService {
                 RolDTO rolDTO = modelMapper.map(rol, RolDTO.class);
                 if (rol.getSistema() != null) { // Asignar tipoDocumento a partir de DocumentoIdentidad
                     rolDTO.setIdSistema(rol.getSistema().getIdSistema());
+                    rolDTO.setNombreSistema(rol.getSistema().getNombre());
 
                 }
                 return rolDTO;
@@ -87,7 +89,7 @@ public class RolServiceImpl implements IRolService {
     }
 
     @Override
-    public RolDTO saveRole(RolDTO rolDTO) {
+    public RolFormDTO saveRole(RolFormDTO rolDTO) {
         log.info(" INI - Service  saveRole");
         try {
             Usuario usuario = util.getUsuario();
@@ -101,8 +103,8 @@ public class RolServiceImpl implements IRolService {
             rol.setSistema(sistema);
 
             Rol rolSave=rolRepository.save(rol);
-            RolDTO rolDTONew = modelMapper.map(rol, RolDTO.class);
-            return rolDTONew;
+            RolFormDTO rolFormDTO = modelMapper.map(rol, RolFormDTO.class);
+            return rolFormDTO;
 
         }catch (ResourceNotFoundException e) {
              log.error( "ERROR - service saveRole "+e.getMessage() );
@@ -114,7 +116,7 @@ public class RolServiceImpl implements IRolService {
     }
 
     @Override
-    public RolDTO updateRole(RolDTO rolDto, Integer idRol) {
+    public RolFormDTO updateRole(RolFormDTO rolDto, Integer idRol) {
         log.info(" INI - Service  updateRole");
         try {
             Usuario usuario = util.getUsuario();
@@ -130,7 +132,7 @@ public class RolServiceImpl implements IRolService {
             rol.setUsuarioActualizacion(usuario.getUsuario());
 
             Rol rolSave = rolRepository.save(rol);
-            RolDTO rolDTOUpd = modelMapper.map(rol, RolDTO.class);
+            RolFormDTO rolDTOUpd = modelMapper.map(rol, RolFormDTO.class);
             return rolDTOUpd;
 
         }catch (ResourceNotFoundException e){
@@ -154,6 +156,7 @@ public class RolServiceImpl implements IRolService {
             if(rol!=null){
 
                 rol.setDeleted(true);
+                rol.setEstado(0);
                 rol.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 rol.setUsuarioEliminacion(usuario.getUsuario());
 

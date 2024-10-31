@@ -62,7 +62,7 @@ public class PerfilServiceImpl implements IPerfilService {
 
             List<PerfilDTO> perfilDTOS = perfiles.stream().map(p -> {
                 PerfilDTO perfilDTO = modelMapper.map(p, PerfilDTO.class);
-                if (p.getRol() != null) { // Asignar tipoDocumento a partir de DocumentoIdentidad
+                if (p.getRol() != null) {
                     perfilDTO.setIdSistema(p.getRol().getSistema().getIdSistema());
                     perfilDTO.setNombrePerfil(p.getNombre());
 

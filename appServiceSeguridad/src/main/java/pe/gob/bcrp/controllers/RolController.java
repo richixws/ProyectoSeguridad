@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.OpcionDTO;
 import pe.gob.bcrp.dto.ResponseDTO;
 import pe.gob.bcrp.dto.RolDTO;
+import pe.gob.bcrp.dto.RolFormDTO;
 import pe.gob.bcrp.dto.response.OpcionResponse;
 import pe.gob.bcrp.dto.response.RolResponse;
+import pe.gob.bcrp.entities.Sistema;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
+import pe.gob.bcrp.repositories.ISistemaRepository;
 import pe.gob.bcrp.services.IRolService;
+import pe.gob.bcrp.services.ISistemaService;
 
 @Log4j2
 @RestController
@@ -51,12 +55,12 @@ public class RolController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/rol")
-    public  ResponseEntity<ResponseDTO<RolDTO>> saveRol(@Valid @RequestBody RolDTO rolDto){
+    public  ResponseEntity<ResponseDTO<RolFormDTO>> saveRol(@Valid @RequestBody RolFormDTO rolDto){
 
         log.info("INI - saveRol | requestURL=rol");
-        ResponseDTO<RolDTO> response=new ResponseDTO<>();
+        ResponseDTO<RolFormDTO> response=new ResponseDTO<>();
         try {
-            RolDTO moduloDto=rolService.saveRole(rolDto);
+            RolFormDTO moduloDto=rolService.saveRole(rolDto);
             response.setStatus(1);
             response.setMessage("El Rol fue guardado de manera exitosa");
             // response.setBody(entidadDTO);
@@ -72,12 +76,12 @@ public class RolController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/rol/{idRol}")
-    public ResponseEntity<ResponseDTO<RolDTO>> updateRol(@Valid @RequestBody  RolDTO rolDTO,
+    public ResponseEntity<ResponseDTO<RolFormDTO>> updateRol(@Valid @RequestBody  RolFormDTO rolDTO,
                                                                 @PathVariable("idRol") Integer idRol){
         log.info("INI - updateRol | requestURL=rol");
-        ResponseDTO<RolDTO> response=new ResponseDTO<>();
+        ResponseDTO<RolFormDTO> response=new ResponseDTO<>();
         try {
-            RolDTO rolDto=rolService.updateRole(rolDTO,idRol);
+            RolFormDTO rolDto=rolService.updateRole(rolDTO,idRol);
             response.setStatus(1);
             response.setMessage("El Rol fue actualizado exitosamente");
 
