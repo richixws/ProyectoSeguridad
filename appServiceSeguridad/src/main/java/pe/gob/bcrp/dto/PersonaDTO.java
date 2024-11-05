@@ -12,4 +12,5 @@ public class PersonaDTO {
     private String  apellidoPaterno;
     private String  apellidoMaterno;
     private String  nombres;
+    private String correo;
 }

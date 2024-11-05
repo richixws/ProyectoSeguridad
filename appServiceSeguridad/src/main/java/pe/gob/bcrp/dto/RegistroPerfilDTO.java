@@ -4,8 +4,7 @@ import jakarta.persistence.Transient;
 import lombok.Data;
 
 @Data
-public class PerfilDTO {
-
+public class RegistroPerfilDTO {
 
     private Integer idPerfil;
 
@@ -17,6 +16,5 @@ public class PerfilDTO {
 
     private String nombrePerfil;
 
-
-
+    private String nombreSistema;
 }

@@ -11,10 +11,15 @@ import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.PersonaDTO;
 import pe.gob.bcrp.dto.response.PersonaResponse;
 import pe.gob.bcrp.entities.Persona;
+import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IPersonaRepository;
 import pe.gob.bcrp.services.IPersonaService;
+import pe.gob.bcrp.util.Util;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -24,8 +29,10 @@ public class PersonaServiceImpl  implements IPersonaService {
 
 
     private IPersonaRepository  iPersonaRepository ;
-
     private ModelMapper modelMapper;
+    private final Util util;
+
+
 
     @Override
     public PersonaResponse getAllPersonas( Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String nombre) {
@@ -66,13 +73,16 @@ public class PersonaServiceImpl  implements IPersonaService {
     public PersonaDTO addPersona(PersonaDTO personaDTO) {
         log.info("INFO - Service AddPersona() ");
         try {
+            Usuario usuario = util.getUsuario();
 
-            boolean existeNumeroDocumento = iPersonaRepository.existsByDocumentoIdentidad(personaDTO.getDocumentoIdentidad());
+            boolean existeNumeroDocumento = iPersonaRepository.existsByNumeroDocumento(personaDTO.getDocumentoIdentidad());
             if (existeNumeroDocumento) {
                 throw new IllegalArgumentException("El numero de documento de identidad ya existe en el sistema.");
             }
 
             Persona persona=modelMapper.map(personaDTO,Persona.class);
+            persona.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+            persona.setUsuarioCreacion(usuario.getUsuario());
             Persona newPersona=iPersonaRepository.save(persona);
             PersonaDTO newPersonaDTO=modelMapper.map(newPersona,PersonaDTO.class);
             return newPersonaDTO;
@@ -91,19 +101,24 @@ public class PersonaServiceImpl  implements IPersonaService {
 
         log.info("INFO - Service UpdatePersona() ");
         try {
-
-            boolean existeDocumentoIdentidad = iPersonaRepository.existsByDocumentoIdentidadAndIdPersonaNot(personaDTO.getDocumentoIdentidad(), idPersona);
+            Usuario usuario = util.getUsuario();
+            boolean existeDocumentoIdentidad = iPersonaRepository.existsByNumeroDocumentoAndIdPersonaNot(personaDTO.getDocumentoIdentidad(), idPersona);
             if (existeDocumentoIdentidad) {
                 throw new IllegalArgumentException("El número de documento identidad ya está registrado en otra Persona");
             }
+
 
 
             Persona persona=iPersonaRepository.findById(idPersona).orElseThrow( ()-> new RuntimeException("Persona no encontrada") );
             persona.setApellidoMaterno(personaDTO.getApellidoMaterno());
             persona.setNombres(personaDTO.getNombres());
             persona.setApellidoPaterno(personaDTO.getApellidoPaterno());
-            persona.setTipoDocumento(personaDTO.getTipoDocumento());
-            persona.setDocumentoIdentidad(personaDTO.getDocumentoIdentidad());
+            //persona.setDocuIdentidad(personaDTO.getTipoDocumento());
+            persona.setNumeroDocumento(personaDTO.getDocumentoIdentidad());
+            persona.setCorreo(personaDTO.getCorreo());
+
+            persona.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+            persona.setUsuarioActualizacion(usuario.getUsuario());
             PersonaDTO newPersonaDTO=modelMapper.map(persona,PersonaDTO.class);
             return newPersonaDTO;
 
@@ -120,11 +135,12 @@ public class PersonaServiceImpl  implements IPersonaService {
         log.info("INFO - Service DeletePersona() ");
         var estado=false;
         try {
-
+            Usuario usuario = util.getUsuario();
             var persona=iPersonaRepository.findById(idPersona).orElseThrow(()->new  ResourceNotFoundException("Persona no encontrado"));
             if(persona!=null){
                persona.setDeleted(true);
-
+               persona.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+               persona.setUsuarioActualizacion(usuario.getUsuario());
                iPersonaRepository.save(persona);
                estado=true;
             }

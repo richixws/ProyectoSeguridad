@@ -62,7 +62,8 @@ public class EntidadServiceImpl implements IEntidadService {
 
         try {
             log.info("INI - getAllDocumentos");
-            List<DocumentoIdentidad> listDocumentos=documentoIdentidadRepository.findAll();
+            List<DocumentoIdentidad> listDocumentos=documentoIdentidadRepository.findByGrupoDocumento(1);;
+           // List<DocumentoIdentidad> listDocumentos=documentoIdentidadRepository.findAll();
             return listDocumentos.stream()
                     .map(documento -> modelMapper.map(documento, DocumentoIdentidadDTO.class))
                     .collect(Collectors.toList());
@@ -139,8 +140,9 @@ public class EntidadServiceImpl implements IEntidadService {
 
     @Override
     public EntidadDTO saveEntidad(EntidadDTO entidadDto) {
+        log.info("INI - Service() saveEntidad()");
         try {
-            log.info("INI - saveEntidad()");
+
             Usuario usuario=util.getUsuario();
             String uuidCodExt = UUID.randomUUID().toString();
 

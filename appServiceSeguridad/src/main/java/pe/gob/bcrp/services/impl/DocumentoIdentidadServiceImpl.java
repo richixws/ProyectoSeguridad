@@ -27,7 +27,8 @@ public class DocumentoIdentidadServiceImpl implements IDocumentoIdentidadService
     public List<DocumentoIdentidadDTO> findAllDocumentoIdentidades() {
         try {
             log.info("INI - Service findAllDocumentoIdentidades");
-            List<DocumentoIdentidad> listDocumentoIdentidad = documentoIdentidadRepository.findAll();
+           List<DocumentoIdentidad> listDocumentoIdentidad = documentoIdentidadRepository.findAll();
+         //   List<DocumentoIdentidad> listDocumentoIdentidad = documentoIdentidadRepository.findByGrupoDocumento(1);
             return listDocumentoIdentidad.stream()
                     .map(documentoIdentidad -> modelMapper.map(documentoIdentidad, DocumentoIdentidadDTO.class))
                     .collect(Collectors.toList());

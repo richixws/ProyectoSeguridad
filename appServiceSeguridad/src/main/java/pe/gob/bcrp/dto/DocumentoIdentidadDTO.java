@@ -8,5 +8,5 @@ public class DocumentoIdentidadDTO {
 
     private Integer idDocumentoIdentidad;
     private String tipoDocumentoIdentidad;
-   // private Integer grupoDocumento;
+    private Integer grupoDocumento;
 }

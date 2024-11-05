@@ -9,6 +9,7 @@ public interface IDocumentoIdentidadRepository extends JpaRepository<DocumentoId
 
     DocumentoIdentidad findByTipoDocumentoIdentidad(String tipoDocumentoIdentidad);
 
+    List<DocumentoIdentidad> findByGrupoDocumento(Integer grupoDocumento);
     // Método que devuelve los documentos filtrados por grupo_documento = 2
     //List<DocumentoIdentidad> findByGrupoDocumento(Integer grupoDocumento);
 

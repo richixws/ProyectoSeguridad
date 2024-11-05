@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.OpcionDTO;
 import pe.gob.bcrp.dto.PerfilDTO;
+import pe.gob.bcrp.dto.RegistroPerfilDTO;
 import pe.gob.bcrp.dto.response.OpcionResponse;
 import pe.gob.bcrp.dto.response.PerfilResponse;
 import pe.gob.bcrp.entities.*;
@@ -60,11 +61,12 @@ public class PerfilServiceImpl implements IPerfilService {
 
             List<Perfil> perfiles = pagePerfiles.getContent();
 
-            List<PerfilDTO> perfilDTOS = perfiles.stream().map(p -> {
-                PerfilDTO perfilDTO = modelMapper.map(p, PerfilDTO.class);
+            List<RegistroPerfilDTO> perfilDTOS = perfiles.stream().map(p -> {
+                RegistroPerfilDTO perfilDTO = modelMapper.map(p, RegistroPerfilDTO.class);
                 if (p.getRol() != null) {
                     perfilDTO.setIdSistema(p.getRol().getSistema().getIdSistema());
                     perfilDTO.setNombrePerfil(p.getNombre());
+                    perfilDTO.setNombreSistema(p.getRol().getSistema().getNombre());
 
                 }
                 return perfilDTO;

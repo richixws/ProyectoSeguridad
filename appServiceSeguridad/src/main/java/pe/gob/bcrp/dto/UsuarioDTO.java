@@ -10,7 +10,6 @@ import java.util.Date;
 @Data
 public class UsuarioDTO {
 
-
     private Integer idUsuario;
     private String correoInstitucional;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,10 +46,19 @@ public class Usuario implements Serializable {
     @Column(name = "password", nullable = false, length = 100)
     private String password;
 
+    @Column(name = "estado")
+    private  String estado;
+
     //mapeo realcionar con entidad persona
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_persona", nullable = false)
     private Persona persona;
+
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted=false;
+
+
 
     //mapeo relacional con perfil
     //@OneToMany(mappedBy = "usuario")
@@ -58,6 +68,25 @@ public class Usuario implements Serializable {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_perfil"))
     private Set<Perfil> perfilUsuarios = new HashSet<>();
+
+    //agregacion campos auditoria
+    @Column(name = "hora_creacion")
+    private LocalDateTime horaCreacion;
+
+    @Column(name = "hora_eliminacion")
+    private LocalDateTime horaDeEliminacion;
+
+    @Column(name = "hora_actualizacion")
+    private LocalDateTime horaActualizacion;
+
+    @Column(name = "usuario_creacion",length = 50)
+    private String usuarioCreacion;
+
+    @Column(name = "usuario_eliminacion", length = 50)
+    private String usuarioEliminacion;
+
+    @Column(name = "usuario_actualizacion", length = 50)
+    private String usuarioActualizacion;
 
 
 

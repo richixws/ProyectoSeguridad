@@ -19,13 +19,22 @@ CREATE SEQUENCE seq_sw_documento_identidad START WITH 1 INCREMENT BY 1;
 -- Creación de tablas
 CREATE TABLE SW_PERSONA (
     id_persona NUMBER(10) DEFAULT seq_sw_persona.NEXTVAL NOT NULL,
-    tipo_documento NUMBER(5) NOT NULL,
-    --id_documento NUMBER(10) NOT NULL,
+    --tipo_documento NUMBER(5) NOT NULL,
+    id_documento NUMBER(10) NOT NULL,
     documento_identidad VARCHAR2(50) NOT NULL,
     ap_pat VARCHAR2(50) NOT NULL,
     ap_mat VARCHAR2(50) NOT NULL,
     nombres VARCHAR2(50) NOT NULL,
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
+    correo varchar(100) NOT NULL,
+    
+    hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
+    hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
+    hora_actualizacion TIMESTAMP NULL, -- Permitir nulos para la actualización
+    usuario_creacion VARCHAR2(50) NULL, -- Limitar la longitud a 50 caracteres
+    usuario_eliminacion VARCHAR2(50) NULL, -- Permitir nulos para la eliminación
+    usuario_actualizacion VARCHAR2(50) NULL, -- Permitir nulos para la actualización
+    
     CONSTRAINT PK_SW_PERSONA PRIMARY KEY (id_persona),
    -- CONSTRAINT FK_SW_PERSONA_DOCUMENTO FOREIGN KEY (id_documento) REFERENCES SW_DOCUMENTO_IDENTIDAD (id_documento)
 );
@@ -121,8 +130,21 @@ CREATE TABLE SW_USUARIO (
     fecha_creacion DATE DEFAULT SYSDATE NOT NULL,
     doc_sustento VARCHAR2(500) NOT NULL,
     ambito VARCHAR2(20) NOT NULL,
-    usuario VARCHAR2(100) NOT NULL,
-    password VARCHAR2(100) NOT NULL,
+    usuario VARCHAR2(100) NULL,--NOT 
+    password VARCHAR2(100) NULL,--NOT
+    estado varchar(100) NOT NULL,
+    
+    is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
+    hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
+    hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
+    hora_actualizacion TIMESTAMP NULL, -- Permitir nulos para la actualización
+    usuario_creacion VARCHAR2(50) NULL, -- Limitar la longitud a 50 caracteres
+    usuario_eliminacion VARCHAR2(50) NULL, -- Permitir nulos para la eliminación
+    usuario_actualizacion VARCHAR2(50) NULL, -- Permitir nulos para la actualización
+    
+    
+    
+    
     CONSTRAINT PK_SW_USUARIO PRIMARY KEY (id_usuario),
     CONSTRAINT FK_SW_USUARIO_PERSONA FOREIGN KEY (id_persona) REFERENCES SW_PERSONA(id_persona)
 );
@@ -237,7 +259,7 @@ CREATE TABLE SW_FILES (
 CREATE TABLE SW_DOCUMENTO_IDENTIDAD (
     id_documento NUMBER(10) DEFAULT seq_sw_documento_identidad.NEXTVAL NOT NULL,
     tipo_documento VARCHAR2(25) NOT NULL,
-    --grupo_documento number(10) NOT NULL,  --1 .- identidad  2.-financiero
+    grupo_documento number(10) NOT NULL,  --1 .- identidad  2.-financiero
     CONSTRAINT UC_TIPO_NUMERO UNIQUE (tipo_documento),
     CONSTRAINT PK_SW_DOCUMENTO_IDENTIDAD PRIMARY KEY (id_documento),
 );

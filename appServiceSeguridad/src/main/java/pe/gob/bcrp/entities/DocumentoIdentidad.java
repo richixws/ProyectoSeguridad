@@ -24,8 +24,8 @@ public class DocumentoIdentidad {
     @Column(name = "tipo_documento", nullable = false)
     private String tipoDocumentoIdentidad;
 
-    //@Column(name = "grupo_documento")
-    //private Integer grupoDocumento;
+    @Column(name = "grupo_documento")
+    private Integer grupoDocumento;
 
 
 

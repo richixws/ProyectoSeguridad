@@ -147,7 +147,7 @@ public class EntidadController {
         }catch (ResourceNotFoundException e) {
             log.error("ERROR - updateEntidad No encontrado " + e.getMessage());
             response.setStatus(0);
-            response.setMessage(e.getMessage());
+            response.setMessage("Error al Actualizar la Entidad "+e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         } catch (Exception e){
