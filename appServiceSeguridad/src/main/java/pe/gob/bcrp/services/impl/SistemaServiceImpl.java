@@ -340,8 +340,8 @@ public class SistemaServiceImpl implements ISistemaService {
             Sistema sistemaNew=sistemaRepository.save(sistema);
 
             //almacenarDatosDeArchivo(sistemaNew);
-            uploadFileService.almacenarDatosFile(multiLogoHead,sistemaNew.getIdSistema());
-            uploadFileService.almacenarDatosFile(multiLogoMain,sistemaNew.getIdSistema());
+            uploadFileService.almacenarDatosFile(multiLogoHead,sistemaNew.getIdSistema(),"Modulo Sistema");
+            uploadFileService.almacenarDatosFile(multiLogoMain,sistemaNew.getIdSistema(),"Modulo Sistema");
 
             SistemaFormDTO SistemaFormDTO=modelMapper.map(sistemaNew,SistemaFormDTO.class);
 

@@ -61,7 +61,7 @@ public class UsuarioController {
     }
 
 
-    @PostMapping("/usuario")
+    @PostMapping("/usuarioOld")
     public ResponseEntity<ResponseDTO<UsuarioFormDTO>> addUsuario(@Valid  @RequestBody UsuarioFormDTO usuarioFormDTO) {
 
         log.info("INI - add Usuario | requestURL=usuarios");
@@ -81,7 +81,7 @@ public class UsuarioController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/usuarios")
+    @PostMapping("/usuario")
     public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> guardarUsuario(@RequestParam @NotNull Integer tipoDocumento,
                                                                           @RequestParam @NotNull String numeroDocumento,
                                                                           @RequestParam @NotNull String nombres,
@@ -145,13 +145,13 @@ public class UsuarioController {
 
 
 
-    @DeleteMapping("/usuario/{idUsuario}")
-    public ResponseEntity<ResponseDTO<UsuarioDTO>> deleteUsuario(@PathVariable("idUsuario") Integer idusuario) {
+    @PutMapping("/usuario/{idUsuario}/inhabilitar")
+    public ResponseEntity<ResponseDTO<UsuarioDTO>> InhabilitarUsuario(@PathVariable("idUsuario") Integer idusuario) {
           log.info("INI - Eliminar Usuario | requestURL=IdUsuario");
           ResponseDTO<UsuarioDTO> response=new ResponseDTO<>();
           try {
               boolean eliminado=usuarioService.deleteUsuario(idusuario);
-              if(eliminado){
+              if(!eliminado){
                   throw new ResourceNotFoundException("El Usuario a eliminar "+idusuario+" no existe");
               }
               response.setStatus(1);
@@ -171,7 +171,5 @@ public class UsuarioController {
               return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
           }
     }
-
-
 
 }

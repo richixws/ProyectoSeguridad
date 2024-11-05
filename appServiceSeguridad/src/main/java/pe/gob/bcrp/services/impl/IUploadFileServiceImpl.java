@@ -121,7 +121,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
 
 
     @Override
-    public pe.gob.bcrp.entities.Files almacenarDatosFile(MultipartFile file, Integer idSistema) {
+    public pe.gob.bcrp.entities.Files almacenarDatosFile(MultipartFile file, Integer idAplicacion,String modulo) {
         if (file == null || file.isEmpty()) {
             return null; // Si el archivo no está presente, no hacer nada
         }
@@ -133,10 +133,10 @@ public class IUploadFileServiceImpl implements IUploadFileService {
 
         // Crear la entidad FileEntity y asignar los valores
         pe.gob.bcrp.entities.Files  files = new pe.gob.bcrp.entities.Files();
-        files.setIdIdentidad(idSistema);
+        files.setIdIdentidad(idAplicacion);
         files.setHoraFechaFile(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()) );
         files.setIdUsuario(usuario.getUsuario());
-        files.setIdModulo("modulo sistema");
+        files.setIdModulo(modulo);
 
         files.setFilename(file.getOriginalFilename());
         files.setPath(FOLDER + file.getOriginalFilename()); // Ajusta según tu lógica de almacenamiento

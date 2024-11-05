@@ -20,7 +20,7 @@ public interface IUploadFileService {
     public String upload(MultipartFile multipartFile) throws IOException;
     public void delete(String nombreFile) throws IOException;
 
-    public Files almacenarDatosFile(MultipartFile multipartFile, Integer idSistema) throws IOException;
+    public Files almacenarDatosFile(MultipartFile multipartFile, Integer idAplicacion, String modulo) throws IOException;
     public Files updateDatosFile(MultipartFile multipartFile, Files files) throws IOException;
 
 }

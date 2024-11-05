@@ -22,6 +22,7 @@ import pe.gob.bcrp.mapper.UsuarioMapper;
 import pe.gob.bcrp.repositories.IDocumentoIdentidadRepository;
 import pe.gob.bcrp.repositories.IPersonaRepository;
 import pe.gob.bcrp.repositories.IUsuarioRepository;
+import pe.gob.bcrp.services.IUploadFileService;
 import pe.gob.bcrp.services.IUsuarioService;
 import pe.gob.bcrp.util.Util;
 
@@ -48,6 +49,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
     private ModelMapper modelMapper;
 
     private Util util;
+
+    private IUploadFileService uploadFileService;
 
 
     @Override
@@ -161,9 +164,13 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
             if(ambito.equalsIgnoreCase("interno")){
                 usuario.setAmbito(ambito);
-                usuario.setDocSustento(sustento.getOriginalFilename());
+                if(sustento !=null){
+                    usuario.setDocSustento(sustento.getOriginalFilename());
+                    uploadFileService.upload(sustento);
+                }
+
                 usuario.setFechaCreacion(new Date());
-               //usuarioNew.setCorreoInstitucional("dada");
+                usuario.setEstado("ACTIVO");
 
                 usuario.setUsuarioCreacion(usuarioSistema.getUsuario());
                 usuario.setHoraCreacion(usuario.getHoraCreacion());
@@ -174,6 +181,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
             usuario.setPersona(personaNew);
             //usuarioNew.setEstado("Activo");
             Usuario usuarioNew=usuarioRepository.save(usuario);
+
+            uploadFileService.almacenarDatosFile(sustento,usuarioNew.getIdUsuario(),"Modulo Usuario");
 
             RegistroUsuarioDTO regUsuarioNew=modelMapper.map(usuarioNew, RegistroUsuarioDTO.class);
             return regUsuarioNew;
@@ -233,7 +242,31 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Override
     public boolean deleteUsuario(Integer idUsuario) {
-        return false;
+
+        log.info("INI - InhabilitarUsuario()");
+        boolean estado=false;
+        try {
+            Usuario usuarioReg=util.getUsuario();
+
+            Usuario usuario=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            if(usuario!=null){
+                //entidadRepository.deleteById(id);
+                usuario.setDeleted(true);
+                usuario.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+                usuario.setUsuarioEliminacion(usuarioReg.getUsuario());
+                usuario.setEstado("INHABILITADO");
+
+                usuarioRepository.save(usuario);
+                estado=true;
+            }
+
+
+        }catch (ResourceNotFoundException e){
+            log.error("ERROR - deleteEntidad() "+e.getMessage());
+            e.printStackTrace();
+            estado=false;
+        }
+        return estado;
     }
 
 
