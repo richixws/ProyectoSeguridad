@@ -60,24 +60,25 @@ public class UsuarioController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/upload/usuarios")
+    public ResponseEntity<List<UsuarioFormDTO>>  uploadUsuarios(@RequestParam("file") MultipartFile file) {
 
-    @PostMapping("/usuarioOld")
-    public ResponseEntity<ResponseDTO<UsuarioFormDTO>> addUsuario(@Valid  @RequestBody UsuarioFormDTO usuarioFormDTO) {
-
-        log.info("INI - add Usuario | requestURL=usuarios");
+        log.info("INI - UploadsUsuario | uploadUsuarios=upload/usuarios");
         ResponseDTO<UsuarioFormDTO> response=new ResponseDTO<>();
         try {
-            UsuarioFormDTO newUsuarioFormDTO=usuarioService.saveUsuario(usuarioFormDTO);
-            response.setStatus(1);
-            response.setMessage("El Usuario fue guardado de manera existosa");
+
+            List<UsuarioFormDTO> list=usuarioService.uploadUserCsv(file);
+            return new ResponseEntity<>(list, HttpStatus.OK);
+
 
         }catch (Exception e){
             log.error(" ERROR - add Usuario | requestURL=usuarios ");
             response.setStatus(0);
             response.setMessage("Error al guardar el Usuario "+e.getMessage() );
-            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(response,HttpStatus.CREATED);
+
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -152,10 +153,10 @@ public class UsuarioController {
           try {
               boolean eliminado=usuarioService.deleteUsuario(idusuario);
               if(!eliminado){
-                  throw new ResourceNotFoundException("El Usuario a eliminar "+idusuario+" no existe");
+                  throw new ResourceNotFoundException("El Usuario a Inhabilitar "+idusuario+" no existe");
               }
               response.setStatus(1);
-              response.setMessage("El Usuario fue eliminado de manera exitosa");
+              response.setMessage("El Usuario fue Inhabilitado de manera exitosa");
               return new ResponseEntity<>(response,HttpStatus.OK);
 
           }catch (ResourceNotFoundException e){
@@ -167,9 +168,10 @@ public class UsuarioController {
           }catch (Exception e){
               log.error(" ERROR - delete Usuario | requestURL=IdUsuario ");
               response.setStatus(0);
-              response.setMessage("Error al eliminar el Usuario "+e.getMessage() );
+              response.setMessage("Error al Inhabilitar el Usuario "+e.getMessage() );
               return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
           }
     }
+
 
 }

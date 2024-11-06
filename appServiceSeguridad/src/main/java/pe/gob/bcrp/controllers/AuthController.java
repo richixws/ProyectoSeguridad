@@ -60,7 +60,7 @@ public class AuthController {
 
         try {
 
-           if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
+         if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
                Map<String, String> response = Map.of("mensaje", "Captcha inválido");
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }

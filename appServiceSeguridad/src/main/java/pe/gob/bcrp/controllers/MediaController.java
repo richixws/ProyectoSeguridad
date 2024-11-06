@@ -22,8 +22,8 @@ public class MediaController {
 
     @PostMapping("/upload")
     Map<String, String> upload(@RequestParam("file") MultipartFile multipartFile) {
-        String path = storageService.store(multipartFile);
-        return Map.of("path", path);
+        Map<String, String> fileData  = storageService.store(multipartFile);
+        return fileData;
     }
 
 

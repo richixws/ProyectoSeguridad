@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -37,10 +38,11 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public String store(MultipartFile file) {
+    public Map<String, String> store(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
-        String filename = UUID.randomUUID() + "." + StringUtils.getFilenameExtension(originalFilename);
-
+       // String filename = UUID.randomUUID() + "." + StringUtils.getFilenameExtension(originalFilename);
+        String filename = originalFilename + "." + StringUtils.getFilenameExtension(originalFilename);
+        String tamaño=formatFileSize(file.getSize());
         if (file.isEmpty()) {
             throw new RuntimeException("Failed to store empty file " + filename);
         }
@@ -51,7 +53,9 @@ public class FileSystemStorageService implements StorageService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file " + filename, e);
         }
-        return filename;
+       // return filename;
+        return Map.of("filename", filename, "tamaño", tamaño);
+
     }
 
     @Override
@@ -80,6 +84,16 @@ public class FileSystemStorageService implements StorageService {
         try {
             FileSystemUtils.deleteRecursively(file);
         } catch (IOException e) {
+        }
+    }
+
+    private String formatFileSize(long size) {
+        if (size >= 1024 * 1024) {
+            return String.format("%.2f MB", size / (1024.0 * 1024.0));
+        } else if (size >= 1024) {
+            return String.format("%.2f KB", size / 1024.0);
+        } else {
+            return size + " bytes";
         }
     }
 }

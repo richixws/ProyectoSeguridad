@@ -2,14 +2,19 @@ package pe.gob.bcrp.services.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScanBeanDefinitionParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pe.gob.bcrp.controllers.UsuarioController;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.response.EntidadResponse;
 import pe.gob.bcrp.dto.response.UsuarioResponse;
@@ -26,12 +31,16 @@ import pe.gob.bcrp.services.IUploadFileService;
 import pe.gob.bcrp.services.IUsuarioService;
 import pe.gob.bcrp.util.Util;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Log4j2
 @Service
@@ -107,31 +116,40 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
-     public UsuarioFormDTO saveUsuario(UsuarioFormDTO usuarioFormDTO) {
-        log.info("INI Service() - saveUsuario");
+     public List<UsuarioFormDTO> uploadUserCsv(MultipartFile file) {
+        log.info("INI Service() - uploadUserCsv");
         try {
-            Usuario usuario=util.getUsuario();
 
-            Persona persona=new Persona();
-            Usuario usuario1=new Usuario();
-          //  persona.setTipoDocumento(usuarioFormDTO.getIdDocumento());
-            persona.setNombres(usuarioFormDTO.getNombres());
-            persona.setApellidoPaterno(usuarioFormDTO.getApellidoPaterno());
-            persona.setApellidoMaterno(usuarioFormDTO.getApellidoMaterno());
-            persona.setCorreo(usuarioFormDTO.getCorreoElectronico());
+            if(file.isEmpty()){
+                throw new BadRequestException("Por favor seleccione un archivo para cargar");
+            }
+            if(!file.getContentType().equals("text/csv")){
+                throw new BadRequestException("Por favor carge un archivo CSV valido");
+            }
 
-            Usuario usuario2=modelMapper.map(usuarioFormDTO, Usuario.class);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+            CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader());
 
+            List<UsuarioFormDTO> users = new ArrayList<>();
 
+            for (CSVRecord record : csvParser) {
+                UsuarioFormDTO user = new UsuarioFormDTO();
+                user.setAmbito(record.get("Ambito"));               // "Ambito" en lugar de "ambito"
+                user.setTipoDocumento(record.get("Tip. doc"));      // "Tip. doc" en lugar de "tipo"
+                user.setNumeroDocumento(record.get("Nro. documento")); // "Nro. documento" en lugar de "numeroDocumento"
+                user.setEstado(record.get("Estado"));               // "Estado" en lugar de "estado"
+                user.setNombres(record.get("Nombre"));              // "Nombre" en lugar de "nombres"
+                user.setApellidoPaterno(record.get("Ape. paterno")); // "Ape. paterno" en lugar de "apellidoPaterno"
+                user.setApellidoMaterno(record.get("Ape. materno")); // "Ape. materno" en lugar de "apellidoMaterno"
+                user.setCorreoElectronico(record.get("Correo electrónico")); // "Correo electrónico" en lugar de "correoElectronico"
+                users.add(user);
 
-
-
-            Usuario usuarioNew=usuarioRepository.save(usuario);
+            }
+            return users;
 
         }catch (Exception e) {
-
+            throw new RuntimeException("Error al procesar el archivo CSV: " + e.getMessage());
         }
-       return null;
     }
 
     @Override
@@ -298,4 +316,12 @@ public class UsuarioServiceImpl implements IUsuarioService {
 //        post.setContent(postDto.getContent());
         return usuario;
     }
+
+
+    public class BadRequestException extends RuntimeException {
+        public BadRequestException(String message) {
+            super(message);
+        }
+    }
+
 }

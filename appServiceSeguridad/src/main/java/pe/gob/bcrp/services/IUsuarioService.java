@@ -24,7 +24,7 @@ public interface IUsuarioService {
 
 
 
-  public UsuarioFormDTO saveUsuario(UsuarioFormDTO usuarioFormDTO);
+  public List<UsuarioFormDTO> uploadUserCsv(MultipartFile file);
 
   public RegistroUsuarioDTO guardarUsuario(Integer tipoDocumento,
                                            String numeroDocumento,
