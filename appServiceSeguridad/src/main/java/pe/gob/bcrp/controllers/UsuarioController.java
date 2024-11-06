@@ -119,10 +119,10 @@ public class UsuarioController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/usuario/{idUsuario}")
-    public ResponseEntity<ResponseDTO<UsuarioDTO>> updateUsuario(@PathVariable("idUsuario") Integer idUsuario,
+    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> updateUsuario(@PathVariable("idUsuario") Integer idUsuario,
                                                                 @RequestBody RegistroUsuarioDTO registroUsuarioDTO) {
         log.info("INI - Editar Usuario | requestURL=usuario");
-        ResponseDTO<UsuarioDTO> response=new ResponseDTO<>();
+        ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
         try {
             RegistroUsuarioDTO updUsuarioFormDTO=usuarioService.updateUsuario(idUsuario,registroUsuarioDTO);
             response.setStatus(1);

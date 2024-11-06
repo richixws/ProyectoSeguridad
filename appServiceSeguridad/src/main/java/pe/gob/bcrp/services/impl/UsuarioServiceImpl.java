@@ -223,11 +223,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
             DocumentoIdentidad docuIde = documentoIdentidadRepository.findById(registroUsuarioDTO.getTipoDocumento()).orElseThrow(() -> new ResourceNotFoundException("documento no encontrado"));
 
             persona.setDocuIdentidad(docuIde);
-            persona.setNumeroDocumento(registroUsuarioDTO.getDocumentoIdentidad());
+            persona.setNumeroDocumento(registroUsuarioDTO.getNumeroDocumento());
             persona.setNombres(registroUsuarioDTO.getNombres());
-            persona.setApellidoPaterno(registroUsuarioDTO.getApPat());
-            persona.setApellidoMaterno(registroUsuarioDTO.getApMat());
-            persona.setCorreo(registroUsuarioDTO.getCorreo());
+            persona.setApellidoPaterno(registroUsuarioDTO.getApPaterno());
+            persona.setApellidoMaterno(registroUsuarioDTO.getApMataterno());
+            persona.setCorreo(registroUsuarioDTO.getCorreoElectronico());
 
             persona.setUsuarioActualizacion(usuarioReg.getUsuario());
             persona.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
@@ -286,6 +286,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
         }
         return estado;
     }
+
+
+
 
 
     @Override

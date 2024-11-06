@@ -6,11 +6,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class RegistroUsuarioDTO {
 
     private Integer tipoDocumento;
-    private String documentoIdentidad;
-    private String nombres;
-    private String apPat;
-    private String apMat;
-    private String correo;
-    private String ambito;
-    private String sustento;
+    private String  numeroDocumento;
+    private String  nombres;
+    private String  apPaterno;
+    private String  apMataterno;
+    private String  correoElectronico;
+    private String  ambito;
+    private String  sustento;
 }
