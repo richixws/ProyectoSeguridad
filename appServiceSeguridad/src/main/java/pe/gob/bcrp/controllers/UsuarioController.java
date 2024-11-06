@@ -147,9 +147,9 @@ public class UsuarioController {
 
 
     @PutMapping("/usuario/{idUsuario}/inhabilitar")
-    public ResponseEntity<ResponseDTO<UsuarioDTO>> InhabilitarUsuario(@PathVariable("idUsuario") Integer idusuario) {
+    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> InhabilitarUsuario(@PathVariable("idUsuario") Integer idusuario) {
           log.info("INI - Eliminar Usuario | requestURL=IdUsuario");
-          ResponseDTO<UsuarioDTO> response=new ResponseDTO<>();
+          ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
           try {
               boolean eliminado=usuarioService.deleteUsuario(idusuario);
               if(!eliminado){

@@ -226,7 +226,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
             persona.setNumeroDocumento(registroUsuarioDTO.getNumeroDocumento());
             persona.setNombres(registroUsuarioDTO.getNombres());
             persona.setApellidoPaterno(registroUsuarioDTO.getApPaterno());
-            persona.setApellidoMaterno(registroUsuarioDTO.getApMataterno());
+            persona.setApellidoMaterno(registroUsuarioDTO.getApMaterno());
             persona.setCorreo(registroUsuarioDTO.getCorreoElectronico());
 
             persona.setUsuarioActualizacion(usuarioReg.getUsuario());

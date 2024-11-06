@@ -9,7 +9,7 @@ public class RegistroUsuarioDTO {
     private String  numeroDocumento;
     private String  nombres;
     private String  apPaterno;
-    private String  apMataterno;
+    private String  apMaterno;
     private String  correoElectronico;
     private String  ambito;
     private String  sustento;
