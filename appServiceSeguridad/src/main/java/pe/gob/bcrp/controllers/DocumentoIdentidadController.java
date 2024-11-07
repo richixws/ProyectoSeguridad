@@ -1,5 +1,8 @@
 package pe.gob.bcrp.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -18,12 +21,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
-@AllArgsConstructor
+@Tag(name = "REST APIs Documento Identidad",description = "REST APIs - get All Documentos Identidad")
 public class DocumentoIdentidadController {
 
 
     private IDocumentoIdentidadService documentoIdentidadService;
 
+    public DocumentoIdentidadController(IDocumentoIdentidadService documentoIdentidadService) {
+        this.documentoIdentidadService = documentoIdentidadService;
+    }
+
+    @Operation(summary = "get All Documento Identidad REST API", description = "Obtener todos los documentos de identidad de la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/documento/identidad")
     public ResponseEntity<List<DocumentoIdentidadDTO>> findAllDocumentoIdentidades() {

@@ -13,42 +13,34 @@ public interface ISistemaService {
 
     public List<UsuarioResponsableDTO> listarUsuariosResponsable();
     public List<EstadoCriticoDto> listarEstadosCriticos();
-
-
     public List<SistemaDTO> getSistemaCarousel();
-
     public SistemaResponse getAllSistemas(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String nombre, String version);
-    public Page<SistemaDTO> listarSistemasPaginated(Pageable pageable);
-    public SistemaDTO findById(Integer id);
-    public SistemaFormDTO createSistema(SistemaFormDTO sistemaDTO);
-    public SistemaFormDTO updateSistema(Integer id, SistemaFormDTO sistemaDTO);
-   // public SistemaDTO guardarSistema(SistemaDTO sistemaDTO, MultipartFile logoMain);
-    public SistemaFormDTO guardarSistemaPorParametro(
-                                                     String nombre,
-                                                     String version,
-                                                     MultipartFile multiLogoMain,
-                                                     MultipartFile multiLogoHead,
-                                                     String url,
-                                                     String usuarioResponsable,
-                                                     String usuarioResponsableAlt,
-                                                     Integer idUsuarioResponsable,
-                                                     Integer idUsuarioResponsableAlt,
-                                                     String urlExterno,
-                                                     Integer idEstadoCritico,
-                                                     String unidOrganizacional) throws IOException;
+    public SistemaFormDTO guardarSistema(
+                                         String         nombre,
+                                         String         version,
+                                         MultipartFile  multiLogoMain,
+                                         MultipartFile  multiLogoHead,
+                                         String         url,
+                                         String         usuarioResponsable,
+                                         String         usuarioResponsableAlt,
+                                         Integer        idUsuarioResponsable,
+                                         Integer        idUsuarioResponsableAlt,
+                                         String         urlExterno,
+                                         Integer        idEstadoCritico,
+                                         String         unidOrganizacional) throws IOException;
 
-    public SistemaFormDTO actualizarSistemaPorParametro(Integer idSistema,
-                                                        String nombre,
-                                                        String version,
-                                                        MultipartFile logoMain,
-                                                        MultipartFile logoHead,
-                                                        String url,
-                                                        String usuarioResponsable,
-                                                        String usuarioResponsableAlt,
-                                                        Integer idUsuarioResponsable,
-                                                        Integer idUsuarioResponsableAlt,
-                                                        String urlExterno,
-                                                        Integer idEstadoCritico,
-                                                        String unidOrganizacional)throws IOException;
-    public boolean  deleteSistemas(Integer idSistema);
+    public SistemaFormDTO actualizarSistema(Integer       idSistema,
+                                            String        nombre,
+                                            String        version,
+                                            MultipartFile logoMain,
+                                            MultipartFile logoHead,
+                                            String        url,
+                                            String        usuarioResponsable,
+                                            String        usuarioResponsableAlt,
+                                            Integer       idUsuarioResponsable,
+                                            Integer       idUsuarioResponsableAlt,
+                                            String        urlExterno,
+                                            Integer       idEstadoCritico,
+                                            String        unidOrganizacional)throws IOException;
+    public boolean  deleteSistema(Integer idSistema);
 }

@@ -1,7 +1,11 @@
 package pe.gob.bcrp.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +22,7 @@ import pe.gob.bcrp.services.IPerfilService;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
+@Tag(name = "REST APIs Perfil",description = "REST APIs - get All Perfiles, save Prefil, update Perfil, delete Perfil")
 public class PerfilController {
 
     private IPerfilService perfilService;
@@ -26,6 +31,8 @@ public class PerfilController {
         this.perfilService = perfilService;
     }
 
+    @Operation(summary = "get All Perfiles REST API", description = "Obtener la lista de todos los Perfiles de la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/perfiles")
     public ResponseEntity<PerfilResponse> getAllPerfiles(
@@ -48,6 +55,8 @@ public class PerfilController {
         }
     }
 
+    @Operation(summary = "Save Perfil REST API", description = "Guarda el Perfil en la base de datos")
+    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/perfil")
     public  ResponseEntity<ResponseDTO<PerfilDTO>> savePerfil(@Valid @RequestBody  PerfilDTO perfilDTO){
@@ -69,7 +78,8 @@ public class PerfilController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
-
+    @Operation(summary = "Update Perfil REST API", description = "Actualiza el Perfil en la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/perfil/{idPerfil}")
     public ResponseEntity<ResponseDTO<PerfilDTO>> updatePerfil(@Valid @RequestBody  PerfilDTO perfilDTO,
@@ -96,6 +106,8 @@ public class PerfilController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Delete Perfil REST API", description = "Elimina el perfil por el IdPerfil de la base de datos")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/perfil/{idPerfil}")
     public ResponseEntity<ResponseDTO<PerfilDTO>> deletePerfil(@PathVariable("idPerfil") Integer idPerfil){

@@ -41,21 +41,7 @@ public class EntidadServiceImpl implements IEntidadService {
 
     private IDocumentoIdentidadRepository documentoIdentidadRepository;
 
-    @Override
-    public List<EntidadDTO> getEntidades() {
 
-        try {
-            log.info("INI - getEntidades");
-            List<Entidad> listEntidades=entidadRepository.findByIsDeletedFalse();
-            return listEntidades.stream()
-                    .map(entidad -> modelMapper.map(entidad, EntidadDTO.class))
-                    .collect(Collectors.toList());
-
-        }catch (Exception e){
-            log.error("ERROR - getEntidades() "+e.getMessage());
-        }
-        return null;
-    }
 
     @Override
     public List<DocumentoIdentidadDTO> getAllDocumentos() {
@@ -125,18 +111,7 @@ public class EntidadServiceImpl implements IEntidadService {
         }
     }
 
-    @Override
-    public EntidadDTO findEntidadByNombre(String nombre) {
-        try {
-            log.info("INI - findEntidadByNombre()");
-           Entidad entidad=entidadRepository.findByNombre(nombre).orElseThrow(()-> new ResourceNotFoundException("Entidad no encontrado con nombre"+nombre));
-            EntidadDTO dto=modelMapper.map(entidad, EntidadDTO.class);
-            return dto;
-        }catch (ResourceNotFoundException e){
-            log.error("ERROR - getEntidadByNombre() "+e.getMessage());
-        }
-        return null;
-    }
+
 
     @Override
     public EntidadDTO saveEntidad(EntidadDTO entidadDto) {

@@ -1,5 +1,8 @@
 package pe.gob.bcrp.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +19,25 @@ import pe.gob.bcrp.services.IModuloService;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
+@Tag(name = "REST APIs Modulo",description = "REST APIs - get All Modulo, save Modulo, update Modulo, delete Modulo")
 public class ModuloController {
 
-    @Autowired
+
     private IModuloService moduloService;
 
+    public ModuloController(IModuloService moduloService ) {
+        this.moduloService = moduloService;
+    }
+
+    @Operation(summary = "get All Modulos REST API", description = "Obtener la lista de todos los Modulos de la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/modulos")
     public ResponseEntity<ModuloResponse> getAllModulos(
-            @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
-            @RequestParam(name = "pageSize", defaultValue = "10",   required = false) Integer pageSize,
-            @RequestParam(name = "sortBy", defaultValue = "nombreModulo", required = false) String sortBy,
-            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "pageNumber",  defaultValue = "0",  required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize",    defaultValue = "10",   required = false) Integer pageSize,
+            @RequestParam(name = "sortBy",      defaultValue = "nombreModulo", required = false) String sortBy,
+            @RequestParam(name = "sortOrder",   defaultValue = "asc", required = false) String sortOrder,
             @RequestParam(name = "idSistema", required = false) Integer idSistema
     ){
 
@@ -42,7 +52,8 @@ public class ModuloController {
         }
     }
 
-
+    @Operation(summary = "Save Modulo REST API", description = "Guarda el Modulo en la base de datos")
+    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/modulo")
     public  ResponseEntity<ResponseDTO<ModuloDTO>> saveModulo(@Valid @RequestBody  ModuloDTO moduloDTO){
@@ -64,6 +75,8 @@ public class ModuloController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Update Modulo REST API", description = "Actualiza el Modulo en la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/modulo/{idModulo}")
     public  ResponseEntity<ResponseDTO<ModuloDTO>> updateModulo(@Valid @RequestBody  ModuloDTO moduloDTO,
@@ -92,6 +105,8 @@ public class ModuloController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Delete Modulo REST API", description = "Elimina el Modulo por el IdModulo de la base de datos")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/modulo/{idModulo}")
     public ResponseEntity<ResponseDTO<ModuloDTO>> deleteModulo(@PathVariable("idModulo") Integer idModulo){

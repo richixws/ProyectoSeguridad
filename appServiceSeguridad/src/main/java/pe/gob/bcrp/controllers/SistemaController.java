@@ -1,9 +1,11 @@
 package pe.gob.bcrp.controllers;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.auth.InvalidCredentialsException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import java.util.List;
 @Log4j2
 @RestController
 @RequestMapping("/api/v1")
+@Tag(name = "REST APIs Sistema",description = "REST APIs - get All Sistemas, save Sistema, update Sistema,delete Sistema,find AllUsuarios Responsables, find All Estados Criticos")
 public class SistemaController {
 
 
@@ -37,6 +40,8 @@ public class SistemaController {
     /**
      * Metodo Listar usuarios responsables del los Sistemas
      * **/
+    @Operation(summary = "find All Usuarios Sistema REST API", description = "Obtener la lista de los usuarios responsables del sistema de la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistema/usuarios")
     public ResponseEntity<List<UsuarioResponsableDTO>> findAllUsuariosResponsables(){
@@ -55,6 +60,8 @@ public class SistemaController {
     /**
      * Metodo Listar estados del los Sistemas
      * **/
+    @Operation(summary = "find All Estado Sistema REST API", description = "Obtener la lista de los estados del sistema de la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistema/estados")
     public ResponseEntity<List<EstadoCriticoDto>> findAllEstadosCriticos(){
@@ -73,7 +80,8 @@ public class SistemaController {
    /**
     * Metodo Listar todos los Sistemas
     * **/
-
+    @Operation(summary = "get All Sistemas REST API", description = "Obtener la lista de todos los sistemas de la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistemas")
     public ResponseEntity<SistemaResponse> getAllSistemas(
@@ -81,7 +89,6 @@ public class SistemaController {
             @RequestParam(name = "pageSize", defaultValue = "50",   required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
             @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
-            //@RequestParam(name = "codigo", required = false) String codigo,
             @RequestParam(name = "nombre", required = false) String nombre,
             @RequestParam(name = "version", required = false) String version
             ){
@@ -97,71 +104,18 @@ public class SistemaController {
     }
 
 
-
-   /**
-    * Metodo Guardar sistema
-    * **/
-   @PreAuthorize("hasRole('ADMIN')")
-   @PostMapping(value = "/sistema2")
-   public ResponseEntity<ResponseDTO<SistemaFormDTO>> guardarSistema(@Validated @RequestBody SistemaFormDTO sistemaDTO){
-        log.info("INFO - Guardar Sistema");
-        ResponseDTO<SistemaFormDTO> response=new ResponseDTO();
-        try {
-
-            SistemaFormDTO sistemaDto=sistemaService.createSistema(sistemaDTO);
-            response.setStatus(1);
-            response.setMessage("El Sistema fue guardado de manera exitosa");
-           // response.setBody(sistemaDto);
-
-        }catch (Exception e ){
-            log.error("ERROR - guardarSistema |", e.getMessage());
-            response.setStatus(0);
-            response.setMessage("Error al guardar el Sistema : "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
     /**
-     * Metodo Actualizar sistema por Id
+     * Metodo Eliminar sistema por idSistema
      * **/
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/sistema2/{id}")
-    public ResponseEntity<ResponseDTO<SistemaFormDTO>> actualizarSistema(@PathVariable Integer id, @Validated @RequestBody SistemaFormDTO sistemaDTO) {
-
-        log.info("INFO - Actualizar Sistema");
-        ResponseDTO<SistemaFormDTO> response=new ResponseDTO();
-        try {
-            SistemaFormDTO sistemaDto=sistemaService.updateSistema( id, sistemaDTO );
-            if(sistemaDto==null){
-                response.setStatus(0);
-                response.setMessage("Sistema no encontrado con id: " + id);
-                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-            }
-
-            response.setStatus(1);
-            response.setMessage("Sistema actualizado con exito");
-          //  response.setBody(sistemaDto);
-
-        }catch (Exception e){
-            log.error("ERROR - actualizarSistema |", e);
-            response.setStatus(0);
-            response.setMessage("Error al actualizar el Sistema");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return  new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    /**
-     * Metodo Eliminar sistema por id
-     * **/
+    @Operation(summary = "Elimina Sistema REST API", description = "Elimina el sistema por el Id de la base de datos")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/sistema/{idSistema}")
-    public ResponseEntity<ResponseDTO<?>> eliminarSistema(@PathVariable("idSistema") Integer idSistema) {
+    public ResponseEntity<ResponseDTO<?>> deleteSistema(@PathVariable("idSistema") Integer idSistema) {
         ResponseDTO<SistemaFormDTO> response = new ResponseDTO<>();
         log.info("INFO - Eliminar Sistema");
         try {
-            boolean eliminado = sistemaService.deleteSistemas(idSistema);
+            boolean eliminado = sistemaService.deleteSistema(idSistema);
             if (!eliminado) {
                 throw new ResourceNotFoundException("El sistema a eliminar con ID " + idSistema + " no existe");
             }else{
@@ -173,7 +127,7 @@ public class SistemaController {
         } catch (ResourceNotFoundException e) {
             log.error("ERROR - eliminarSistema No encontrado| {}", e.getMessage());
             response.setStatus(0);
-            response.setMessage(e.getMessage()); // Aquí puedes pasar el mensaje de la excepción
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("ERROR - eliminarSistema | {}", e.getMessage());
@@ -186,9 +140,11 @@ public class SistemaController {
     /**
      * Metodo Guardar sistema por parametros
      * **/
+    @Operation(summary = "Save Sistema REST API", description = "Guarda el Sistema en la base de datos")
+    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO<SistemaFormDTO>> guardarSistema(//@RequestParam @NotNull String codigo,
+    public ResponseEntity<ResponseDTO<SistemaFormDTO>> saveSistema(
                                                                       @RequestParam @NotNull String nombre,
                                                                       @RequestParam @NotNull String version,
                                                                       @RequestParam @NotNull String usuarioResponsable,
@@ -205,16 +161,16 @@ public class SistemaController {
         ResponseDTO<SistemaFormDTO> response=new ResponseDTO();
         try {
 
-            SistemaFormDTO sistemaDto=sistemaService.guardarSistemaPorParametro(nombre,version,
-                                                                                multiLogoMain,multiLogoHead,url, usuarioResponsable,
-                                                                                usuarioResponsableAlt,idUsuarioResponsable,idUsuarioResponsableAlt,
-                                                                                urlExterno,idEstadoCritico,unidOrganizacional);
+            SistemaFormDTO sistemaDto=sistemaService.guardarSistema(nombre,version,
+                                                                    multiLogoMain,multiLogoHead,url, usuarioResponsable,
+                                                                    usuarioResponsableAlt,idUsuarioResponsable,idUsuarioResponsableAlt,
+                                                                    urlExterno,idEstadoCritico,unidOrganizacional);
             response.setStatus(1);
             response.setMessage("El Sistema fue guardado de manera exitosa");
             response.setBody(sistemaDto);
 
         }catch (Exception e ){
-            log.error("ERROR - guardarSistema |", e.getMessage());
+            log.error("ERROR - guardar Sistema ", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al guardar el Sistema : "+ e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -225,10 +181,11 @@ public class SistemaController {
     /**
      * Metodo Actualizar sistema por parametros
      * **/
+    @Operation(summary = "Update Sistema REST API", description = "Actualiza el Sistema en la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO<SistemaFormDTO>> actualizarSistema(@RequestParam @NotNull Integer idSistema,
-                                                                         //@RequestParam String codigo,
+    public ResponseEntity<ResponseDTO<SistemaFormDTO>> updateSistema(@RequestParam @NotNull Integer idSistema,
                                                                          @RequestParam @NotNull String nombre,
                                                                          @RequestParam @NotNull String version,
                                                                          @RequestParam @NotNull String usuarioResponsable,
@@ -245,10 +202,10 @@ public class SistemaController {
         ResponseDTO<SistemaFormDTO> response = new ResponseDTO<>();
         try {
             // Llamar al servicio de actualización
-            SistemaFormDTO sistemaDto = sistemaService.actualizarSistemaPorParametro(idSistema, nombre, version, multiLogoMain,
-                                                                                    multiLogoHead, url,usuarioResponsable,usuarioResponsableAlt,
-                                                                                    idUsuarioResponsable,idUsuarioResponsableAlt,
-                                                                                    urlExterno,idEstadoCritico,unidOrganizacional);
+            SistemaFormDTO sistemaDto = sistemaService.actualizarSistema(idSistema, nombre, version, multiLogoMain,
+                                                                        multiLogoHead, url,usuarioResponsable,usuarioResponsableAlt,
+                                                                        idUsuarioResponsable,idUsuarioResponsableAlt,
+                                                                        urlExterno,idEstadoCritico,unidOrganizacional);
 
             response.setStatus(1);
             response.setMessage("El Sistema fue actualizado de manera exitosa");

@@ -1,7 +1,11 @@
 package pe.gob.bcrp.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +26,7 @@ import pe.gob.bcrp.services.ISistemaService;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
+@Tag(name = "REST APIs Rol",description = "REST APIs - get All Roles, save Rol, update Rol, delete Rol")
 public class RolController {
 
 
@@ -31,6 +36,8 @@ public class RolController {
         this.rolService = rolService;
     }
 
+    @Operation(summary = "get All Roles REST API", description = "Obtener la lista de todos los Roles de la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/roles")
     public ResponseEntity<RolResponse> getAllRoles(
@@ -53,6 +60,8 @@ public class RolController {
         }
     }
 
+    @Operation(summary = "Save Rol REST API", description = "Guarda el Rol en la base de datos")
+    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/rol")
     public  ResponseEntity<ResponseDTO<RolFormDTO>> saveRol(@Valid @RequestBody RolFormDTO rolDto){
@@ -74,6 +83,8 @@ public class RolController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Update Rol REST API", description = "Actualiza el Rol en la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/rol/{idRol}")
     public ResponseEntity<ResponseDTO<RolFormDTO>> updateRol(@Valid @RequestBody  RolFormDTO rolDTO,
@@ -101,7 +112,8 @@ public class RolController {
     }
 
 
-
+    @Operation(summary = "Delete Rol REST API", description = "Elimina el rol por el IdRol de la base de datos")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/rol/{idRol}")
     public ResponseEntity<ResponseDTO<RolDTO>> deleteRol(@PathVariable("idRol") Integer idRol){

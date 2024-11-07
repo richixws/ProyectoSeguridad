@@ -1,5 +1,8 @@
 package pe.gob.bcrp.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,16 +19,20 @@ import java.util.List;
 @Log4j2
 @RestController
 @RequestMapping("/api/v1")
+@Tag(name = "REST APIs Carousel",description = "REST APIs - find All Carousel Sistemas")
 public class CarouselSistemas {
 
-
-    @Autowired
     private ISistemaService sistemaService;
 
+    public CarouselSistemas(ISistemaService sistemaService) {
+        this.sistemaService = sistemaService;
+    }
 
+    @Operation(summary = "find All Carousel REST API", description = "Obtener todos los Sistemas de carousel de la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/catalogo/sistemas")
-    public ResponseEntity<List<SistemaDTO>> listarCarouselSistemas() {
+    public ResponseEntity<List<SistemaDTO>> findAllCarouselSistemas() {
         log.info("Listando lista de catalogo de sistemas");
         try {
 

@@ -66,7 +66,7 @@ public class SistemaServiceImpl implements ISistemaService {
             return listUserResp;
 
         } catch (Exception e) {
-            log.error(" ERROR - Service listarUsuariosResponsable "+e.getMessage());
+            log.error(" ERROR - Service listarUsuariosResponsable {}", e.getMessage());
             e.printStackTrace();
             return new ArrayList<>();
         }
@@ -177,83 +177,10 @@ public class SistemaServiceImpl implements ISistemaService {
         }
     }
 
-    @Override
-    public Page<SistemaDTO> listarSistemasPaginated(Pageable pageable) {
-        log.info( "INI -listarSistemasPaginated ");
-        try {
-           Page<Sistema> pageSistema=   sistemaRepository.findAll(pageable);
-           Page<SistemaDTO> pageSistemaDTO= modelMapper.map(pageSistema, Page.class);
-           return pageSistemaDTO;
-
-        }catch (Exception e){
-            log.error("ERROR -  listarSistemas"+e.getMessage());
-        }
-        return null;
-    }
 
     @Override
-    public SistemaDTO findById(Integer id) {
-
-        Sistema sistema=sistemaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("sitema no encontrado"));
-        SistemaDTO sistemaDTO=new SistemaDTO();
-        return sistemaDTO;
-    }
-
-
-
-    @Override
-    public SistemaFormDTO createSistema(SistemaFormDTO sistemaDTO) {
-
-        log.info("INI -saveSistemas ");
-        ResponseDTO<SistemaFormDTO> response = new ResponseDTO<SistemaFormDTO>();
-        try {
-
-            Sistema newSistema=modelMapper.map(sistemaDTO,Sistema.class);
-            Sistema saveSistema=sistemaRepository.save(newSistema);
-            SistemaFormDTO sistemaDto=modelMapper.map(saveSistema, SistemaFormDTO.class);
-            return sistemaDTO;
-
-        }catch (Exception e){
-            log.error("ERROR - saveSistemas()"+e.getMessage());
-        }
-        return null;
-    }
-
-
-    @Override
-    public SistemaFormDTO updateSistema(Integer id, SistemaFormDTO sistemaDTO ) {
-
-        log.info("INI -updateSistemas() ");
-        try {
-
-            Sistema sistema = sistemaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Sistema no encontrado con id :" + id));
-
-            sistema.setNombre(sistemaDTO.getNombre());
-            sistema.setUrl(sistemaDTO.getUrl());
-            sistema.setLogoMain(sistemaDTO.getLogoMain());
-            sistema.setVersion(sistemaDTO.getVersion());
-            sistema.setCodigo(sistemaDTO.getCodigo());
-            sistema.setLogoHead(sistemaDTO.getLogoHead());
-
-            //Sistema newSistema=modelMapper.map(sistemaDTO,Sistema.class);
-            Sistema updSistema = sistemaRepository.save(sistema);
-            SistemaFormDTO updateSistema = modelMapper.map(updSistema, SistemaFormDTO.class);
-            return updateSistema;
-        } catch (ResourceNotFoundException e) {
-            log.error("ERROR - eliminarSistema No encontrado| {}", e.getMessage());
-            throw e;
-        }catch (Exception e){
-          log.error("ERROR - updateSistemas()"+e.getMessage());
-          throw new RuntimeException("Error al actualizar el sistema", e);
-        }
-
-    }
-
-
-
-    @Override
-    public boolean deleteSistemas(Integer idSistema) {
-        log.info("INI -deleteSistemas() ");
+    public boolean deleteSistema(Integer idSistema) {
+        log.info("INI -deleteSistema() ");
         boolean estado=false;
         try {
             Usuario usuario=util.getUsuario();
@@ -274,7 +201,6 @@ public class SistemaServiceImpl implements ISistemaService {
                 sistema.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 sistema.setUsuarioEliminacion(usuario.getUsuario());
                 sistemaRepository.save(sistema);
-                //sistemaRepository.deleteById(id);
                 estado=true;
             }
 
@@ -291,19 +217,20 @@ public class SistemaServiceImpl implements ISistemaService {
 
 
     @Override
-    public SistemaFormDTO guardarSistemaPorParametro(
-                                                     String nombre,
-                                                     String version,
-                                                     MultipartFile multiLogoMain,
-                                                     MultipartFile multiLogoHead,
-                                                     String url,
-                                                     String usuarioResponsable,
-                                                     String usuarioResponsableAlt,
-                                                     Integer idUsuarioResponsable,
-                                                     Integer idUsuarioResponsableAlt,
-                                                     String urlExterno,
-                                                     Integer idestadoCritico,
-                                                     String unidOrganizacional) throws IOException {
+    public SistemaFormDTO guardarSistema(
+                                         String nombre,
+                                         String version,
+                                         MultipartFile multiLogoMain,
+                                         MultipartFile multiLogoHead,
+                                         String url,
+                                         String usuarioResponsable,
+                                         String usuarioResponsableAlt,
+                                         Integer idUsuarioResponsable,
+                                         Integer idUsuarioResponsableAlt,
+                                         String urlExterno,
+                                         Integer idestadoCritico,
+                                         String unidOrganizacional) throws IOException {
+        log.info("INI - guardarSistema() ");
         try {
 
             Usuario usuario=util.getUsuario();
@@ -353,20 +280,21 @@ public class SistemaServiceImpl implements ISistemaService {
     }
 
     @Override
-    public SistemaFormDTO actualizarSistemaPorParametro(Integer idSistema,
-                                                        String nombre,
-                                                        String version,
-                                                        MultipartFile logoMain,
-                                                        MultipartFile logoHead,
-                                                        String url,
-                                                        String usuarioResponsable,
-                                                        String usuarioResponsableAlt,
-                                                        Integer idUsuarioResponsable,
-                                                        Integer idUsuarioResponsableAlt,
-                                                        String urlExterno,
-                                                        Integer idestadoCritico,
-                                                        String unidOrganizacional
-                                                        ) throws IOException {
+    public SistemaFormDTO actualizarSistema(Integer idSistema,
+                                            String nombre,
+                                            String version,
+                                            MultipartFile logoMain,
+                                            MultipartFile logoHead,
+                                            String url,
+                                            String usuarioResponsable,
+                                            String usuarioResponsableAlt,
+                                            Integer idUsuarioResponsable,
+                                            Integer idUsuarioResponsableAlt,
+                                            String urlExterno,
+                                            Integer idestadoCritico,
+                                            String unidOrganizacional
+                                            ) throws IOException {
+        log.info("INI - actualizarSistema() ");
         try {
             Usuario usuario=util.getUsuario();//obtener usuario del sistema
 
@@ -375,7 +303,6 @@ public class SistemaServiceImpl implements ISistemaService {
             if(sistemaExistente!=null) {
 
                 // 2. Actualizar campos del sistema
-                //sistemaExistente.setCodigo(codigo);
                 sistemaExistente.setNombre(nombre);
                 sistemaExistente.setVersion(version);
                 sistemaExistente.setUrl(url);
@@ -427,7 +354,7 @@ public class SistemaServiceImpl implements ISistemaService {
             }
 
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - actualizarSistemaPorParametro()"+e.getMessage());
+            log.error("ERROR - actualizarSistema()"+e.getMessage());
             throw e;
         }
 

@@ -39,7 +39,7 @@ public class OpenApiConfig {
         // Datos de la API
         License mitLicense = new License()
                 .name("Licencia MIT")
-                .url("https://choosealicense.com/licenses/mit/");
+                .url("https://bcrp.gob.pe/license");
 
         Info info = new Info()
                 .title("Documentación de App Seguridad BCRP")

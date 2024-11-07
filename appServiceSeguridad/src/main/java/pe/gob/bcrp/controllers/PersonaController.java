@@ -1,8 +1,12 @@
 package pe.gob.bcrp.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,18 +21,24 @@ import pe.gob.bcrp.services.IPersonaService;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
-@AllArgsConstructor
+@Tag(name = "REST APIs Persona",description = "REST APIs - get All Personas, save Persona, update Persona, delete Persona")
 public class PersonaController {
 
     private IPersonaService personaService;
 
+    public  PersonaController(IPersonaService personaService) {
+        this.personaService = personaService;
+    }
+
+    @Operation(summary = "get All Personas REST API", description = "Obtener la lista de todos las personas de la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/personas")
     public ResponseEntity<PersonaResponse> getAllPersonas(
-            @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
-            @RequestParam(name = "pageSize", defaultValue = "50",   required = false) Integer pageSize,
-            @RequestParam(name = "sortBy", defaultValue = "nombres", required = false) String sortBy,
-            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "pageNumber",  defaultValue = "0",       required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize",    defaultValue = "50",      required = false) Integer pageSize,
+            @RequestParam(name = "sortBy",      defaultValue = "nombres", required = false) String sortBy,
+            @RequestParam(name = "sortOrder",   defaultValue = "asc",     required = false) String sortOrder,
             @RequestParam(name = "nombre", required = false) String nombre){
        log.info(" INI - getAllPersonas | requestUrl=personas");
        try {
@@ -40,9 +50,11 @@ public class PersonaController {
        }
     }
 
+    @Operation(summary = "Save Persona REST API", description = "Guarda la persona en la base de datos")
+    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/persona")
-    public ResponseEntity<ResponseDTO<PersonaDTO>> addPersona(@Valid @RequestBody PersonaDTO personaDTO) {
+    public ResponseEntity<ResponseDTO<PersonaDTO>> savePersona(@Valid @RequestBody PersonaDTO personaDTO) {
          log.info(" INI - addPersona | requestUrl=persona");
          ResponseDTO<PersonaDTO> response=new ResponseDTO<>();
         try {
@@ -58,6 +70,8 @@ public class PersonaController {
         }
     }
 
+    @Operation(summary = "Update Persona REST API", description = "Actualiza la Persona en la base de datos")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/persona/{idPersona}")
     public ResponseEntity<ResponseDTO<PersonaDTO>> updatePersona(@PathVariable Integer idPersona,
@@ -80,6 +94,8 @@ public class PersonaController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @Operation(summary = "Delete Persona REST API", description = "Elimina la persona por el IdPersona de la base de datos")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/persona/{idPersona}")
     public ResponseEntity<ResponseDTO<PersonaDTO>> deletePersona(@PathVariable Integer idPersona) {
         ResponseDTO<PersonaDTO> response=new ResponseDTO<>();

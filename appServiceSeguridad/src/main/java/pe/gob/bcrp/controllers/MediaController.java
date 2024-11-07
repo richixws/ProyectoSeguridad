@@ -1,6 +1,7 @@
 package pe.gob.bcrp.controllers;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
 
+@Log4j2
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/media")
