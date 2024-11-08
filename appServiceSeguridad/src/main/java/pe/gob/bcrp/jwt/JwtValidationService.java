@@ -56,53 +56,57 @@ public class JwtValidationService {
     @PostConstruct
     public void init() {
         try {
-            // Obtener la clave pública de Keycloak al iniciar el servicio
-           // String publicKeyPEM = getKeycloakPublicKey();
-           // publicKey = parsePublicKey(publicKeyPEM);
-            publicKey = getKeycloakPublicKey();
+            publicKey = null; // Inicialización diferida al validar el token
         } catch (Exception e) {
             log.error("Error initializing JWT validation service", e);
         }
     }
 
     public boolean validateToken(String token) {
-
         try {
+            // Decodifica el token para extraer el `kid`
+            DecodedJWT jwt = JWT.decode(token);
+            String kid = jwt.getKeyId();
+
+            // Cargar y obtener la clave pública correcta del `JWKSet` usando el `kid`
+            publicKey = getKeycloakPublicKey(kid);
+
             // Crear el algoritmo RSA256 con la llave pública
-            Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
+            Algorithm algorithm = Algorithm.RSA256(publicKey, null);
+
             // Crear el verificador del token
             JWTVerifier verifier = JWT.require(algorithm)
-                                      .withIssuer(this.keycloakIssuerUrl)
-                                      .build();
+                    .withIssuer(this.keycloakIssuerUrl)
+                    .build();
+
             // Verificar y decodificar el token
-            DecodedJWT jwt = verifier.verify(token);
-            //información adicional del token
+            verifier.verify(token);
             String subject = jwt.getSubject();
-            log.info("Token valido para el usuario: ", subject);
+            log.info("Token válido para el usuario: {}", subject);
             return true;
 
-        } catch (JWTVerificationException ex) { // Esto captura el resto de errores de verificación
+        } catch (JWTVerificationException ex) {
             throw new SeguridadAPIException(HttpStatus.BAD_REQUEST, "Invalid JWT token");
         } catch (SeguridadAPIException ex) {
             throw new SeguridadAPIException(HttpStatus.BAD_REQUEST, "Expired JWT token");
         } catch (IllegalArgumentException ex) {
             throw new SeguridadAPIException(HttpStatus.BAD_REQUEST, "JWT claims string is empty.");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private RSAPublicKey getKeycloakPublicKey() throws Exception {
-        // URL del JWKSet de Keycloak
-        //String jwkSetUrl = keycloakServerUrl + "/realms/" + realm + "/protocol/openid-connect/certs";
-        // Obtener el JWKSet desde Keycloak
+    private RSAPublicKey getKeycloakPublicKey(String kid) throws Exception {
+        // Cargar el conjunto de claves (JWKSet) de Keycloak
         JWKSet jwkSet = JWKSet.load(new URL(urlCerts));
-        // Obtener el primer JWK y convertirlo a RSAPublicKey
-        JWK jwk = jwkSet.getKeys().get(0);
-        // Asegúrate de que es una clave RSA
-        if (jwk instanceof RSAKey) {
-            return ((RSAKey) jwk).toRSAPublicKey();
-        } else {
-            throw new IllegalArgumentException("No RSA key found in JWKSet");
-        }
+
+        // Buscar la clave que coincide con el `kid`
+        JWK jwk = jwkSet.getKeys().stream()
+                .filter(key -> key.getKeyID().equals(kid) && key instanceof RSAKey)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No matching RSA key found in JWKSet"));
+
+        return ((RSAKey) jwk).toRSAPublicKey();
     }
 
 

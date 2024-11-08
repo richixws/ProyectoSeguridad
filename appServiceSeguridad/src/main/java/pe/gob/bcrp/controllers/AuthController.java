@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.response.CaptchaResponse;
 import pe.gob.bcrp.dto.response.TokenResponse;
+import pe.gob.bcrp.excepciones.SeguridadAPIException;
 import pe.gob.bcrp.jwt.JwtService;
 import pe.gob.bcrp.jwt.JwtValidationService;
 import pe.gob.bcrp.jwt.KeycloakRestService;
@@ -111,23 +112,27 @@ public class AuthController {
    public ResponseEntity<?> ValidarToken(@RequestHeader("Authorization") String authHeader) {
 
         log.info("INI - validarToken");
+        String token = authHeader.replace("Bearer ", "");
+        Map<String, String> response = new HashMap<>();
         try {
-            String token = authHeader.replace("Bearer ", "");
-
             boolean isValid = jwtValidationService.validateToken(token);
 
-            Map<String, String> response = new HashMap<>();
             if (isValid) {
                 response.put("message","Token valido");
                 return ResponseEntity.ok(response);
             } else {
-                response.put("message","Token Invalido o Expirado");
-                return ResponseEntity.badRequest().body(response);
+                response.put("message", "Token Invalido o Expirado");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
 
+        } catch (SeguridadAPIException e) {
+            log.error("Token Invalido o Expirado: {}", e.getMessage());
+            response.put("message", "Token Invalido o Expirado");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (Exception e) {
-            log.error("Error en el validarToken", e.getMessage());
-            throw new RuntimeException(e);
+            log.error("Error en validarToken: {}", e.getMessage());
+            response.put("message", "Error al procesar el token");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
 
     }
