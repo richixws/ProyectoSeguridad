@@ -26,7 +26,7 @@ import java.security.interfaces.RSAPublicKey;
 @Slf4j
 public class JwtValidationService {
 
-    @Value("${kecloak.issuer}")
+    @Value("${keycloak.issuer}")
     private String keycloakIssuerUrl;
 
     @Value("${keycloak.token-uri}")
@@ -38,8 +38,8 @@ public class JwtValidationService {
     @Value("${keycloak.client-id}")
     private String clientId;
 
-    @Value("${keycloak.client-secret}")
-    private String clientSecret;
+    //@Value("${keycloak.client-secret}")
+    //private String clientSecret;
 
     private RestTemplate restTemplate;
 
@@ -117,7 +117,7 @@ public class JwtValidationService {
         body.add("grant_type", "refresh_token");
         body.add("refresh_token", refreshToken);
         body.add("client_id", clientId);
-        body.add("client_secret", clientSecret);
+        //body.add("client_secret", clientSecret);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
         //String url = keycloakServerUrl + "/realms/" + realm + TOKEN_ENDPOINT;
@@ -125,31 +125,6 @@ public class JwtValidationService {
         ResponseEntity<TokenResponse> response = restTemplate.postForEntity(urlToken, request, TokenResponse.class);
         return response.getBody();
     }
-
-
-
-/**
-    private String getKeycloakPublicKey() {
-        String url = keycloakServerUrl + "/realms/" + realm + "/protocol/openid-connect/certs";
-        JsonNode response = restTemplate.getForObject(url, JsonNode.class);
-
-        // Obtener la clave pública del response
-        return response.get("keys").get(0).get("n").asText();
-    }
-
-    private RSAPublicKey parsePublicKey(String publicKeyPEM) throws Exception {
-        // Implementación de la conversión de PEM a RSAPublicKey
-        // Este es un ejemplo simplificado, deberías usar una biblioteca como Bouncy Castle
-       // byte[] publicKeyDER = Base64.getDecoder().decode(publicKeyPEM);
-        byte[] publicKeyDER = Base64.getUrlDecoder().decode(publicKeyPEM);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return (RSAPublicKey) keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyDER));
-    }
-
-  **/
-
-
-
 
 
 

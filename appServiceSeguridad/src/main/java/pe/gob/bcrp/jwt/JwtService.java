@@ -11,7 +11,7 @@ import java.net.URL;
 @Service
 public class JwtService {
 	
-	@Value("${keycloak.jwk-set-uri}")
+/**	@Value("${keycloak.jwk-set-uri}")
 	private String jwksUrl;
 	@Value("${keycloak.certs-id}")
 	private String certsId;
@@ -23,5 +23,5 @@ public class JwtService {
        Jwk get = urlJwkProvider.get(certsId.trim());  
         return get;
     }
-	
+  **/
 }

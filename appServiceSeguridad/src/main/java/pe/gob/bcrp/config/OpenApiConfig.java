@@ -23,11 +23,11 @@ public class OpenApiConfig {
         //http://localhost:8081/v3/api-docs
         //http://localhost:8081/swagger-ui/index.html
         Server devServer = new Server();
-        devServer.setUrl("http://localhost:8081");
+        devServer.setUrl("http://172.30.107.212:1025");
         devServer.setDescription("URL del servidor de pruebas");
 
         Server prodServer = new Server();
-        prodServer.setUrl("http://3.135.87.207");
+        prodServer.setUrl("http://172.30.107.212:1025");
         prodServer.setDescription("URL del servidor de producción");
 
         // Datos de contacto

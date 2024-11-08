@@ -24,7 +24,7 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    @Value("${kecloak.issuer}")
+    @Value("${keycloak.issuer}")
     private String keycloakIssuerUrl;
 
     @Bean
@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         //.requestMatchers("/api/v1/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/v1/login").permitAll()
+                        .requestMatchers("/api/v1/oauth/login").permitAll()
                         .requestMatchers("/api/v1/oauth/validarToken").permitAll()
                         .requestMatchers("/api/v1/oauth/refreshToken").permitAll()
                         .requestMatchers("/api/v1/oauth/logout").permitAll()

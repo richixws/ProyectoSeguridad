@@ -3,6 +3,9 @@ package pe.gob.bcrp.controllers;
 
 import cn.apiclub.captcha.Captcha;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import lombok.AllArgsConstructor;
@@ -27,9 +30,10 @@ import java.util.Map;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1")
+@Tag(name = "REST APIs Auth",description = "REST APIs - login, Validar Token, refresh Token, cerrar Sesion, getCaptcha")
 public class AuthController {
 
-   // @Autowired
+    @Autowired
     private IUsuarioService usuariosService;
 
     @Autowired
@@ -38,22 +42,18 @@ public class AuthController {
    @Autowired
     private KeycloakRestService keycloakRestService;
 
-   // @Value("${keycloak.client-user}")
-   // private String username;
 
-  //  @Value("${keycloak.client-password}")
-  //  private String contrasena;
     @Autowired
     private JwtService jwtService;
 
     @Autowired
     private JwtValidationService jwtValidationService;
 
-    public AuthController(IUsuarioService usuariosService){
-        this.usuariosService = usuariosService;
-    }
 
-    @PostMapping(value = "/login")
+
+    @Operation(summary = "Login REST API", description = "Inicio de seccion del usuario a la aplicacion")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @PostMapping(value = "oauth/login")
     public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
 
         log.info("INI - login | requestURL=login");
@@ -65,17 +65,6 @@ public class AuthController {
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }**/
 
-
-            /**if (jwtValidationService.verify(dto.getCaptchaToken()).isSuccess()) {
-                return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
-                        .body(Map.of("mensaje", "Captcha inválido"));
-            }**/
-
-             /**  final boolean isValidCaptcha = jwtValidationService.validateCaptcha(dto.getCaptchaResponse());
-            if (!isValidCaptcha) {
-                log.info("Throwing forbidden exception as the captcha is invalid.");
-                throw new ForbiddenException("INVALID_CAPTCHA");
-            }**/
 
             UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
 
@@ -102,7 +91,9 @@ public class AuthController {
             response.put("id", String.valueOf(usuarioDTO.getIdUsuario()));
             response.put("nombre", usuarioDTO.getPersona().getNombres().concat(" "+usuarioDTO.getPersona().getApellidoPaterno()));
             response.put("token", jwt.getAccess_token());
+            response.put("expires_in", String.valueOf(jwt.getExpires_in()));
             response.put("refreshToken",jwt.getRefresh_token());
+            response.put("refresh_expires_in", String.valueOf(jwt.getRefresh_expires_in()));
             return ResponseEntity.ok(response);
 
 
@@ -114,69 +105,83 @@ public class AuthController {
 
     }
 
-
+    @Operation(summary = "Validar Token REST API", description = "Validar token de acceso")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("oauth/validarToken")
    public ResponseEntity<?> ValidarToken(@RequestHeader("Authorization") String authHeader) {
-   // public String ValidarToken(@RequestParam("Authorization") String authHeader) {
-        // El token viene en el formato "Bearer <token>", así que lo extraemos
-        String token = authHeader.replace("Bearer ", "");
 
-        boolean isValid = jwtValidationService.validateToken(token);
-
-        Map<String, String> response = new HashMap<>();
-        if (isValid) {
-            response.put("message","Token valido");
-            return ResponseEntity.ok(response);
-        } else {
-            response.put("message","Token Invalido o Expirado");
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
-
-
-    @PostMapping("oauth/refreshToken")
-    public ResponseEntity<TokenResponse> refreshToken(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refresh_token");
-         if(refreshToken ==null){
-            return new ResponseEntity<TokenResponse>(HttpStatus.FORBIDDEN);
-         }
-         TokenResponse newTokens = jwtValidationService.refreshAccessToken(refreshToken);
-        return ResponseEntity.ok(newTokens);
-    }
-
-
-
-    @PostMapping("oauth/logout")
-    public ResponseEntity<?> cerrarSesion(@RequestParam("refreshToken") String refreshToken) {
-        if (refreshToken == null || refreshToken.isEmpty()) {
-            return new ResponseEntity<>("Refresh token was expired or missing. Please make a new signin request",HttpStatus.FORBIDDEN);
-        }
-
+        log.info("INI - validarToken");
         try {
-            // Llamar a Keycloak para revocar el refresh token
-            ResponseEntity<?> estado = keycloakRestService.logout(refreshToken);
-            return estado;
+            String token = authHeader.replace("Bearer ", "");
+
+            boolean isValid = jwtValidationService.validateToken(token);
+
+            Map<String, String> response = new HashMap<>();
+            if (isValid) {
+                response.put("message","Token valido");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("message","Token Invalido o Expirado");
+                return ResponseEntity.badRequest().body(response);
+            }
 
         } catch (Exception e) {
-            log.error("Error during logout", e);
-            return new ResponseEntity<>("An error occurred while trying to logout", HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Error en el validarToken", e.getMessage());
+            throw new RuntimeException(e);
         }
+
     }
 
-    /**@GetMapping("oauth/captcha")
-    public ResponseEntity<CaptchaResponse> getCaptcha() {
+    @Operation(summary = "Refresh Token REST API", description = "Refresh token de acceso")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @PostMapping("oauth/refreshToken")
+    public ResponseEntity<TokenResponse> refreshToken(@RequestBody Map<String, String> request) {
 
-        Captcha captcha = CaptchaServiceGenerate.createCaptcha(240, 70);
-        String encodedCaptcha = CaptchaServiceGenerate.encodeCaptcha(captcha);
+        log.info("INI - refreshToken");
+        try {
+            String refreshToken = request.get("refresh_token");
+            if(refreshToken ==null){
+                return new ResponseEntity<TokenResponse>(HttpStatus.FORBIDDEN);
+            }
+            TokenResponse newTokens = jwtValidationService.refreshAccessToken(refreshToken);
+            return ResponseEntity.ok(newTokens);
+        } catch (Exception e) {
+            log.error("Error en el refreshToken", e.getMessage());
+            throw new RuntimeException(e);
+        }
 
-        CaptchaResponse response = new CaptchaResponse();
-        response.setCaptchaImage(encodedCaptcha);
-        response.setHiddenCaptcha(captcha.getAnswer());
+    }
 
-        return ResponseEntity.ok(response);
 
-    }**/
+    @Operation(summary = "logout REST API", description = "logout de acceso")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @PostMapping("oauth/logout")
+    public ResponseEntity<?> cerrarSesion(@RequestParam("refreshToken") String refreshToken) {
 
+        log.error("INI - logout");
+        try {
+            if (refreshToken == null || refreshToken.isEmpty()) {
+                return new ResponseEntity<>("Refresh token was expired or missing. Please make a new signin request",HttpStatus.FORBIDDEN);
+            }
+
+            try {
+                // Llamar a Keycloak para revocar el refresh token
+                ResponseEntity<?> estado = keycloakRestService.logout(refreshToken);
+                return estado;
+
+            } catch (Exception e) {
+                log.error("Error during logout", e);
+                return new ResponseEntity<>("An error occurred while trying to logout", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            log.error("Error during logout", e);
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Operation(summary = "Captcha REST API", description = "obtener captcha")
+    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("oauth/captcha")
     public ResponseEntity<CaptchaResponse> getCaptcha() {
 
