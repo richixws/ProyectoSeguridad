@@ -51,7 +51,7 @@ public class PerfilController {
 
         }catch (Exception e){
             log.error("ERROR - getAllPerfiles | requestURL=perfiles{}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -73,7 +73,7 @@ public class PerfilController {
             log.error("ERROR - guardarPerfil | requestURL=perfil{}", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al guardar el Perfil "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -101,7 +101,7 @@ public class PerfilController {
             log.error("ERROR - update Perfil | requestURL=perfil{}", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al actualizar el perfil "+e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -132,7 +132,7 @@ public class PerfilController {
             log.error("ERROR - eliminarPerfil() {}", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al eliminar el perfil "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 

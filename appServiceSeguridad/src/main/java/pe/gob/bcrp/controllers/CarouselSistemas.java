@@ -41,7 +41,7 @@ public class CarouselSistemas {
 
         }catch (Exception e) {
             log.error(" ERROR - listar sistemas"+e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
 
         }
 

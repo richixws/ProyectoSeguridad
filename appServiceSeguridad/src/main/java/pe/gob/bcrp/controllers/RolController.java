@@ -56,7 +56,7 @@ public class RolController {
 
         }catch (Exception e){
             log.error("ERROR - getAllRoles | requestURL=roles{}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -78,7 +78,7 @@ public class RolController {
             log.error("ERROR - saveRol | requestURL=rol{}", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al guardar el Rol "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -88,7 +88,7 @@ public class RolController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/rol/{idRol}")
     public ResponseEntity<ResponseDTO<RolFormDTO>> updateRol(@Valid @RequestBody  RolFormDTO rolDTO,
-                                                                @PathVariable("idRol") Integer idRol){
+                                                             @PathVariable("idRol") Integer idRol){
         log.info("INI - updateRol | requestURL=rol");
         ResponseDTO<RolFormDTO> response=new ResponseDTO<>();
         try {
@@ -106,7 +106,7 @@ public class RolController {
             log.equals("ERROR - updateRol | requestURL=rol"+e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al actualizar el  "+e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -138,7 +138,7 @@ public class RolController {
             log.error("ERROR - deleteRol() {}", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al eliminar Rol: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 }

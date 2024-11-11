@@ -59,7 +59,7 @@ public class OpcionController {
 
         }catch (Exception e){
             log.error("ERROR - getAllOpciones | requestURL=opciones{}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -82,11 +82,17 @@ public class OpcionController {
             response.setMessage("El Modulo fue guardado de manera exitosa");
             //response.setBody(entidadDTO);
 
+        }catch (ResourceNotFoundException e) {
+            log.error("ERROR - Opcion No encontrado " + e.getMessage());
+            response.setStatus(0);
+            response.setMessage("Error al Guardar la Opcion " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
         }catch (Exception e){
             log.error("ERROR - guardarEntidad | requestURL=entidadDto");
             response.setStatus(0);
-            response.setMessage("Error al guardar el Modulo "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage("Error al guardar la Opcion "+ e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -107,14 +113,14 @@ public class OpcionController {
         }catch ( ResourceNotFoundException e) {
             log.error("ERROR - update Opcion No encontrado " + e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar la opcion "+e.getMessage());
+            response.setMessage("Error al actualizar opcion "+e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         }catch (Exception e){
             log.equals("ERROR - update Opcion | requestURL=opcion"+e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar la opcion "+e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage("Error al actualizar opcion "+e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -150,7 +156,7 @@ public class OpcionController {
             log.error("ERROR - eliminarOpcion() "+e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al eliminar Opcion: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 }

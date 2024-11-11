@@ -73,7 +73,7 @@ public class SistemaController {
 
         } catch (Exception e) {
             log.error("ERROR - listado de estados criticos" +e.getMessage());
-            throw new RuntimeException(e);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -99,7 +99,7 @@ public class SistemaController {
             return new ResponseEntity<>(sistemaResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - listarEntidades | requestURL=entidades");
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -133,7 +133,7 @@ public class SistemaController {
             log.error("ERROR - eliminarSistema | {}", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al eliminar el sistema");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -173,13 +173,13 @@ public class SistemaController {
             log.error("ERROR - guardar Sistema ", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al guardar el Sistema : "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     /**
-     * Metodo Actualizar sistema por parametros
+     * Metodo Actualizar sistema
      * **/
     @Operation(summary = "Update Sistema REST API", description = "Actualiza el Sistema en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
@@ -221,7 +221,7 @@ public class SistemaController {
             log.error("ERROR - actualizarSistema | ", e);
             response.setStatus(0);
             response.setMessage("Error al actualizar el Sistema: " + e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);

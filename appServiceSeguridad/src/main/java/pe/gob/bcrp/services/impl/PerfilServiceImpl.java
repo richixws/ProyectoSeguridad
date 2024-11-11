@@ -101,9 +101,9 @@ public class PerfilServiceImpl implements IPerfilService {
 
             //Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no encontrado sistema"));
             //Modulo modulo = moduloRepository.findById(opcionDto.getIdModulo()).orElseThrow(()-> new ResourceNotFoundException("no encontrado modulo"));
-           Rol rol= rolRepository.findById(perfilDTO.getIdRol()).orElseThrow(()-> new ResourceNotFoundException("no encontrado rol"));
-           Sistema sistema=sistemaRepository.findById(perfilDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no encontrado sistema"));
-           Entidad entidad=entidadRepository.findById(perfilDTO.getIdEntidad()).orElseThrow(()-> new ResourceNotFoundException("no encontrado entidad"));
+           Rol rol= rolRepository.findById(perfilDTO.getIdRol()).orElseThrow(()-> new ResourceNotFoundException("Rol no encontrado"));
+           Sistema sistema=sistemaRepository.findById(perfilDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("Sistema no encontrado"));
+           Entidad entidad=entidadRepository.findById(perfilDTO.getIdEntidad()).orElseThrow(()-> new ResourceNotFoundException("Entidad no encontrado"));
            rol.setSistema(sistema);
            perfil.setRol(rol);
            perfil.setEntidad(entidad);
@@ -114,10 +114,10 @@ public class PerfilServiceImpl implements IPerfilService {
            return perfilDtoNew;
 
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - updatePerfil() "+e.getMessage());
+            log.error("ERROR -Service save Perfil() "+e.getMessage());
             throw e;
         }catch (Exception e) {
-            log.error( "ERROR - savePerfil() "+e.getMessage() );
+            log.error( "ERROR -Service savePerfil() "+e.getMessage() );
             throw  new RuntimeException("Error al guardar perfil"+e.getMessage());
         }
 
@@ -130,7 +130,7 @@ public class PerfilServiceImpl implements IPerfilService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(()-> new ResourceNotFoundException("no encontrado perfil "+idPerfil));
+            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(()-> new ResourceNotFoundException("Perfil no encontrado"+idPerfil));
 
             //Modulo modulo=moduloRepository.findById(opcionDto.getIdModulo())
             //        .orElseThrow(()-> new ResourceNotFoundException("no encontrado modulo a actualizar " + opcionDto.getIdModulo()));
@@ -154,10 +154,10 @@ public class PerfilServiceImpl implements IPerfilService {
             return perfilDtoUpd;
 
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - updatePerfil() "+e.getMessage());
+            log.error("ERROR -Service update Perfil() "+e.getMessage());
             throw e;
         }catch (Exception e) {
-            log.error( "ERROR - updatePerfil() "+e.getMessage() );
+            log.error( "ERROR -Service updatePerfil() "+e.getMessage() );
             throw new RuntimeException("Error al actualizar perfil"+e.getMessage());
         }
 
@@ -184,7 +184,7 @@ public class PerfilServiceImpl implements IPerfilService {
 
 
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - deletePerfil() "+e.getMessage());
+            log.error("ERROR - Service deletePerfil() "+e.getMessage());
             e.printStackTrace();
             estado=false;
         }

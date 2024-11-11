@@ -6,24 +6,21 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScanBeanDefinitionParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pe.gob.bcrp.controllers.UsuarioController;
 import pe.gob.bcrp.dto.*;
-import pe.gob.bcrp.dto.response.EntidadResponse;
 import pe.gob.bcrp.dto.response.UsuarioResponse;
+import pe.gob.bcrp.dto.usuarioDTO.RegistroCreateUsuarioDTO;
+import pe.gob.bcrp.dto.usuarioDTO.RegistroUsuarioDTO;
+import pe.gob.bcrp.dto.usuarioDTO.UsuarioFormDTO;
 import pe.gob.bcrp.entities.DocumentoIdentidad;
-import pe.gob.bcrp.entities.Entidad;
 import pe.gob.bcrp.entities.Persona;
 import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
-import pe.gob.bcrp.mapper.UsuarioMapper;
 import pe.gob.bcrp.repositories.IDocumentoIdentidadRepository;
 import pe.gob.bcrp.repositories.IPersonaRepository;
 import pe.gob.bcrp.repositories.IUsuarioRepository;
@@ -39,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Log4j2
@@ -62,6 +58,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     private IUploadFileService uploadFileService;
 
 
+    //@Cacheable(value = "getAllUsuarios", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #nombres, #tipoDocumento, #numeroDocumento, #idSistema, #ambito}")
     @Override
     public UsuarioResponse getAllUsuarios(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String nombres, Integer tipoDocumento, String numeroDocumento, Integer idSistema, String ambito) {
         log.info("INI Service() - getAllUsuarios");
@@ -153,15 +150,26 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
-    public RegistroUsuarioDTO guardarUsuario(Integer tipoDocumento,
-                                             String numeroDocumento,
-                                             String nombres,
-                                             String apePaterno,
-                                             String apeMaterno,
-                                             String correoElectronico,
-                                             String ambito, MultipartFile sustento) {
+    public RegistroCreateUsuarioDTO guardarUsuario(Integer tipoDocumento,
+                                                   String numeroDocumento,
+                                                   String nombres,
+                                                   String apePaterno,
+                                                   String apeMaterno,
+                                                   String correoElectronico,
+                                                   String ambito, MultipartFile sustento) {
 
         try {
+            // Verificar si el número de documento ya existe
+            if (personaRepository.existsByNumeroDocumento(numeroDocumento)) {
+                throw new IllegalArgumentException("El número de documento ya existe.");
+            }
+
+            // Verificar si el correo electrónico ya existe
+            if (personaRepository.existsByCorreo(correoElectronico)) {
+                throw new IllegalArgumentException("El correo electrónico ya existe.");
+            }
+
+
             Usuario usuarioSistema=util.getUsuario();
 
             DocumentoIdentidad doc=documentoIdentidadRepository.findById(tipoDocumento).orElseThrow(()-> new ResourceNotFoundException("documento no encontrado"));
@@ -176,23 +184,23 @@ public class UsuarioServiceImpl implements IUsuarioService {
             persona.setApellidoMaterno(apeMaterno);
             persona.setCorreo(correoElectronico);
 
-            persona.setUsuarioCreacion(usuario.getUsuario());
+            persona.setUsuarioCreacion(usuarioSistema.getUsuario());
             persona.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
 
 
-            if(ambito.equalsIgnoreCase("interno")){
-                usuario.setAmbito(ambito);
-                if(sustento !=null){
-                    usuario.setDocSustento(sustento.getOriginalFilename());
-                    uploadFileService.upload(sustento);
-                }
-
-                usuario.setFechaCreacion(new Date());
-                usuario.setEstado("ACTIVO");
-
-                usuario.setUsuarioCreacion(usuarioSistema.getUsuario());
-                usuario.setHoraCreacion(usuario.getHoraCreacion());
+            //if(ambito.equalsIgnoreCase("interno")){
+            usuario.setAmbito(ambito);
+            if(sustento !=null){
+                usuario.setDocSustento(sustento.getOriginalFilename());
+                uploadFileService.upload(sustento);
             }
+
+            usuario.setFechaCreacion(new Date());
+            usuario.setEstado("ACTIVO");
+
+            usuario.setUsuarioCreacion(usuarioSistema.getUsuario());
+            usuario.setHoraCreacion(usuario.getHoraCreacion());
+           // }
 
 
             Persona personaNew=personaRepository.save(persona);
@@ -202,10 +210,14 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
             uploadFileService.almacenarDatosFile(sustento,usuarioNew.getIdUsuario(),"Modulo Usuario");
 
-            RegistroUsuarioDTO regUsuarioNew=modelMapper.map(usuarioNew, RegistroUsuarioDTO.class);
+            RegistroCreateUsuarioDTO regUsuarioNew=modelMapper.map(usuarioNew, RegistroCreateUsuarioDTO.class);
             return regUsuarioNew;
 
-        }catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+          log.error(e.getMessage());
+          throw new IllegalArgumentException(e.getMessage());
+        }
+        catch (Exception e) {
           log.error(e.getMessage());
           throw new RuntimeException(e);
         }
@@ -216,6 +228,17 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
         log.info("INI Service() - updateUsuario");
         try {
+            // Verificar si el número de documento ya existe
+            if (personaRepository.existsByNumeroDocumento(registroUsuarioDTO.getNumeroDocumento())) {
+                throw new IllegalArgumentException("El número de documento ya existe.");
+            }
+
+            // Verificar si el correo electrónico ya existe
+            if (personaRepository.existsByCorreo(registroUsuarioDTO.getCorreoElectronico())) {
+                throw new IllegalArgumentException("El correo electrónico ya existe.");
+            }
+
+
             Usuario usuarioReg = util.getUsuario();
 
             Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -225,8 +248,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
             persona.setDocuIdentidad(docuIde);
             persona.setNumeroDocumento(registroUsuarioDTO.getNumeroDocumento());
             persona.setNombres(registroUsuarioDTO.getNombres());
-            persona.setApellidoPaterno(registroUsuarioDTO.getApPaterno());
-            persona.setApellidoMaterno(registroUsuarioDTO.getApMaterno());
+            persona.setApellidoPaterno(registroUsuarioDTO.getApePaterno());
+            persona.setApellidoMaterno(registroUsuarioDTO.getApeMaterno());
             persona.setCorreo(registroUsuarioDTO.getCorreoElectronico());
 
             persona.setUsuarioActualizacion(usuarioReg.getUsuario());
@@ -248,10 +271,12 @@ public class UsuarioServiceImpl implements IUsuarioService {
             RegistroUsuarioDTO newUsuario = modelMapper.map(usuarioUpd, RegistroUsuarioDTO.class);
             return newUsuario;
 
-        }catch (ResourceNotFoundException e){
+        } catch (IllegalArgumentException e) {
+           log.error(e.getMessage());
+           throw new IllegalArgumentException(e.getMessage());
+        }  catch (ResourceNotFoundException e){
             log.error("ERROR - updateUsuario() "+e.getMessage());
             throw e;
-
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);

@@ -16,6 +16,8 @@ public interface IPersonaRepository extends JpaRepository<Persona, Integer> {
 
     boolean existsByNumeroDocumento(String numeroDocumento);
 
+    boolean existsByCorreo(String numeroDocumento);
+
     //Método para verificar si ya existe otra entidad con el mismo número de documento, excluyendo la actual por ID
     boolean existsByNumeroDocumentoAndIdPersonaNot(String documentoIdentidad, Integer idEntidad);
 

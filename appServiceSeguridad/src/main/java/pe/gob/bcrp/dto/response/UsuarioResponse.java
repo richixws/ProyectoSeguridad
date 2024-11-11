@@ -3,8 +3,7 @@ package pe.gob.bcrp.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pe.gob.bcrp.dto.UsuarioDTO;
-import pe.gob.bcrp.dto.UsuarioFormDTO;
+import pe.gob.bcrp.dto.usuarioDTO.UsuarioFormDTO;
 
 import java.util.List;
 

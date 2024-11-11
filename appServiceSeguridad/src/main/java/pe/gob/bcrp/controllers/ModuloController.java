@@ -48,7 +48,7 @@ public class ModuloController {
             return new ResponseEntity<>(moduloResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - getAllModulos | requestURL=modulos"+e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -70,7 +70,7 @@ public class ModuloController {
             log.error("ERROR - guardarEntidad | requestURL=entidadDto");
             response.setStatus(0);
             response.setMessage("Error al guardar el Modulo "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -100,9 +100,9 @@ public class ModuloController {
             log.error("ERROR -  update Modulo | requestURL=modulo");
             response.setStatus(0);
             response.setMessage("Error al guardar el Modulo "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        return new ResponseEntity<>(response,HttpStatus.CREATED);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     @Operation(summary = "Delete Modulo REST API", description = "Elimina el Modulo por el IdModulo de la base de datos")
@@ -131,7 +131,7 @@ public class ModuloController {
             log.error("ERROR - eliminarModulo() "+e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al eliminar Modulo: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 

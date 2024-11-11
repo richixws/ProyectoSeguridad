@@ -1,11 +1,12 @@
-package pe.gob.bcrp.dto;
+package pe.gob.bcrp.dto.usuarioDTO;
 
 import lombok.*;
 
-import java.util.Set;
+import java.io.Serializable;
 
 @Data
-public class UsuarioFormDTO {
+@NoArgsConstructor
+public class UsuarioFormDTO implements Serializable {
 
     private Integer idUsuario;
     private Integer idDocumento;

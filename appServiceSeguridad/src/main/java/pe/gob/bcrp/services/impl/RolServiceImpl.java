@@ -3,6 +3,7 @@ package pe.gob.bcrp.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,8 +40,10 @@ public class RolServiceImpl implements IRolService {
     private IRolRepository rolRepository;
     private ISistemaRepository sistemaRepository;
 
-    @Override
-    public RolResponse getAllRoles(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, Integer idSistema, Integer idRol) {
+     @Override
+     //@Cacheable(value = "roles", key = "#pageNumber + '_' + #pageSize + '_' + #sortBy + '_' + #sortOrder + '_' + #idSistema + '_' + #idRol")
+     @Cacheable(value = "roles", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema, #idRol}")
+     public RolResponse getAllRoles(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, Integer idSistema, Integer idRol) {
 
         log.info(" INI - Service  getAllRoles");
         try {
@@ -167,6 +170,9 @@ public class RolServiceImpl implements IRolService {
             log.error("ERROR - delete Role "+e.getMessage());
             e.printStackTrace();
             estado=false;
+        }catch (Exception e) {
+            log.error( "ERROR - Service deleteRole() "+e.getMessage() );
+            throw new RuntimeException("Error al Eliminar Role "+e.getMessage());
         }
         return estado;
     }

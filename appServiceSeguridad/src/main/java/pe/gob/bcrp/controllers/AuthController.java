@@ -61,7 +61,7 @@ public class AuthController {
 
         try {
 
-           /**if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
+         /**  if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
                Map<String, String> response = Map.of("mensaje", "Captcha inválido");
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }**/
@@ -83,10 +83,10 @@ public class AuthController {
 
 
             // Validar el token
-            if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
+           /** if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of("mensaje", "Token inválido"));
-            }
+            }**/
 
             Map<String, String> response = new HashMap<>();
             response.put("id", String.valueOf(usuarioDTO.getIdUsuario()));
@@ -100,7 +100,7 @@ public class AuthController {
 
         } catch (Exception e) {
             log.error("Error en el login", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body(Map.of("mensaje", "Ocurrió un error interno en el sistema"));
         }
 
@@ -132,7 +132,7 @@ public class AuthController {
         } catch (Exception e) {
             log.error("Error en validarToken: {}", e.getMessage());
             response.put("message", "Error al procesar el token");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
         }
 
     }
@@ -176,7 +176,7 @@ public class AuthController {
 
             } catch (Exception e) {
                 log.error("Error during logout", e);
-                return new ResponseEntity<>("An error occurred while trying to logout", HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>("An error occurred while trying to logout", HttpStatus.UNPROCESSABLE_ENTITY);
             }
         } catch (Exception e) {
             log.error("Error during logout", e);

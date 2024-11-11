@@ -44,7 +44,7 @@ public class DocumentoIdentidadController {
 
         }catch (Exception e){
             log.error("ERROR -  findAllDocumentoIdentidades | requestURL=documento");
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 

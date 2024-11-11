@@ -184,10 +184,10 @@ public class EntidadServiceImpl implements IEntidadService {
             return  updateEntidad;
 
         } catch (IllegalArgumentException e) {
-            log.error("ERROR - updateEntidad() " + e.getMessage());
+            log.error("ERROR -Service update Entidad() " + e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - updateEntidad() "+e.getMessage());
+            log.error("ERROR -Service updateEntidad() "+e.getMessage());
             throw e;
         }
         catch (Exception e){

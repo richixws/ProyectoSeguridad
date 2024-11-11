@@ -4,18 +4,19 @@ package pe.gob.bcrp.controllers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.auth.InvalidCredentialsException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pe.gob.bcrp.dto.RegistroUsuarioDTO;
+import pe.gob.bcrp.dto.usuarioDTO.RegistroCreateUsuarioDTO;
+import pe.gob.bcrp.dto.usuarioDTO.RegistroUsuarioDTO;
 import pe.gob.bcrp.dto.ResponseDTO;
-import pe.gob.bcrp.dto.UsuarioFormDTO;
+import pe.gob.bcrp.dto.usuarioDTO.UsuarioFormDTO;
 import pe.gob.bcrp.dto.response.UsuarioResponse;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IUsuarioService;
@@ -60,7 +61,7 @@ public class UsuarioController {
             return new ResponseEntity<>(usurioResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - listar Usuarios | requestURL=usuarios");
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -83,7 +84,7 @@ public class UsuarioController {
             log.error(" ERROR - uploadUsuarios | requestURL=usuarios ");
             response.setStatus(0);
             response.setMessage("Error al guardar el Usuario "+e.getMessage() );
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }
@@ -91,46 +92,50 @@ public class UsuarioController {
     @Operation(summary = "Save Usuario REST API", description = "Guarda el usuario en la base de datos")
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/usuario")
-    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> saveUsuario(@RequestParam @NotNull Integer tipoDocumento,
-                                                                       @RequestParam @NotNull String  numeroDocumento,
-                                                                       @RequestParam @NotNull String  nombres,
-                                                                       @RequestParam @NotNull String  apePaterno,
-                                                                       @RequestParam @NotNull String  apeMaterno,
-                                                                       @RequestParam @NotNull String  correoElectronico,
-                                                                       @RequestParam @NotNull String  ambito,
-                                                                       @RequestParam(value = "sustento", required = false) MultipartFile sustento) throws InvalidCredentialsException {
+    @PostMapping(value = "/usuario",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseDTO<RegistroCreateUsuarioDTO>> saveUsuario(@Valid @ModelAttribute RegistroCreateUsuarioDTO registroUsuarioDTO,
+                                                                             @RequestParam(value = "sustento", required = false) MultipartFile sustento) throws InvalidCredentialsException {
 
 
         log.info("INI - guardarUsuario | requestURL=usuarios");
-        ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
+        ResponseDTO<RegistroCreateUsuarioDTO> response=new ResponseDTO<>();
+
         try {
-            RegistroUsuarioDTO newUsuarioFormDTO=usuarioService.guardarUsuario(tipoDocumento,
-                                                                               numeroDocumento,
-                                                                               nombres,
-                                                                               apePaterno,
-                                                                               apeMaterno,
-                                                                               correoElectronico,
-                                                                               ambito,
-                                                                               sustento);
+
+            validarArchivoSustento(sustento);
+            RegistroCreateUsuarioDTO newUsuarioFormDTO=usuarioService.guardarUsuario(registroUsuarioDTO.getTipoDocumento(),
+                                                                                     registroUsuarioDTO.getNumeroDocumento(),
+                                                                                     registroUsuarioDTO.getNombres(),
+                                                                                     registroUsuarioDTO.getApePaterno(),
+                                                                                     registroUsuarioDTO.getApeMaterno(),
+                                                                                     registroUsuarioDTO.getCorreoElectronico(),
+                                                                                     registroUsuarioDTO.getAmbito(), sustento);
+
             response.setStatus(1);
             response.setMessage("El Usuario fue guardado de manera existosa");
 
-        }catch (Exception e){
+        } catch (IllegalArgumentException e) {
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+        catch (Exception e){
             log.error(" ERROR - add Usuario | requestURL=usuarios ");
             response.setStatus(0);
             response.setMessage("Error al guardar el Usuario "+e.getMessage() );
-            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
+
+
 
     @Operation(summary = "Update Usuario REST API", description = "Actualiza el usuario en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/usuario/{idUsuario}")
-    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> updateUsuario(@PathVariable("idUsuario") Integer idUsuario,
-                                                                @RequestBody RegistroUsuarioDTO registroUsuarioDTO) {
+    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> updateUsuario(
+                                                                         @PathVariable("idUsuario") Integer idUsuario,@Valid  @RequestBody RegistroUsuarioDTO registroUsuarioDTO) {
         log.info("INI - Editar Usuario | requestURL=usuario");
         ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
         try {
@@ -138,17 +143,20 @@ public class UsuarioController {
             response.setStatus(1);
             response.setMessage("El Usuario fue actualizado de manera exitosa");
 
+        }catch (IllegalArgumentException e) {
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }catch (ResourceNotFoundException e) {
             log.error("ERROR - updateUsuario No encontrado " + e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al Actualizar el Usuario "+e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-
         }catch (Exception e){
             log.error(" ERROR - Editar Usuario | requestURL=usuario ");
             response.setStatus(0);
             response.setMessage("Error al actualizar el Usuario "+e.getMessage() );
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         return new ResponseEntity<>(response,HttpStatus.OK);
@@ -164,7 +172,7 @@ public class UsuarioController {
           try {
               boolean eliminado=usuarioService.deleteUsuario(idusuario);
               if(!eliminado){
-                  throw new ResourceNotFoundException("El Usuario a Inhabilitar "+idusuario+" no existe");
+                  throw new ResourceNotFoundException("El Usuario a Inhabilitar no existe");
               }
               response.setStatus(1);
               response.setMessage("El Usuario fue Inhabilitado de manera exitosa");
@@ -180,8 +188,28 @@ public class UsuarioController {
               log.error(" ERROR - delete Usuario | requestURL=IdUsuario ");
               response.setStatus(0);
               response.setMessage("Error al Inhabilitar el Usuario "+e.getMessage() );
-              return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+              return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
           }
+    }
+
+
+    // validar archivo sustento
+    private void validarArchivoSustento(MultipartFile sustento) {
+
+        if (sustento == null || sustento.isEmpty()) {
+            throw new IllegalArgumentException("El archivo de sustento es obligatorio.");
+        }
+
+        // Validar el tamaño máximo permitido (por ejemplo, 2MB)
+         if (sustento.getSize() > 2 * 1024 * 1024) { // 2MB en bytes
+           throw new IllegalArgumentException("El archivo de sustento no debe exceder los 2MB.");
+         }
+
+        // Validar el tipo de archivo (por ejemplo, aceptar solo PDF o imágenes)
+        String contentType = sustento.getContentType();
+        if (!"application/pdf".equals(contentType)) {
+            throw new IllegalArgumentException("El archivo de sustento debe ser en formato PDF");
+        }
     }
 
 

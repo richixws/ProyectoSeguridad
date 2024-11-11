@@ -3,6 +3,8 @@ package pe.gob.bcrp.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,7 @@ public class ModuloServiceImpl implements IModuloService {
 
 
     @Override
+    @Cacheable(value = "modulos", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema}")
     public ModuloResponse getAllModulos(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, Integer idSistema) { //, String nombre
 
         log.info(" INI - Service  getAllModulos");
@@ -73,6 +76,7 @@ public class ModuloServiceImpl implements IModuloService {
 
 
     @Override
+    @CacheEvict(value = "modulos", allEntries = true)
     public ModuloDTO saveModulo(ModuloDTO moduloDto) {
 
         try {
@@ -97,6 +101,7 @@ public class ModuloServiceImpl implements IModuloService {
 
 
     @Override
+    @CacheEvict(value = "modulos", allEntries = true)
     public ModuloDTO updateModulo(ModuloDTO moduloDto, Integer idModulo) {
 
         log.info("INI - Service updateModulo()");
@@ -134,6 +139,7 @@ public class ModuloServiceImpl implements IModuloService {
     }
 
     @Override
+    @CacheEvict(value = "modulos", allEntries = true)
     public boolean deleteModulo(Integer idModulo) {
 
         log.info("INI - delete Modulo()");
