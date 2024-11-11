@@ -8,10 +8,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import pe.gob.bcrp.dto.OpcionDTO;
 import pe.gob.bcrp.dto.PerfilDTO;
 import pe.gob.bcrp.dto.RegistroPerfilDTO;
-import pe.gob.bcrp.dto.response.OpcionResponse;
 import pe.gob.bcrp.dto.response.PerfilResponse;
 import pe.gob.bcrp.entities.*;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
@@ -20,6 +18,7 @@ import pe.gob.bcrp.repositories.IPerfilRepository;
 import pe.gob.bcrp.repositories.IRolRepository;
 import pe.gob.bcrp.repositories.ISistemaRepository;
 import pe.gob.bcrp.services.IPerfilService;
+import pe.gob.bcrp.entities.*;
 import pe.gob.bcrp.util.Util;
 
 import java.time.LocalDateTime;

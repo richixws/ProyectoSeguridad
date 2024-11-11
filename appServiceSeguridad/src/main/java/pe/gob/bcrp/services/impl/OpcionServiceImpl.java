@@ -10,12 +10,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.OpcionDTO;
 import pe.gob.bcrp.dto.response.OpcionResponse;
-import pe.gob.bcrp.entities.*;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IModuloRepository;
 import pe.gob.bcrp.repositories.IOpcionRepository;
 import pe.gob.bcrp.repositories.ISistemaRepository;
 import pe.gob.bcrp.services.IOpcionService;
+import pe.gob.bcrp.entities.Modulo;
+import pe.gob.bcrp.entities.Opcion;
+import pe.gob.bcrp.entities.Sistema;
+import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.util.Util;
 
 import java.time.LocalDateTime;

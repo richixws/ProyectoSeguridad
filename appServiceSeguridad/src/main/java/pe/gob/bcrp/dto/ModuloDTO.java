@@ -1,11 +1,9 @@
 package pe.gob.bcrp.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import pe.gob.bcrp.entities.Sistema;
 
 import java.io.Serializable;
 import java.util.Date;

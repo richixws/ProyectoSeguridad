@@ -1,7 +1,6 @@
 package pe.gob.bcrp.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
 import lombok.Data;
 import pe.gob.bcrp.entities.Persona;
 

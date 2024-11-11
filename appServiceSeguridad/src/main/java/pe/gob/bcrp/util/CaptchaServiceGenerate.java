@@ -44,8 +44,8 @@ public class CaptchaServiceGenerate {
    public static Captcha createCaptcha(Integer width, Integer height) {
        // Generar dos números aleatorios para la operación matemática
        Random random = new Random();
-       int num1 = random.nextInt(10);  // Número entre 0 y 9
-       int num2 = random.nextInt(10);  // Número entre 0 y 9
+       int num1 = random.nextInt(20);  // Número entre 0 y 9
+       int num2 = random.nextInt(20);  // Número entre 0 y 9
 
        // Crear el texto de la operación, por ejemplo "3 + 7"
        String mathOperation = num1 + " + " + num2;

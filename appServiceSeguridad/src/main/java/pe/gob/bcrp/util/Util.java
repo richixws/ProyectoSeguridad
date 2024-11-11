@@ -1,7 +1,6 @@
 package pe.gob.bcrp.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IUsuarioRepository;
-import pe.gob.bcrp.services.IUsuarioService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,9 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
 @Component
 @Slf4j

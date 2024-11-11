@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.response.SistemaResponse;
-import pe.gob.bcrp.entities.*;
 import pe.gob.bcrp.enumerador.EstadoCritico;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IFilesRepository;
@@ -19,6 +18,10 @@ import pe.gob.bcrp.repositories.ISistemaRepository;
 import pe.gob.bcrp.repositories.IUsuarioRepository;
 import pe.gob.bcrp.services.ISistemaService;
 import pe.gob.bcrp.services.IUploadFileService;
+import pe.gob.bcrp.entities.Files;
+import pe.gob.bcrp.entities.Persona;
+import pe.gob.bcrp.entities.Sistema;
+import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.util.Util;
 
 import java.io.IOException;

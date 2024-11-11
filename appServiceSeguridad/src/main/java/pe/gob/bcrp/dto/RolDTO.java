@@ -1,8 +1,6 @@
 package pe.gob.bcrp.dto;
 
-import jakarta.persistence.*;
 import lombok.Data;
-import pe.gob.bcrp.entities.Sistema;
 
 @Data
 public class RolDTO {

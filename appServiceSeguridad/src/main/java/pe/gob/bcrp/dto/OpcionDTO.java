@@ -3,7 +3,6 @@ package pe.gob.bcrp.dto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import pe.gob.bcrp.entities.Modulo;
 
 @Data
 public class OpcionDTO {

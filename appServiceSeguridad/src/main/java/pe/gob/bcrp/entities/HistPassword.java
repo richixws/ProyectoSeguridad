@@ -12,14 +12,14 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SW_HIST_PASSWORD" , schema = "BCRP_MSAUTHENTICA_API")
+@Table(name = "SW_HIST_PASSWORD" , schema = "bd_seguridad")
 public class HistPassword {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "histpassword_seq")
-    @SequenceGenerator(name = "histpassword_seq", sequenceName = "BCRP_MSAUTHENTICA_API.seq_sw_histpassword", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "histpassword_seq", sequenceName = "bd_seguridad.seq_sw_histpassword", allocationSize = 1, initialValue = 1)
     @Column(name = "id_hist_password", nullable = false)
     private Integer idHistPassword;
 

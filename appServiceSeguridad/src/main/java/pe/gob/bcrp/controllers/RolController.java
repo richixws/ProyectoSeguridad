@@ -5,22 +5,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pe.gob.bcrp.dto.OpcionDTO;
 import pe.gob.bcrp.dto.ResponseDTO;
 import pe.gob.bcrp.dto.RolDTO;
 import pe.gob.bcrp.dto.RolFormDTO;
-import pe.gob.bcrp.dto.response.OpcionResponse;
 import pe.gob.bcrp.dto.response.RolResponse;
-import pe.gob.bcrp.entities.Sistema;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
-import pe.gob.bcrp.repositories.ISistemaRepository;
 import pe.gob.bcrp.services.IRolService;
-import pe.gob.bcrp.services.ISistemaService;
 
 @Log4j2
 @RestController

@@ -14,7 +14,7 @@ public class CaptchaResponse {
     private String captchaImage;
     private String hiddenCaptcha;
 
-
+    private String tokenUuid;
 
 
 }

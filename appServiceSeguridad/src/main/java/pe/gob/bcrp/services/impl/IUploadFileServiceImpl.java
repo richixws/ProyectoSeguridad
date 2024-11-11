@@ -121,7 +121,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
 
 
     @Override
-    public pe.gob.bcrp.entities.Files almacenarDatosFile(MultipartFile file, Integer idAplicacion,String modulo) {
+    public pe.gob.bcrp.entities.Files almacenarDatosFile(MultipartFile file, Integer idAplicacion, String modulo) {
         if (file == null || file.isEmpty()) {
             return null; // Si el archivo no está presente, no hacer nada
         }
@@ -132,7 +132,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
         String uniqueFilename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
         // Crear la entidad FileEntity y asignar los valores
-        pe.gob.bcrp.entities.Files  files = new pe.gob.bcrp.entities.Files();
+        pe.gob.bcrp.entities.Files files = new pe.gob.bcrp.entities.Files();
         files.setIdIdentidad(idAplicacion);
         files.setHoraFechaFile(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()) );
         files.setIdUsuario(usuario.getUsuario());

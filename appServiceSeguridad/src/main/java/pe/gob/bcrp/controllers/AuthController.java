@@ -6,11 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,9 @@ import pe.gob.bcrp.services.IUsuarioService;
 import pe.gob.bcrp.util.CaptchaServiceGenerate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Log4j2
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -50,22 +53,35 @@ public class AuthController {
     @Autowired
     private JwtValidationService jwtValidationService;
 
+    /*@Value("${allowed.cors.origins}")
+    private String[] allowedCorsOrigins;*/
 
 
+    @CrossOrigin(allowCredentials = "true" )
     @Operation(summary = "Login REST API", description = "Inicio de seccion del usuario a la aplicacion")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping(value = "oauth/login")
-    public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
+    public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto, HttpSession session) throws Exception {
 
         log.info("INI - login | requestURL=login");
 
         try {
 
-         /**  if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
-               Map<String, String> response = Map.of("mensaje", "Captcha inválido");
-               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }**/
+            String tokenUuid = (String) session.getAttribute("uuid");
+            if(tokenUuid == null){
+                Map<String, String> response = Map.of("mensaje", "Por favor generar un nuevo captcha");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
 
+            if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
+                Map<String, String> response = Map.of("mensaje", "Captcha inválido");
+                session.invalidate();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            } else if(!dto.getTokenUuid().equals(tokenUuid)){
+                Map<String, String> response = Map.of("mensaje", "Token captcha inválido");
+                session.invalidate();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
 
             UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
 
@@ -185,10 +201,11 @@ public class AuthController {
 
     }
 
+    @CrossOrigin(allowCredentials = "true" )
     @Operation(summary = "Captcha REST API", description = "obtener captcha")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("oauth/captcha")
-    public ResponseEntity<CaptchaResponse> getCaptcha() {
+    public ResponseEntity<CaptchaResponse> getCaptcha(HttpSession session) {
 
         Captcha captcha = CaptchaServiceGenerate.createCaptcha(240, 70);
         String encodedCaptcha = CaptchaServiceGenerate.encodeCaptcha(captcha);
@@ -197,9 +214,13 @@ public class AuthController {
         String hiddenCaptcha = captcha.getAnswer();
         int resultadoOperacion = evaluarOperacion(hiddenCaptcha); // Evalúa el resultado
 
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        session.setAttribute("uuid", uuid);
+
         CaptchaResponse response = new CaptchaResponse();
         response.setCaptchaImage(encodedCaptcha);
         response.setHiddenCaptcha(String.valueOf(resultadoOperacion)); // Almacena solo el resultado
+        response.setTokenUuid(session.getAttribute("uuid").toString());
 
         return ResponseEntity.ok(response);
     }

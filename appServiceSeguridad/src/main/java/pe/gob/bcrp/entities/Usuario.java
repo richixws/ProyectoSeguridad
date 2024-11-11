@@ -16,14 +16,14 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SW_USUARIO" , schema = "BCRP_MSAUTHENTICA_API")
+@Table(name = "SW_USUARIO" , schema = "bd_seguridad")
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usuario_seq")
-    @SequenceGenerator(name = "usuario_seq", sequenceName = "BCRP_MSAUTHENTICA_API.seq_sw_usuario", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "usuario_seq", sequenceName = "bd_seguridad.seq_sw_usuario", allocationSize = 1, initialValue = 1)
     @Column(name = "id_usuario", nullable = false)
     private Integer idUsuario;
 
@@ -64,7 +64,7 @@ public class Usuario implements Serializable {
     //@OneToMany(mappedBy = "usuario")
     //private Set<PerfilUsuario> perfilUsuarios;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "SW_PERFIL_USUARIO", schema = "BCRP_MSAUTHENTICA_API",
+    @JoinTable(name = "SW_PERFIL_USUARIO", schema = "bd_seguridad",
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_perfil"))
     private Set<Perfil> perfilUsuarios = new HashSet<>();

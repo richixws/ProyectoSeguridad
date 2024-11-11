@@ -5,9 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.DocumentoIdentidadDTO;
-import pe.gob.bcrp.dto.EntidadDTO;
 import pe.gob.bcrp.entities.DocumentoIdentidad;
-import pe.gob.bcrp.entities.Entidad;
 import pe.gob.bcrp.repositories.IDocumentoIdentidadRepository;
 import pe.gob.bcrp.services.IDocumentoIdentidadService;
 
