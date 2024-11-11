@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Log4j2
-@CrossOrigin(origins = "*", maxAge = 3600)
+//@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1")
 @Tag(name = "REST APIs Auth",description = "REST APIs - login, Validar Token, refresh Token, cerrar Sesion, getCaptcha")
@@ -53,11 +53,11 @@ public class AuthController {
     @Autowired
     private JwtValidationService jwtValidationService;
 
-    /*@Value("${allowed.cors.origins}")
-    private String[] allowedCorsOrigins;*/
+    @Value("${allowed.cors.origins}")
+    private String[] allowedCorsOrigins;
 
 
-    @CrossOrigin(allowCredentials = "true" )
+    @CrossOrigin(origins = {"http://localhost:4200"}, allowCredentials = "true" )
     @Operation(summary = "Login REST API", description = "Inicio de seccion del usuario a la aplicacion")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping(value = "oauth/login")
@@ -201,7 +201,7 @@ public class AuthController {
 
     }
 
-    @CrossOrigin(allowCredentials = "true" )
+    @CrossOrigin(origins = {"http://localhost:4200"}, allowCredentials = "true" )
     @Operation(summary = "Captcha REST API", description = "obtener captcha")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("oauth/captcha")
