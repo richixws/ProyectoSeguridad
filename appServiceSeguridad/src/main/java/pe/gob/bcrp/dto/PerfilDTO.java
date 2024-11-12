@@ -13,13 +13,13 @@ public class PerfilDTO {
     //@NotEmpty(message = "perfil no debe ser vacio")
     private Integer idPerfil;
 
-    @NotEmpty(message = "Sistema no debe ser vacio")
+    @NotNull(message = "Sistema no debe ser vacio")
     private Integer IdSistema;
 
-    @NotEmpty(message = "Rol no debe ser vacio")
+    @NotNull(message = "Rol no debe ser vacio")
     private Integer idRol;
 
-    @NotEmpty(message = "Entidad no debe ser vacio")
+    @NotNull(message = "Entidad no debe ser vacio")
     private Integer idEntidad;
 
     @NotEmpty(message = "Nombre del perfil no debe ser vacio")

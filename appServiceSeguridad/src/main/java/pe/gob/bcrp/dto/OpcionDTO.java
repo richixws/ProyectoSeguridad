@@ -1,6 +1,7 @@
 package pe.gob.bcrp.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
@@ -10,10 +11,10 @@ public class OpcionDTO {
     //@NotEmpty(message = "Opcion no debe ser vacio")
     private Integer idOpcion;
 
-    @NotEmpty(message = "Modulo no debe ser vacio")
+    @NotNull(message = "Modulo no debe ser vacio")
     private Integer idModulo;
 
-    @NotEmpty(message = "Sistema no debe ser vacio")
+    @NotNull(message = "Sistema no debe ser vacio")
     private Integer idSistema;
 
     @NotEmpty(message = "Nombre de Opcion no debe ser vacio")
