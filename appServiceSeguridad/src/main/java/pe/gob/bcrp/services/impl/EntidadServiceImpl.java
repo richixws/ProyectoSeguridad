@@ -3,6 +3,8 @@ package pe.gob.bcrp.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +46,7 @@ public class EntidadServiceImpl implements IEntidadService {
 
 
     @Override
+    @Cacheable(value = "documentosIdentidad")
     public List<DocumentoIdentidadDTO> getAllDocumentos() {
 
         try {
@@ -62,6 +65,7 @@ public class EntidadServiceImpl implements IEntidadService {
     }
 
     @Override
+    @Cacheable(value = "entidades", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #nombre,#tipoDocumento,#numeroDocumento}")
     public EntidadResponse getAllEntidades(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,String nombre,Integer tipoDocumento, String numeroDocumento) {
 
         log.info("INI Service() - getAllEntidades");
@@ -114,6 +118,7 @@ public class EntidadServiceImpl implements IEntidadService {
 
 
     @Override
+    @CacheEvict(value = "entidades", allEntries = true)
     public EntidadDTO saveEntidad(EntidadDTO entidadDto) {
         log.info("INI - Service() saveEntidad()");
         try {
@@ -153,6 +158,7 @@ public class EntidadServiceImpl implements IEntidadService {
     }
 
     @Override
+    @CacheEvict(value = "entidades", allEntries = true)
     public EntidadDTO updateEntidad(Integer idEntidad, EntidadDTO entidadDto) {
         log.info("INI - Service updateEntidad()");
         try {
@@ -198,6 +204,7 @@ public class EntidadServiceImpl implements IEntidadService {
     }
 
     @Override
+    @CacheEvict(value = "entidades", allEntries = true)
     public boolean deleteEntidad(Integer idEntidad) {
 
         log.info("INI - deleteEntidad()");

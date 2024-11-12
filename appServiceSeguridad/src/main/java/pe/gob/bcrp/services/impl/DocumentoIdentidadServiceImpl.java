@@ -3,6 +3,7 @@ package pe.gob.bcrp.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.DocumentoIdentidadDTO;
 import pe.gob.bcrp.entities.DocumentoIdentidad;
@@ -22,6 +23,7 @@ public class DocumentoIdentidadServiceImpl implements IDocumentoIdentidadService
     private IDocumentoIdentidadRepository documentoIdentidadRepository;
 
     @Override
+    @Cacheable(value = "documentosIdentidades")
     public List<DocumentoIdentidadDTO> findAllDocumentoIdentidades() {
         try {
             log.info("INI - Service findAllDocumentoIdentidades");

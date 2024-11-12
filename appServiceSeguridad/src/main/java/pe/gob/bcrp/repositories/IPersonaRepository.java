@@ -14,10 +14,12 @@ public interface IPersonaRepository extends JpaRepository<Persona, Integer> {
 
     boolean existsByNumeroDocumento(String numeroDocumento);
 
+    boolean existsByCorreoAndIdPersonaNot(String numeroDocumento, Integer idPersona);
+
     boolean existsByCorreo(String numeroDocumento);
 
     //Método para verificar si ya existe otra entidad con el mismo número de documento, excluyendo la actual por ID
-    boolean existsByNumeroDocumentoAndIdPersonaNot(String documentoIdentidad, Integer idEntidad);
+    boolean existsByNumeroDocumentoAndIdPersonaNot(String documentoIdentidad, Integer idPersona);
 
     @Query("SELECT s FROM Persona s WHERE " + "(:nombre IS NULL OR s.nombres = :nombre) AND " + "s.isDeleted = false")
     Page<Persona> findByFilters(@Param("nombre") String nombre, Pageable pageable);

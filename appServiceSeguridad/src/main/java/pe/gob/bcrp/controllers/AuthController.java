@@ -99,10 +99,10 @@ public class AuthController {
 
 
             // Validar el token
-           /** if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
+           if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of("mensaje", "Token inválido"));
-            }**/
+            }
 
             Map<String, String> response = new HashMap<>();
             response.put("id", String.valueOf(usuarioDTO.getIdUsuario()));

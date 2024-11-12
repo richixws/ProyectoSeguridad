@@ -3,6 +3,8 @@ package pe.gob.bcrp.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,9 +12,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.PersonaDTO;
 import pe.gob.bcrp.dto.response.PersonaResponse;
+import pe.gob.bcrp.entities.DocumentoIdentidad;
 import pe.gob.bcrp.entities.Persona;
 import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
+import pe.gob.bcrp.repositories.IDocumentoIdentidadRepository;
 import pe.gob.bcrp.repositories.IPersonaRepository;
 import pe.gob.bcrp.services.IPersonaService;
 import pe.gob.bcrp.util.Util;
@@ -29,12 +33,14 @@ public class PersonaServiceImpl  implements IPersonaService {
 
 
     private IPersonaRepository  iPersonaRepository ;
+    private IDocumentoIdentidadRepository documentoIdentidadRepository;
     private ModelMapper modelMapper;
-    private final Util util;
+    private Util util;
 
 
 
     @Override
+    @Cacheable(value = "personas", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #nombre}")
     public PersonaResponse getAllPersonas( Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String nombre) {
 
         log.info("INI - Service GetAllPersonas() ");
@@ -70,17 +76,24 @@ public class PersonaServiceImpl  implements IPersonaService {
     }
 
     @Override
+    @CacheEvict(value = "personas", allEntries = true)
     public PersonaDTO addPersona(PersonaDTO personaDTO) {
         log.info("INFO - Service AddPersona() ");
         try {
             Usuario usuario = util.getUsuario();
 
-            boolean existeNumeroDocumento = iPersonaRepository.existsByNumeroDocumento(personaDTO.getDocumentoIdentidad());
+            boolean existeNumeroDocumento = iPersonaRepository.existsByNumeroDocumento(personaDTO.getNumeroDocumento());
             if (existeNumeroDocumento) {
                 throw new IllegalArgumentException("El numero de documento de identidad ya existe en el sistema.");
             }
 
+            if (iPersonaRepository.existsByCorreo(personaDTO.getCorreo())) {
+                throw new IllegalArgumentException("El correo electrónico ya existe.");
+            }
+
+            DocumentoIdentidad documentoIdentidad=documentoIdentidadRepository.findById(personaDTO.getTipoDocumento()).orElseThrow(()->new ResourceNotFoundException("Documento no encontrada"));
             Persona persona=modelMapper.map(personaDTO,Persona.class);
+            persona.setTipoDocumento(documentoIdentidad);
             persona.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             persona.setUsuarioCreacion(usuario.getUsuario());
             Persona newPersona=iPersonaRepository.save(persona);
@@ -88,38 +101,43 @@ public class PersonaServiceImpl  implements IPersonaService {
             return newPersonaDTO;
 
 
-        }catch (IllegalArgumentException e){
-            throw  new IllegalArgumentException("El numero de documento de identidad ya existe en el sistema.");
-
+        } catch (IllegalArgumentException e) {
+            log.error("ERROR - Service savePersona() " + e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }catch (Exception e) {
-            throw new RuntimeException("ERROR Service - GetAllPersonas() "+e.getMessage());
+            throw new RuntimeException("ERROR Service - save Persona() "+e.getMessage());
         }
     }
 
     @Override
+    @CacheEvict(value = "personas", allEntries = true)
     public PersonaDTO updatePersona(Integer idPersona, PersonaDTO personaDTO) {
 
         log.info("INFO - Service UpdatePersona() ");
         try {
             Usuario usuario = util.getUsuario();
-            boolean existeDocumentoIdentidad = iPersonaRepository.existsByNumeroDocumentoAndIdPersonaNot(personaDTO.getDocumentoIdentidad(), idPersona);
+            boolean existeDocumentoIdentidad = iPersonaRepository.existsByNumeroDocumentoAndIdPersonaNot(personaDTO.getNumeroDocumento(), idPersona);
             if (existeDocumentoIdentidad) {
                 throw new IllegalArgumentException("El número de documento identidad ya está registrado en otra Persona");
             }
 
-
+            boolean existeCorreo = iPersonaRepository.existsByCorreoAndIdPersonaNot(personaDTO.getCorreo(), idPersona);
+            if (existeCorreo) {
+                throw new IllegalArgumentException("El correo electrónico ya existe.");
+            }
 
             Persona persona=iPersonaRepository.findById(idPersona).orElseThrow( ()-> new RuntimeException("Persona no encontrada") );
             persona.setApellidoMaterno(personaDTO.getApellidoMaterno());
             persona.setNombres(personaDTO.getNombres());
             persona.setApellidoPaterno(personaDTO.getApellidoPaterno());
             //persona.setDocuIdentidad(personaDTO.getTipoDocumento());
-            persona.setNumeroDocumento(personaDTO.getDocumentoIdentidad());
+            persona.setNumeroDocumento(personaDTO.getNumeroDocumento());
             persona.setCorreo(personaDTO.getCorreo());
 
             persona.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             persona.setUsuarioActualizacion(usuario.getUsuario());
-            PersonaDTO newPersonaDTO=modelMapper.map(persona,PersonaDTO.class);
+            Persona personaUpd=iPersonaRepository.save(persona);
+            PersonaDTO newPersonaDTO=modelMapper.map(personaUpd,PersonaDTO.class);
             return newPersonaDTO;
 
         } catch (IllegalArgumentException e) {
@@ -131,6 +149,7 @@ public class PersonaServiceImpl  implements IPersonaService {
     }
 
     @Override
+    @CacheEvict(value = "personas", allEntries = true)
     public boolean deletePersona(Integer idPersona) {
         log.info("INFO - Service DeletePersona() ");
         var estado=false;

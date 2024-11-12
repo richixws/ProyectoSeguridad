@@ -38,7 +38,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
     private Util util;
 
 
-    private final String FOLDER = "src//main//resources//static//images//";
+    private final String FOLDER = "src//main//resources//folder//";
     private final static String DIRECTORIO_UPLOAD="uploads";
     private final String IMG_DEFAULT = "default.jpg";
 

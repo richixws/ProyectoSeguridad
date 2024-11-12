@@ -6,6 +6,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -58,8 +60,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
     private IUploadFileService uploadFileService;
 
 
-    //@Cacheable(value = "getAllUsuarios", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #nombres, #tipoDocumento, #numeroDocumento, #idSistema, #ambito}")
     @Override
+    @Cacheable(value = "usuarios", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #nombres,#tipoDocumento,#numeroDocumento,#idSistema, #ambito}")
     public UsuarioResponse getAllUsuarios(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String nombres, Integer tipoDocumento, String numeroDocumento, Integer idSistema, String ambito) {
         log.info("INI Service() - getAllUsuarios");
 
@@ -86,8 +88,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
             List<UsuarioFormDTO> usuariosDTOS = usuarios.stream().map(user -> {
                 UsuarioFormDTO usuarioDTO = modelMapper.map(user, UsuarioFormDTO.class);
                   if(user.getPersona() !=null){
-                      usuarioDTO.setIdDocumento(user.getPersona().getDocuIdentidad().getIdDocumentoIdentidad());
-                      usuarioDTO.setTipoDocumento(user.getPersona().getDocuIdentidad().getTipoDocumentoIdentidad());
+                      usuarioDTO.setIdDocumento(user.getPersona().getTipoDocumento().getIdDocumentoIdentidad());
+                      usuarioDTO.setTipoDocumento(user.getPersona().getTipoDocumento().getTipoDocumentoIdentidad());
                       usuarioDTO.setNumeroDocumento(user.getPersona().getNumeroDocumento());
                       usuarioDTO.setNombres(user.getPersona().getNombres());
                       usuarioDTO.setApellidoPaterno(user.getPersona().getApellidoPaterno());
@@ -150,6 +152,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
+    @CacheEvict(value = "usuarios", allEntries = true)
     public RegistroCreateUsuarioDTO guardarUsuario(Integer tipoDocumento,
                                                    String numeroDocumento,
                                                    String nombres,
@@ -177,7 +180,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
             Usuario usuario=new Usuario();
             Persona persona=new Persona();
            // usuarioNew.set
-            persona.setDocuIdentidad(doc);
+            persona.setTipoDocumento(doc);
             persona.setNumeroDocumento(numeroDocumento);
             persona.setNombres(nombres);
             persona.setApellidoPaterno(apePaterno);
@@ -224,17 +227,19 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
+    @CacheEvict(value = "usuarios", allEntries = true)
     public RegistroUsuarioDTO updateUsuario(Integer idUsuario, RegistroUsuarioDTO registroUsuarioDTO) {
 
         log.info("INI Service() - updateUsuario");
         try {
             // Verificar si el número de documento ya existe
-            if (personaRepository.existsByNumeroDocumento(registroUsuarioDTO.getNumeroDocumento())) {
+            Usuario u=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            if (personaRepository.existsByNumeroDocumentoAndIdPersonaNot(registroUsuarioDTO.getNumeroDocumento(), u.getPersona().getIdPersona())) {
                 throw new IllegalArgumentException("El número de documento ya existe.");
             }
 
             // Verificar si el correo electrónico ya existe
-            if (personaRepository.existsByCorreo(registroUsuarioDTO.getCorreoElectronico())) {
+            if (personaRepository.existsByCorreoAndIdPersonaNot(registroUsuarioDTO.getCorreoElectronico(),u.getPersona().getIdPersona())) {
                 throw new IllegalArgumentException("El correo electrónico ya existe.");
             }
 
@@ -245,7 +250,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
             Persona persona = personaRepository.findById(usuario.getPersona().getIdPersona()).orElseThrow(() -> new RuntimeException("Persona no encontrado"));
             DocumentoIdentidad docuIde = documentoIdentidadRepository.findById(registroUsuarioDTO.getTipoDocumento()).orElseThrow(() -> new ResourceNotFoundException("documento no encontrado"));
 
-            persona.setDocuIdentidad(docuIde);
+            persona.setTipoDocumento(docuIde);
             persona.setNumeroDocumento(registroUsuarioDTO.getNumeroDocumento());
             persona.setNombres(registroUsuarioDTO.getNombres());
             persona.setApellidoPaterno(registroUsuarioDTO.getApePaterno());
@@ -284,6 +289,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
+    @CacheEvict(value = "usuarios", allEntries = true)
     public boolean deleteUsuario(Integer idUsuario) {
 
         log.info("INI - InhabilitarUsuario()");
@@ -328,20 +334,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
     // convert Entity into DTO
     private UsuarioDTO mapToDTO(Usuario usuario){
         UsuarioDTO usuarioDTO = modelMapper.map(usuario, UsuarioDTO.class);
-//        PostDto postDto = new PostDto();
-//        postDto.setId(post.getId());
-//        postDto.setTitle(post.getTitle());
-//        postDto.setDescription(post.getDescription());
-//        postDto.setContent(post.getContent());
         return usuarioDTO;
     }
 
     private Usuario mapToEntity(UsuarioDTO usuarioDTO){
         Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
-//        Post post = new Post();
-//        post.setTitle(postDto.getTitle());
-//        post.setDescription(postDto.getDescription());
-//        post.setContent(postDto.getContent());
         return usuario;
     }
 

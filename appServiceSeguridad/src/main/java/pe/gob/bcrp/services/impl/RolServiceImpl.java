@@ -3,6 +3,7 @@ package pe.gob.bcrp.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +38,6 @@ public class RolServiceImpl implements IRolService {
     private ISistemaRepository sistemaRepository;
 
      @Override
-     //@Cacheable(value = "roles", key = "#pageNumber + '_' + #pageSize + '_' + #sortBy + '_' + #sortOrder + '_' + #idSistema + '_' + #idRol")
      @Cacheable(value = "roles", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema, #idRol}")
      public RolResponse getAllRoles(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, Integer idSistema, Integer idRol) {
 
@@ -88,6 +88,7 @@ public class RolServiceImpl implements IRolService {
     }
 
     @Override
+    @CacheEvict(value = "roles", allEntries = true)
     public RolFormDTO saveRole(RolFormDTO rolDTO) {
         log.info(" INI - Service  saveRole");
         try {
@@ -115,6 +116,7 @@ public class RolServiceImpl implements IRolService {
     }
 
     @Override
+    @CacheEvict(value = "roles", allEntries = true)
     public RolFormDTO updateRole(RolFormDTO rolDto, Integer idRol) {
         log.info(" INI - Service  updateRole");
         try {
@@ -145,6 +147,7 @@ public class RolServiceImpl implements IRolService {
     }
 
     @Override
+    @CacheEvict(value = "roles", allEntries = true)
     public boolean deleteRole(Integer idRol) {
         log.info("INI - deleteRole()");
         boolean estado=false;

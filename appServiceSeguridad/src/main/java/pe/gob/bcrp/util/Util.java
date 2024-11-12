@@ -26,7 +26,7 @@ public class Util {
     @Autowired
     private IUsuarioRepository usuarioRepository;
 
-    public static void saveFile(String uploadDir, String fileName, MultipartFile multipartFile) throws IOException {
+    public  void saveFile(String uploadDir, String fileName, MultipartFile multipartFile) throws IOException {
 
         Path uploadPath = Paths.get(uploadDir);
 
@@ -42,7 +42,7 @@ public class Util {
         }
     }
 
-    public static void guardar(MultipartFile archivo) throws IOException {
+    public  void guardar(MultipartFile archivo) throws IOException {
         String nombreArchivo = UUID.randomUUID().toString() + "_" + archivo.getOriginalFilename();
         Path rutaArchivo = Paths.get("src/main/resources/static/images").resolve(nombreArchivo).toAbsolutePath();
 

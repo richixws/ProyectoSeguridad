@@ -14,14 +14,14 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SW_MODULO" , schema = "bd_seguridad")
+@Table(name = "SW_MODULO" , schema = "BCRP_MSAUTHENTICA_API")
 public class Modulo  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "modulo_seq")
-    @SequenceGenerator(name = "modulo_seq", sequenceName = "bd_seguridad.seq_sw_modulo", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "modulo_seq", sequenceName = "BCRP_MSAUTHENTICA_API.seq_sw_modulo", allocationSize = 1, initialValue = 1)
     @Column(name = "id_modulo", nullable = false)
     private Integer idModulo;
 

@@ -33,7 +33,7 @@ public class EntidadDTO {
     private String nombre;
 
     @NotEmpty(message = "sigla no puede ser vacio")
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "La sigla solo puede contener letras y números")
+    @Pattern(regexp = "^[a-zA-Z0-9 ]+$", message = "La sigla solo puede contener letras, números y espacios")
     private String sigla;
     //@NotEmpty(message = "codigo externo no puede ser vacio")
     private String codExterno;

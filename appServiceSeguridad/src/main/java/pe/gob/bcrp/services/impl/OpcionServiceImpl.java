@@ -3,6 +3,8 @@ package pe.gob.bcrp.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +42,7 @@ public class OpcionServiceImpl  implements IOpcionService {
 
 
     @Override
+    @Cacheable(value = "opciones", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema,#idModulo}")
     public OpcionResponse getAllOpciones(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, Integer idSistema,Integer idModulo) {
         log.info(" INI - Service  getAllOpciones");
         try {
@@ -84,6 +87,7 @@ public class OpcionServiceImpl  implements IOpcionService {
     }
 
     @Override
+    @CacheEvict(value = "opciones", allEntries = true)
     public OpcionDTO saveOpcion(OpcionDTO opcionDto) {
        log.info(" INI - Service  saveOpcion");
        try {
@@ -113,6 +117,7 @@ public class OpcionServiceImpl  implements IOpcionService {
     }
 
     @Override
+    @CacheEvict(value = "opciones", allEntries = true)
     public OpcionDTO updateOpcion(OpcionDTO opcionDto, Integer idOpcion) {
         log.info(" INI - Service  updateOpcion");
         try {
@@ -147,6 +152,7 @@ public class OpcionServiceImpl  implements IOpcionService {
     }
 
     @Override
+    @CacheEvict(value = "opciones", allEntries = true)
     public boolean deleteOpcion(Integer idOpcion) {
 
         log.info("INI - deleteOpcion()");

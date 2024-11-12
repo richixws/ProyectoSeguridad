@@ -14,7 +14,7 @@ public class PersonaDTO {
 
     @NotBlank(message = "Número de documento no debe estar vacío.")
     @Size(min = 8, max = 20, message = "Número de documento debe tener entre 8 y 20 caracteres.")
-    private String  documentoIdentidad;
+    private String  numeroDocumento;
 
     @NotBlank(message = "Apellido Paterno no debe ser vacio")
     @NotNull(message = "Apellido Paterno no debe ser nulo.")

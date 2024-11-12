@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "SW_DOCUMENTO_IDENTIDAD" , schema = "bd_seguridad")
+@Table(name = "SW_DOCUMENTO_IDENTIDAD" , schema = "BCRP_MSAUTHENTICA_API")
 public class DocumentoIdentidad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "documento_identidad_seq")
-    @SequenceGenerator(name = "documento_identidad_seq", sequenceName = "bd_seguridad.seq_sw_documento_identidad", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "documento_identidad_seq", sequenceName = "BCRP_MSAUTHENTICA_API.seq_sw_documento_identidad", allocationSize = 1, initialValue = 1)
     @Column(name = "id_documento", nullable = false)
     private Integer idDocumentoIdentidad;
 

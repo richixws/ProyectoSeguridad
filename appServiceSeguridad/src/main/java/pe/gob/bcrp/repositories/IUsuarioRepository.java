@@ -18,7 +18,7 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer> {
 
   @Query("SELECT s FROM Usuario s WHERE " +
             "(:nombres IS NULL OR LOWER(s.persona.nombres) = LOWER(:nombres)) AND " +
-            "(:tipoDocumento IS NULL OR s.persona.docuIdentidad.idDocumentoIdentidad = :tipoDocumento) AND " +
+            "(:tipoDocumento IS NULL OR s.persona.tipoDocumento.idDocumentoIdentidad = :tipoDocumento) AND " +
             "(:numeroDocumento IS NULL OR s.persona.numeroDocumento = :numeroDocumento) AND " +
             "(:ambito IS NULL OR LOWER(s.ambito) = LOWER(:ambito)) AND " +
             "s.isDeleted = false")

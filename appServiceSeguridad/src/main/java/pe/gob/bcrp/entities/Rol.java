@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SW_ROL" , schema = "bd_seguridad")
+@Table(name = "SW_ROL" , schema = "BCRP_MSAUTHENTICA_API")
 public class Rol implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -21,7 +21,7 @@ public class Rol implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rol_seq")
-    @SequenceGenerator(name = "rol_seq", sequenceName = "bd_seguridad.seq_sw_rol", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "rol_seq", sequenceName = "BCRP_MSAUTHENTICA_API.seq_sw_rol", allocationSize = 1, initialValue = 1)
     @Column(name = "id_rol", nullable = false)
     private Integer idRol;
 

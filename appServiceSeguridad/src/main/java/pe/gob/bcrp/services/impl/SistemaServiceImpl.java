@@ -3,6 +3,8 @@ package pe.gob.bcrp.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +54,7 @@ public class SistemaServiceImpl implements ISistemaService {
 
 
     @Override
+    @Cacheable(value = "usuariosResponsables")
     public List<UsuarioResponsableDTO> listarUsuariosResponsable() {
         try {
             List<UsuarioResponsableDTO> listUserResp = new ArrayList<>();
@@ -76,6 +79,7 @@ public class SistemaServiceImpl implements ISistemaService {
     }
 
     @Override
+    @Cacheable(value = "estadosCriticos")
     public List<EstadoCriticoDto> listarEstadosCriticos() {
         log.info("INI - Service listarEstadosCriticos() ");
         try {
@@ -121,6 +125,7 @@ public class SistemaServiceImpl implements ISistemaService {
 
 
     @Override
+    @Cacheable(value = "sistemas", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #nombre, #version}")
     public SistemaResponse getAllSistemas(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String nombre, String version) {
 
         log.info("INI Service() - getAllSistemas()");
@@ -182,6 +187,7 @@ public class SistemaServiceImpl implements ISistemaService {
 
 
     @Override
+    @CacheEvict(value = "sistemas", allEntries = true)
     public boolean deleteSistema(Integer idSistema) {
         log.info("INI -deleteSistema() ");
         boolean estado=false;
@@ -220,6 +226,7 @@ public class SistemaServiceImpl implements ISistemaService {
 
 
     @Override
+    @CacheEvict(value = "sistemas", allEntries = true)
     public SistemaFormDTO guardarSistema(
                                          String nombre,
                                          String version,
@@ -283,6 +290,7 @@ public class SistemaServiceImpl implements ISistemaService {
     }
 
     @Override
+    @CacheEvict(value = "sistemas", allEntries = true)
     public SistemaFormDTO actualizarSistema(Integer idSistema,
                                             String nombre,
                                             String version,
