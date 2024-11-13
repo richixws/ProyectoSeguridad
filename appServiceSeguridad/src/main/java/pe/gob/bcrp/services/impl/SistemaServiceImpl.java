@@ -264,12 +264,14 @@ public class SistemaServiceImpl implements ISistemaService {
             sistema.setUnidadOrganizacional(unidOrganizacional);
 
             if(multiLogoMain != null){
-                sistema.setLogoMain(multiLogoMain.getOriginalFilename());
-                uploadFileService.upload(multiLogoMain);
+                //sistema.setLogoMain(multiLogoMain.getOriginalFilename());
+                String nombreLogoMain=uploadFileService.upload(multiLogoMain);
+                sistema.setLogoMain(nombreLogoMain);
             }
             if(multiLogoHead != null){
-                sistema.setLogoHead(multiLogoHead.getOriginalFilename());
-                uploadFileService.upload(multiLogoHead);
+               // sistema.setLogoHead(multiLogoHead.getOriginalFilename());
+                String nombreLogoHead=uploadFileService.upload(multiLogoHead);
+                sistema.setLogoHead(nombreLogoHead);
             }
 
             sistema.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));

@@ -97,7 +97,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
      * @throws IOException
      */
 
-    public String upload (MultipartFile multipartFile) throws IOException {
+    public String upload2 (MultipartFile multipartFile) throws IOException {
         if (multipartFile!=null){
             byte [] bytes = multipartFile.getBytes();
             Path path = Paths.get(FOLDER+multipartFile.getOriginalFilename());
@@ -106,6 +106,41 @@ public class IUploadFileServiceImpl implements IUploadFileService {
         }
         return  IMG_DEFAULT;
     }
+
+    public String upload(MultipartFile multipartFile) throws IOException {
+        if (multipartFile != null) {
+            byte[] bytes = multipartFile.getBytes();
+            String originalFilename = multipartFile.getOriginalFilename();
+            if (originalFilename == null) {
+                return IMG_DEFAULT;  // Si el nombre de archivo es nulo, retornar el valor por defecto.
+            }
+
+            Path path = Paths.get(FOLDER + originalFilename);
+            String fileName = originalFilename;
+            String fileExtension = "";
+            int dotIndex = originalFilename.lastIndexOf('.');
+
+            // Separar el nombre del archivo de su extensión, si existe.
+            if (dotIndex > 0 && dotIndex < originalFilename.length() - 1) {
+                fileName = originalFilename.substring(0, dotIndex);
+                fileExtension = originalFilename.substring(dotIndex);
+            }
+
+            int counter = 1;
+            // Mientras exista un archivo con el mismo nombre, añadir un sufijo "(n)".
+            while (Files.exists(path)) {
+                String newFileName = fileName + "(" + counter + ")" + fileExtension;
+                path = Paths.get(FOLDER + newFileName);
+                counter++;
+            }
+
+            Files.write(path, bytes);
+            return path.getFileName().toString();  // Retornar el nombre del archivo guardado.
+        }
+        return IMG_DEFAULT;  // Si el archivo es nulo, retornar el valor por defecto.
+    }
+
+
 
     /**public void delete(String nameFile){
         File file = new File(FOLDER+nameFile);

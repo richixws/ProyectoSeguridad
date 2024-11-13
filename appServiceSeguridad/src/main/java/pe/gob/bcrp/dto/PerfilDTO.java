@@ -23,8 +23,7 @@ public class PerfilDTO {
     private Integer idEntidad;
 
     @NotEmpty(message = "Nombre del perfil no debe ser vacio")
-    @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚ]+([\\-'\\s]?[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+)*$",
-            message = "Formato no válido para el nombre del perfil")
+    @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚ]+([\\-'\\s]?[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+)*$", message = "Nombre perfil solo contiene letras.")
     private String nombrePerfil;
 
 

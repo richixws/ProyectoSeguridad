@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,6 +32,7 @@ import pe.gob.bcrp.services.IUsuarioService;
 import pe.gob.bcrp.util.Util;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -115,7 +117,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
-     public List<UsuarioFormDTO> uploadUserCsv(MultipartFile file) {
+     public List<UsuarioFormDTO> uploadUserCsv(MultipartFile file) throws BadRequestException {
         log.info("INI Service() - uploadUserCsv");
         try {
 
@@ -127,26 +129,30 @@ public class UsuarioServiceImpl implements IUsuarioService {
             }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-            CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader());
+            CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
 
             List<UsuarioFormDTO> users = new ArrayList<>();
 
             for (CSVRecord record : csvParser) {
                 UsuarioFormDTO user = new UsuarioFormDTO();
                 user.setAmbito(record.get("Ambito"));               // "Ambito" en lugar de "ambito"
-                user.setTipoDocumento(record.get("Tip. doc"));      // "Tip. doc" en lugar de "tipo"
-                user.setNumeroDocumento(record.get("Nro. documento")); // "Nro. documento" en lugar de "numeroDocumento"
+                user.setTipoDocumento(record.get("Tipo_documento"));      // "Tip. doc" en lugar de "tipo"
+                user.setNumeroDocumento(record.get("Numero_documento")); // "Nro. documento" en lugar de "numeroDocumento"
                 user.setEstado(record.get("Estado"));               // "Estado" en lugar de "estado"
                 user.setNombres(record.get("Nombre"));              // "Nombre" en lugar de "nombres"
-                user.setApellidoPaterno(record.get("Ape. paterno")); // "Ape. paterno" en lugar de "apellidoPaterno"
-                user.setApellidoMaterno(record.get("Ape. materno")); // "Ape. materno" en lugar de "apellidoMaterno"
-                user.setCorreoElectronico(record.get("Correo electrónico")); // "Correo electrónico" en lugar de "correoElectronico"
+                user.setApellidoPaterno(record.get("Apellido_paterno")); // "Ape. paterno" en lugar de "apellidoPaterno"
+                user.setApellidoMaterno(record.get("Apellido_materno")); // "Ape. materno" en lugar de "apellidoMaterno"
+                user.setCorreoElectronico(record.get("Correo_electronico")); // "Correo electrónico" en lugar de "correoElectronico"
                 users.add(user);
 
             }
             return users;
 
-        }catch (Exception e) {
+        } catch (BadRequestException e) {
+            log.error("ERROR - al cargar archivo"+e.getMessage());
+            throw new BadRequestException(e.getMessage());
+        }
+        catch (Exception e) {
             throw new RuntimeException("Error al procesar el archivo CSV: " + e.getMessage());
         }
     }
@@ -194,8 +200,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
             //if(ambito.equalsIgnoreCase("interno")){
             usuario.setAmbito(ambito);
             if(sustento !=null){
-                usuario.setDocSustento(sustento.getOriginalFilename());
-                uploadFileService.upload(sustento);
+                //usuario.setDocSustento(sustento.getOriginalFilename());
+                String nombrefileSustento=uploadFileService.upload(sustento);
+                usuario.setDocSustento(nombrefileSustento);
             }
 
             usuario.setFechaCreacion(new Date());
@@ -337,16 +344,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
         return usuarioDTO;
     }
 
-    private Usuario mapToEntity(UsuarioDTO usuarioDTO){
-        Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
-        return usuario;
-    }
 
-
-    public class BadRequestException extends RuntimeException {
+   /** public class BadRequestException extends RuntimeException {
         public BadRequestException(String message) {
             super(message);
         }
-    }
+    }**/
 
 }

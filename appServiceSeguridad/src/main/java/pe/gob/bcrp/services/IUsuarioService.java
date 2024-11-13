@@ -1,5 +1,6 @@
 package pe.gob.bcrp.services;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroCreateUsuarioDTO;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroUsuarioDTO;
@@ -23,7 +24,7 @@ public interface IUsuarioService {
 
 
 
-  public List<UsuarioFormDTO> uploadUserCsv(MultipartFile file);
+  public List<UsuarioFormDTO> uploadUserCsv(MultipartFile file) throws BadRequestException;
 
   public RegistroCreateUsuarioDTO guardarUsuario(Integer tipoDocumento,
                                                  String numeroDocumento,

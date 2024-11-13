@@ -17,25 +17,25 @@ import java.util.List;
 public class SistemaDTO {
 
 
-    @NotNull( message = "id sistema no puede ser nulo")
+   // @NotNull( message = "id sistema no puede ser nulo")
     private Integer idSistema;
 
    // @NotEmpty(message = "codigo no puede ser vacio")
    // private String codigo;
 
-    @NotEmpty(message = "nombre no puede ser vacio")
+    //@NotEmpty(message = "nombre no puede ser vacio")
     private String nombre;
 
-    @NotEmpty(message = "versus no puede ser vacio")
+   // @NotEmpty(message = "versus no puede ser vacio")
     public String version;
 
-    @NotEmpty(message = "loginMain no puede ser vacio")
+  //  @NotEmpty(message = "loginMain no puede ser vacio")
     private String logoMain;
 
-    @NotEmpty(message = "logoHead no puede ser vacio")
+  //  @NotEmpty(message = "logoHead no puede ser vacio")
     private String logoHead;
 
-    @NotEmpty(message = "url no puede ser vacio")
+  //  @NotEmpty(message = "url no puede ser vacio")
     private String url;
 
     private String usuarioResponsable;

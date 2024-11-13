@@ -3,6 +3,7 @@ package pe.gob.bcrp.dto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -18,10 +19,10 @@ public class OpcionDTO {
     private Integer idSistema;
 
     @NotEmpty(message = "Nombre de Opcion no debe ser vacio")
-    @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚ]+([\\-'\\s]?[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+)*$",
-            message = "Formato no válido para el nombre del perfil")
+    @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚ]+([\\-'\\s]?[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+)*$",message = "Nombre de opcion con formato incorrecto.")
     private String nombreOpcion;
 
     @NotEmpty(message = "Link de Opcion no debe ser vacio")
+    @Size(max = 200, message = "Link debe tener max 200 caracteres.")
     private String url;
 }

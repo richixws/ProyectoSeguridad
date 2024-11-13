@@ -3,6 +3,8 @@ package pe.gob.bcrp.dto;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +21,8 @@ public class SistemaFormDTO {
     private String codigo;
 
     @NotEmpty(message = "nombre no puede ser vacio")
+    @Pattern(regexp = "^[a-zñA-ZÑ0-9\\_](\\s?[a-zñA-ZÑ0-9\\_])*$", message = "Solo se permiten letras, números, guion bajo y espacios intermedios.")
+    @Size(max = 200, message = "Nombre debe tener max 200 caracteres.")
     private String nombre;
 
     @NotEmpty(message = "versus no puede ser vacio")

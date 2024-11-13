@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
+import org.apache.coyote.BadRequestException;
 import org.apache.http.auth.InvalidCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +21,7 @@ import pe.gob.bcrp.dto.usuarioDTO.UsuarioFormDTO;
 import pe.gob.bcrp.dto.response.UsuarioResponse;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IUsuarioService;
+import pe.gob.bcrp.services.impl.UsuarioServiceImpl;
 
 import java.util.List;
 
@@ -70,21 +72,29 @@ public class UsuarioController {
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/upload/usuarios")
-    public ResponseEntity<List<UsuarioFormDTO>>  uploadUsuarios(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ResponseDTO<?>>  uploadUsuarios(@RequestParam("file") MultipartFile file) {
 
         log.info("INI - UploadsUsuario | uploadUsuarios=upload/usuarios");
-        ResponseDTO<UsuarioFormDTO> response=new ResponseDTO<>();
+        ResponseDTO<List<UsuarioFormDTO>> response=new ResponseDTO<>();
         try {
 
             List<UsuarioFormDTO> list=usuarioService.uploadUserCsv(file);
-            return new ResponseEntity<>(list, HttpStatus.OK);
+            response.setStatus(1);
+            response.setMessage("Se cargo exitosamente las lista de usuarios de archivo csv.");
+            response.setBody(list);
+            return new ResponseEntity<>(response, HttpStatus.OK);
 
-
-        }catch (Exception e){
+        }
+         catch (BadRequestException e) {
+            log.error("ERROR - al cargar archivo"+e.getMessage());
+             response.setStatus(0);
+             response.setMessage("Error al cargar archivo "+e.getMessage() );
+            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+        }catch (RuntimeException e){
             log.error(" ERROR - uploadUsuarios | requestURL=usuarios ");
             response.setStatus(0);
-            response.setMessage("Error al guardar el Usuario "+e.getMessage() );
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            response.setMessage(e.getMessage() );
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }
