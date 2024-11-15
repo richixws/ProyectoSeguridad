@@ -39,18 +39,18 @@ public class KeycloakRestService {
    // @Value("${keycloak.client-secret}")
    // private String clientSecret;
 
-  //  @Value("${keycloak.scope}")
-  //  private String scope;
+      @Value("${keycloak.scope}")
+      private String scope;
     
-    public String login(String username, String password) 
-    {
+    public String login(String username, String password) {
     	MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
     	map.add("username", username);
     	map.add("password",password);
     	map.add("client_id", this.clientId);
         map.add("grant_type", this.grantType);
+        map.add("scope",scope);
       //  map.add("client_secret", this.clientSecret);
-       // map.add("scope",scope);
+
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity(map, new HttpHeaders());
         return this.restTemplate.postForObject(this.keycloakTokenUri, request, String.class);
     }

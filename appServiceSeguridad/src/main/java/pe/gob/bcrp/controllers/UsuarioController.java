@@ -144,8 +144,7 @@ public class UsuarioController {
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/usuario/{idUsuario}")
-    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> updateUsuario(
-                                                                         @PathVariable("idUsuario") Integer idUsuario,@Valid  @RequestBody RegistroUsuarioDTO registroUsuarioDTO) {
+    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> updateUsuario(@PathVariable("idUsuario") Integer idUsuario,  @RequestBody RegistroUsuarioDTO registroUsuarioDTO) {
         log.info("INI - Editar Usuario | requestURL=usuario");
         ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
         try {

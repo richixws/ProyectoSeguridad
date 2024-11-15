@@ -32,7 +32,7 @@ public class JwtValidationService {
     @Value("${keycloak.token-uri}")
     private  String urlToken;
 
-    @Value("${keycloak.jwk-set-uri}")
+    @Value("${keycloak.certs}")
     private String urlCerts;
 
     @Value("${keycloak.client-id}")

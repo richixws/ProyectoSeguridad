@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.response.UsuarioResponse;
@@ -77,7 +78,12 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
             Page<Usuario> pageUsuarios = null;
 
-            if (nombres != null || tipoDocumento != null || numeroDocumento != null || ambito != null) {
+            String nombresFiltro = StringUtils.hasText(nombres) ? nombres : null;
+            String numeroDocumentoFiltro = StringUtils.hasText(numeroDocumento) ? numeroDocumento : null;
+            String ambitoFiltro = StringUtils.hasText(ambito) ? ambito : null;
+
+
+            if (nombresFiltro != null  || tipoDocumento != null || numeroDocumentoFiltro != null || ambitoFiltro != null) {
                 pageUsuarios = usuarioRepository.findByFilters(nombres, tipoDocumento, numeroDocumento,ambito, pageDetails);//,
             }else if(idSistema != null){
                 pageUsuarios = usuarioRepository.findBySistemaId(idSistema, pageDetails);
@@ -345,10 +351,5 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
 
-   /** public class BadRequestException extends RuntimeException {
-        public BadRequestException(String message) {
-            super(message);
-        }
-    }**/
 
 }

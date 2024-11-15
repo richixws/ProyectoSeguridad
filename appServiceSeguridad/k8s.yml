@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment-seguridad
+  labels:
+    app: service-seguridad
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-seguridad
+  template:
+    metadata:
+      labels:
+        app: service-seguridad
+    spec:
+      containers:
+        - name: service-seguridad
+          image: app-service-seguridadv1
+          ports:
+            - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: app-service-seguridad
+spec:
+  type: LoadBalancer
+  selector:
+    app: service-seguridad
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

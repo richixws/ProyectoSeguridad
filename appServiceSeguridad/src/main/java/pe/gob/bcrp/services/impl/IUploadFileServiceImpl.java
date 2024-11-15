@@ -2,6 +2,7 @@ package pe.gob.bcrp.services.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -37,8 +38,12 @@ public class IUploadFileServiceImpl implements IUploadFileService {
     @Autowired
     private Util util;
 
+    @Value("${app.storage.location}")
+    private String folderLocation;
 
-    private final String FOLDER = "src//main//resources//folder//";
+
+
+    //private final String FOLDER = "src//main//resources//folder//";
     private final static String DIRECTORIO_UPLOAD="uploads";
     private final String IMG_DEFAULT = "default.jpg";
 
@@ -86,7 +91,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
 
     @Override
     public Path getPath(String nombreFoto) {
-        return Paths.get(DIRECTORIO_UPLOAD).resolve(nombreFoto).toAbsolutePath();
+        return Paths.get(folderLocation).resolve(nombreFoto).toAbsolutePath();
     }
 
     /**
@@ -100,7 +105,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
     public String upload2 (MultipartFile multipartFile) throws IOException {
         if (multipartFile!=null){
             byte [] bytes = multipartFile.getBytes();
-            Path path = Paths.get(FOLDER+multipartFile.getOriginalFilename());
+            Path path = Paths.get(folderLocation+multipartFile.getOriginalFilename());
             Files.write(path, bytes);
             return multipartFile.getOriginalFilename();
         }
@@ -115,7 +120,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
                 return IMG_DEFAULT;  // Si el nombre de archivo es nulo, retornar el valor por defecto.
             }
 
-            Path path = Paths.get(FOLDER + originalFilename);
+            Path path = Paths.get(folderLocation, originalFilename);
             String fileName = originalFilename;
             String fileExtension = "";
             int dotIndex = originalFilename.lastIndexOf('.');
@@ -130,7 +135,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
             // Mientras exista un archivo con el mismo nombre, añadir un sufijo "(n)".
             while (Files.exists(path)) {
                 String newFileName = fileName + "(" + counter + ")" + fileExtension;
-                path = Paths.get(FOLDER + newFileName);
+                path = Paths.get(folderLocation , newFileName);
                 counter++;
             }
 
@@ -148,7 +153,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
     }**/
     public void delete(String filePath) throws IOException {
         // Verificar si el archivo existe antes de eliminarlo
-        Path path = Paths.get(FOLDER + filePath);
+        Path path = Paths.get(folderLocation + filePath);
         if (Files.exists(path)) {
             Files.delete(path);  // Eliminar el archivo si existe
         }
@@ -174,7 +179,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
         files.setIdModulo(modulo);
 
         files.setFilename(file.getOriginalFilename());
-        files.setPath(FOLDER + file.getOriginalFilename()); // Ajusta según tu lógica de almacenamiento
+        files.setPath(folderLocation + file.getOriginalFilename()); // Ajusta según tu lógica de almacenamiento
         files.setExtension(getFileExtension(file.getOriginalFilename()));
         files.setMime(file.getContentType());
         files.setSizes((int) file.getSize());
@@ -197,7 +202,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
         filesNew.setIdUsuario(usuario.getUsuario());
         filesNew.setIdModulo("modulo sistema");  //aca falata agregar el lugar
         filesNew.setFilename(multipartFile.getOriginalFilename());
-        filesNew.setPath(FOLDER + multipartFile.getOriginalFilename());
+        filesNew.setPath(folderLocation + multipartFile.getOriginalFilename());
         filesNew.setExtension(getFileExtension(multipartFile.getOriginalFilename()));
         filesNew.setMime(multipartFile.getContentType());
         filesNew.setSizes((int)multipartFile.getSize());
