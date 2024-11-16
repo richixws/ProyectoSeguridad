@@ -5,21 +5,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.*;
+import pe.gob.bcrp.dto.entidadDTO.EntidadDTO;
 import pe.gob.bcrp.dto.response.EntidadResponse;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IEntidadService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Log4j2
 @RestController
@@ -57,7 +54,7 @@ public class EntidadController {
     public ResponseEntity<EntidadResponse> getAllEntidades(
             @RequestParam(name = "pageNumber", defaultValue = "0",      required = false) Integer pageNumber,
             @RequestParam(name = "pageSize",   defaultValue = "50",     required = false) Integer pageSize,
-            @RequestParam(name = "sortBy",     defaultValue = "nombre", required = false) String sortBy,
+            @RequestParam(name = "sortBy",     defaultValue = "idEntidad", required = false) String sortBy,
             @RequestParam(name = "sortOrder",  defaultValue = "asc",    required = false) String sortOrder,
             @RequestParam(name = "nombre",     required = false) String nombre,
             @RequestParam(name = "tipoDocumento",   required = false) Integer tipoDocumento,

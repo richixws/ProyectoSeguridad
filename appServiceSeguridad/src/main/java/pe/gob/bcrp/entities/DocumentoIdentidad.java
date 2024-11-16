@@ -27,6 +27,9 @@ public class DocumentoIdentidad {
     @Column(name = "grupo_documento")
     private Integer grupoDocumento;
 
+    @Column(name = "longitud")
+    private Integer longitud;
+
 
 
 }

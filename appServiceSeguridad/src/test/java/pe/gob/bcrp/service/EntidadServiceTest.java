@@ -10,7 +10,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
-import pe.gob.bcrp.dto.EntidadDTO;
+import pe.gob.bcrp.dto.entidadDTO.EntidadDTO;
 import pe.gob.bcrp.dto.response.EntidadResponse;
 import pe.gob.bcrp.entities.Entidad;
 import pe.gob.bcrp.repositories.IEntidadRepository;

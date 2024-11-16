@@ -11,7 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.DocumentoIdentidadDTO;
-import pe.gob.bcrp.dto.EntidadDTO;
+import pe.gob.bcrp.dto.entidadDTO.EntidadDTO;
+import pe.gob.bcrp.dto.entidadDTO.EntidadFormDTO;
 import pe.gob.bcrp.dto.response.EntidadResponse;
 import pe.gob.bcrp.entities.DocumentoIdentidad;
 import pe.gob.bcrp.entities.Entidad;
@@ -51,7 +52,7 @@ public class EntidadServiceImpl implements IEntidadService {
 
         try {
             log.info("INI - getAllDocumentos");
-            List<DocumentoIdentidad> listDocumentos=documentoIdentidadRepository.findByGrupoDocumento(1);;
+            List<DocumentoIdentidad> listDocumentos=documentoIdentidadRepository.findByGrupoDocumento(2);;
            // List<DocumentoIdentidad> listDocumentos=documentoIdentidadRepository.findAll();
             return listDocumentos.stream()
                     .map(documento -> modelMapper.map(documento, DocumentoIdentidadDTO.class))
@@ -91,8 +92,8 @@ public class EntidadServiceImpl implements IEntidadService {
                                                     .map(enti -> modelMapper.map(enti, EntidadDTO.class))
                                                     .toList();
              **/
-            List<EntidadDTO> entidadDTOS = entidades.stream().map(enti -> {
-                EntidadDTO entidadDTO = modelMapper.map(enti, EntidadDTO.class);
+            List<EntidadFormDTO> entidadDTOS = entidades.stream().map(enti -> {
+                EntidadFormDTO entidadDTO = modelMapper.map(enti, EntidadFormDTO.class);
                 if (enti.getDocumentoIdentidad() != null) { // Asignar tipoDocumento a partir de DocumentoIdentidad
                     entidadDTO.setTipoDocumento(enti.getDocumentoIdentidad().getTipoDocumentoIdentidad());
                 }
@@ -126,12 +127,17 @@ public class EntidadServiceImpl implements IEntidadService {
             Usuario usuario=util.getUsuario();
             String uuidCodExt = UUID.randomUUID().toString();
 
+            DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
+            if(doc.getLongitud()!=entidadDto.getNumeroDocumento().length()){
+                if(doc.getIdDocumentoIdentidad()==6){
+                    throw new IllegalArgumentException("El número de RUC debe de ser de 11 digitos.");
+                }
+            }
+
             boolean existeNumeroDocumento = entidadRepository.existsByNumeroDocumento(entidadDto.getNumeroDocumento());
             if (existeNumeroDocumento) {
                 throw new IllegalArgumentException("El número de documento ya existe en el sistema.");
             }
-
-            DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
 
             Entidad entidad=modelMapper.map(entidadDto,Entidad.class);
             entidad.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
@@ -148,7 +154,7 @@ public class EntidadServiceImpl implements IEntidadService {
             return entidadDtoNew;
 
         }catch (IllegalArgumentException e){
-           throw  new IllegalArgumentException("El número de documento ya existe en el sistema");
+           throw  new IllegalArgumentException(e.getMessage());
         }
 
         catch (Exception e){
@@ -168,6 +174,13 @@ public class EntidadServiceImpl implements IEntidadService {
             boolean existeNumeroDocumento = entidadRepository.existsByNumeroDocumentoAndIdEntidadNot( entidadDto.getNumeroDocumento(), idEntidad);
             if (existeNumeroDocumento) {
                 throw new IllegalArgumentException("El número de documento ya está registrado en otra entidad.");
+            }
+
+            if(entidadDto.getCodExterno()==null || entidadDto.getCodExterno().isBlank()){
+                throw new IllegalArgumentException("Codigo externo no puede estar vacio.");
+            }
+            if (!entidadDto.getCodExterno().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")) {
+                throw new IllegalArgumentException("Código debe tener un formato UUID válido");
             }
 
             Entidad entidad=entidadRepository.findById(idEntidad).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado con id :" + entidadDto.getIdEntidad()));
