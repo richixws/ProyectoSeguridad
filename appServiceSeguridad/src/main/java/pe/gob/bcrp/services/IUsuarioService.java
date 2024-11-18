@@ -16,7 +16,7 @@ public interface IUsuarioService {
                                         Integer pageSize,
                                         String sortBy,
                                         String sortOrder,
-                                        String nombre,
+                                        String nombres,
                                         Integer tipoDocumento,
                                         String numeroDocumento,
                                         Integer idSistema,

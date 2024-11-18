@@ -33,9 +33,11 @@ public class RegistroSistemaDTO {
     private String usuarioResponsableAlt;
 
     @NotNull(message = "Usuario responsable no puede ser vacio")
+    @Min(value = 1, message = "El valor debe ser mayor o igual a 1")
     private  Integer idUsuarioResponsable;
 
     @NotNull(message = "Usuario responsable Alterno no puede ser vacio")
+    @Min(value = 1, message = "El valor debe ser mayor o igual a 1")
     private  Integer idUsuarioResponsableAlt;
 
     @NotEmpty(message = "url no puede ser vacio")

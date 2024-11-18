@@ -78,12 +78,12 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
             Page<Usuario> pageUsuarios = null;
 
-            String nombresFiltro = StringUtils.hasText(nombres) ? nombres : null;
-            String numeroDocumentoFiltro = StringUtils.hasText(numeroDocumento) ? numeroDocumento : null;
-            String ambitoFiltro = StringUtils.hasText(ambito) ? ambito : null;
+            //String nombres = StringUtils.hasText(nombresFiltro) ? nombresFiltro : null;
+            //String numeroDocumento = StringUtils.hasText(numeroDocumentos) ? numeroDocumentos : null;
+            //String ambito = StringUtils.hasText(ambitos) ? ambitos : null;
 
 
-            if (nombresFiltro != null  || tipoDocumento != null || numeroDocumentoFiltro != null || ambitoFiltro != null) {
+            if (nombres != null  || tipoDocumento != null || numeroDocumento != null || ambito!= null) {
                 pageUsuarios = usuarioRepository.findByFilters(nombres, tipoDocumento, numeroDocumento,ambito, pageDetails);//,
             }else if(idSistema != null){
                 pageUsuarios = usuarioRepository.findBySistemaId(idSistema, pageDetails);
