@@ -116,7 +116,7 @@ public class ModuloController {
 
             boolean eliminado= moduloService.deleteModulo(idModulo);
             if(!eliminado){
-                throw new ResourceNotFoundException("El Modulo a eliminar con Id "+idModulo+" no existe");
+                throw new ResourceNotFoundException("El Modulo no existe, ya se encuentra eliminado");
             }
             response.setStatus(1);
             response.setMessage("El Modulo ha sido eliminado con éxito");

@@ -151,6 +151,9 @@ public class ModuloServiceImpl implements IModuloService {
 
             Modulo modulo=imoduloRepository.findById(idModulo).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado"));
             if(modulo!=null){
+                if(modulo.isDeleted()){
+                    throw new ResourceNotFoundException("El Modulo no existe, ya se encuentra eliminado");
+                }
                 //entidadRepository.deleteById(id);
                 modulo.setDeleted(true);
                 modulo.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
