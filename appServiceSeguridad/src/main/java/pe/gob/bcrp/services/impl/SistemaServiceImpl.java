@@ -29,10 +29,7 @@ import pe.gob.bcrp.util.Util;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -242,7 +239,10 @@ public class SistemaServiceImpl implements ISistemaService {
                                          String unidOrganizacional) throws IOException {
         log.info("INI - guardarSistema() ");
         try {
-
+            Optional<Sistema> sistemaExistente = sistemaRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(nombre);
+            if (sistemaExistente.isPresent()){
+                throw new IllegalArgumentException("El nombre del sistema se encuentra en uso, por favor ingrese un nuevo sistema.");
+            }
             Usuario usuario=util.getUsuario();
 
             UUID codigoUuid=UUID.randomUUID();

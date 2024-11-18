@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import pe.gob.bcrp.entities.Sistema;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ISistemaRepository extends JpaRepository<Sistema, Integer> {
 
@@ -17,6 +18,7 @@ public interface ISistemaRepository extends JpaRepository<Sistema, Integer> {
 
     public Page<Sistema> findByIsDeletedFalse(Pageable pageable);
 
+    Optional<Sistema> findByNombreContainingIgnoreCaseAndIsDeletedFalse(String nombre);
 
     // Consulta personalizada para buscar por código, nombre y versión
       @Query("SELECT s FROM Sistema s WHERE " +
