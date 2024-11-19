@@ -1,25 +1,28 @@
 version: '3'
+
 services:
   
-  app:
-    image: app-service-seguridadv1  # Reemplaza con el nombre de la imagen de tu aplicación Spring Boot
+  spring_app_seguridad:
+    container_name: app_seguridad
+    image: app-service-seguridad  # Reemplaza con el nombre de la imagen de tu aplicación Spring Boot
+    build: .
+    ports:
+      - 1025:1025
     environment:
       SERVER_PORT: 1025
-      ORACLE_HOST: zsrv004
-      ORACLE_PORT: 1998
-      ORACLE_SID: bcrdesa
+      ORACLE_HOST: localhost
+      ORACLE_PORT: 1521
+      ORACLE_SERVICE_NAME: FREEPDB1
       BD_USERNAME: bcrp_msauthentica_api
       BD_PASSWORD: bcrp_msauthentica_api
-      KEYCLOAK_ISSUER: http://172.30.107.211:443/realms/demo
-      KEYCLOAK_BASE_URI: http://172.30.107.211:443/auth/realms/
-      KEYCLOAK_AUTH_URI: http://172.30.107.211:443/realms/demo/protocol/openid-connect/auth
-      KEYCLOAK_INFO_URI: http://172.30.107.211:443/realms/demo/protocol/openid-connect/userinfo
-      KEYCLOAK_TOKEN_URI: http://172.30.107.211:443/realms/demo/protocol/openid-connect/token
-      KEYCLOAK_LOGOUT: http://172.30.107.211:443/realms/demo/protocol/openid-connect/logout
-      KEYCLOAK_CERTS: http://172.30.107.211:443/realms/demo/protocol/openid-connect/certs
+      KEYCLOAK_ISSUER: http://localhost:8080/realms/demo
+      KEYCLOAK_BASE_URI: http://localhost:8080/auth/realms/
+      KEYCLOAK_AUTH_URI: http://localhost:8080/realms/demo/protocol/openid-connect/auth
+      KEYCLOAK_INFO_URI: http://localhost:8080/realms/demo/protocol/openid-connect/userinfo
+      KEYCLOAK_TOKEN_URI: http://localhost:8080/realms/demo/protocol/openid-connect/token
+      KEYCLOAK_LOGOUT: http://localhost:8080/realms/demo/protocol/openid-connect/logout
+      KEYCLOAK_CERTS: http://localhost:8080/realms/demo/protocol/openid-connect/certs
       KEYCLOAK_CLIENT_ID: seguridad-demo
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      ALLOWED_CORS_ORIGINS: http://172.30.107.212:4300
-    ports:
-      - "1025:1025"  # Mapea el puerto del contenedor al host
+      ALLOWED_CORS_ORIGINS: http://localhost:4200
