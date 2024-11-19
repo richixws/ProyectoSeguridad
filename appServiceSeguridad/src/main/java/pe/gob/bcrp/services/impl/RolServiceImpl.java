@@ -156,7 +156,9 @@ public class RolServiceImpl implements IRolService {
 
             Rol rol=rolRepository.findById(idRol).orElseThrow(() -> new ResourceNotFoundException(" Rol no encontrado "));
             if(rol!=null){
-
+                if(rol.isDeleted()){
+                    throw new ResourceNotFoundException("El Rol no existe, ya se encuentra eliminado");
+                }
                 rol.setDeleted(true);
                 rol.setEstado(0);
                 rol.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));

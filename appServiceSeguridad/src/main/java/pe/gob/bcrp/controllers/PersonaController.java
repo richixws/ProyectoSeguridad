@@ -104,7 +104,7 @@ public class PersonaController {
 
             boolean eliminado=personaService.deletePersona(idPersona);
             if(!eliminado){
-                throw new ResourceNotFoundException(" La Persona a eliminar con Id "+idPersona+" no existe" );
+                throw new ResourceNotFoundException("La Persona no existe, ya se encuentra eliminado" );
             }
             response.setStatus(1);
             response.setMessage("la Persona fue eliminado con exito");
@@ -113,7 +113,7 @@ public class PersonaController {
         }catch (ResourceNotFoundException e){
             log.error(" ERROR - deletePersona | requestUrl=persona/idpersona"+e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al eliminar la Persona "+ e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }catch (Exception e){
             log.error(" ERROR - deletePersona | requestUrl=persona/idpersona");

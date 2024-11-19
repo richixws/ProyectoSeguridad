@@ -141,7 +141,7 @@ public class OpcionController {
 
             boolean eliminado=opcionService.deleteOpcion(idOpcion);
             if(!eliminado){
-                throw new ResourceNotFoundException("La Opcion a eliminar con Id "+idOpcion+" no existe");
+                throw new ResourceNotFoundException("La Opción no existe, ya se encuentra eliminado");
             }
             response.setStatus(1);
             response.setMessage("La Opcion ha sido eliminado con éxito");

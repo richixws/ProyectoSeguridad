@@ -227,7 +227,9 @@ public class EntidadServiceImpl implements IEntidadService {
 
             Entidad entidad=entidadRepository.findById(idEntidad).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado"));
             if(entidad!=null){
-                //entidadRepository.deleteById(id);
+                if(entidad.isDeleted()){
+                    throw new ResourceNotFoundException("La entidad no existe, ya se encuentra eliminado");
+                }
                 entidad.setDeleted(true);
                 entidad.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 entidad.setUsuarioEliminacion(usuario.getUsuario());

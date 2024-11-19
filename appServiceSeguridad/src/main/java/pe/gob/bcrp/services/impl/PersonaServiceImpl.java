@@ -157,6 +157,9 @@ public class PersonaServiceImpl  implements IPersonaService {
             Usuario usuario = util.getUsuario();
             var persona=iPersonaRepository.findById(idPersona).orElseThrow(()->new  ResourceNotFoundException("Persona no encontrado"));
             if(persona!=null){
+                if(persona.isDeleted()){
+                    throw new ResourceNotFoundException("La Persona no existe, ya se encuentra eliminado");
+                }
                persona.setDeleted(true);
                persona.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                persona.setUsuarioActualizacion(usuario.getUsuario());

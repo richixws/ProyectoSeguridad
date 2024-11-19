@@ -195,7 +195,9 @@ public class SistemaServiceImpl implements ISistemaService {
             List<Files> listFiles=filesRepository.findAllByIdIdentidad(idSistema);
 
             if(sistema!=null && !listFiles.isEmpty()){
-
+                if(sistema.isDeleted()){
+                    throw new ResourceNotFoundException("El sistema no existe, ya se encuentra eliminado");
+                }
                 for(Files file:listFiles ){
                     String filePath=file.getFilename();
                     uploadFileService.delete(filePath);

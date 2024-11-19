@@ -119,7 +119,7 @@ public class SistemaController {
         try {
             boolean eliminado = sistemaService.deleteSistema(idSistema);
             if (!eliminado) {
-                throw new ResourceNotFoundException("El sistema a eliminar con ID " + idSistema + " no existe");
+                throw new ResourceNotFoundException("El sistema no existe, ya se encuentra eliminado");
             }else{
                 response.setStatus(1);
                 response.setMessage("El sistema ha sido eliminado con éxito");
@@ -204,7 +204,7 @@ public class SistemaController {
             //response.setBody(sistemaDto);
 
         }
-         catch (IllegalArgumentException e) {
+        catch (IllegalArgumentException e) {
              response.setStatus(0);
              response.setMessage(e.getMessage());
              return ResponseEntity.badRequest().body(response);
