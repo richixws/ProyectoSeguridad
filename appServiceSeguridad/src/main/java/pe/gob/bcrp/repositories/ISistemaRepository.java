@@ -18,6 +18,8 @@ public interface ISistemaRepository extends JpaRepository<Sistema, Integer> {
 
     public Page<Sistema> findByIsDeletedFalse(Pageable pageable);
 
+    boolean existsByNombreIgnoreCaseAndIdSistemaNot(String nombre,Integer idSistema);
+
     Optional<Sistema> findByNombreContainingIgnoreCaseAndIsDeletedFalse(String nombre);
 
     // Consulta personalizada para buscar por código, nombre y versión

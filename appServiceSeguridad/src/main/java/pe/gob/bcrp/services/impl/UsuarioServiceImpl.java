@@ -313,10 +313,13 @@ public class UsuarioServiceImpl implements IUsuarioService {
             Usuario usuario=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             if(usuario!=null){
                 //entidadRepository.deleteById(id);
-                usuario.setDeleted(true);
+                //usuario.setDeleted(true);
+                if(usuario.getEstado().equalsIgnoreCase("Inactivo")){
+                    throw  new ResourceNotFoundException("Usuario ya ha sido inhabilitado");
+                }
                 usuario.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 usuario.setUsuarioEliminacion(usuarioReg.getUsuario());
-                usuario.setEstado("INHABILITADO");
+                usuario.setEstado("Inactivo");
 
                 usuarioRepository.save(usuario);
                 estado=true;

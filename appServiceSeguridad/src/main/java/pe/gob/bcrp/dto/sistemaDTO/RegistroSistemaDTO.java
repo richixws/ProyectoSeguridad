@@ -41,9 +41,11 @@ public class RegistroSistemaDTO {
     private  Integer idUsuarioResponsableAlt;
 
     @NotEmpty(message = "url no puede ser vacio")
+    @Size(max = 150, message = "url no puede tener más de 150 caracteres.")
     private String url;
 
     @NotEmpty(message = "Url externo no puede ser vacio")
+    @Size(max = 150, message = "urlExterno no puede tener más de 150 caracteres.")
     private String urlExterno;
 
     @NotNull(message = "Estado critico no puede ser vacio")

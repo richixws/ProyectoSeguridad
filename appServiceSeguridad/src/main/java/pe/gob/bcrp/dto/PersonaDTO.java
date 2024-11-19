@@ -18,20 +18,20 @@ public class PersonaDTO {
 
     @NotBlank(message = "Apellido Paterno no debe ser vacio")
     @NotNull(message = "Apellido Paterno no debe ser nulo.")
-    @Size(max = 50, message = "Apellido Paterno debe tener max 50 caracteres.")
     @Pattern(regexp = "^[a-zñA-ZÑ]+[\\-'\\s]?[a-zñA-ZÑ ]+$", message = "Apellido Paterno formato no válido.")
+    @Size(max = 100, message = "apellido paterno no debe superar los 100 caracteres.")
     private String  apellidoPaterno;
 
     @NotBlank(message = "Apellido Materno no debe ser vacio")
     @NotNull(message = "Apellido Materno no debe ser nulo.")
-    @Size(max = 50, message = "Apellido Materno debe tener max 50 caracteres.")
     @Pattern(regexp = "^[a-zñA-ZÑ]+[\\-'\\s]?[a-zñA-ZÑ ]+$", message = "Apellido Materno formato no válido.")
+    @Size(max = 100, message = "apellido materno no debe superar los 100 caracteres.")
     private String  apellidoMaterno;
 
     @NotBlank(message = "Nombre no debe ser vacio")
     @NotNull(message = "Nombre no debe ser nulo.")
-    @Size(max = 50, message = "Nombre debe tener max 50 caracteres.")
     @Pattern(regexp = "^[a-zñA-ZÑ]+[\\-'\\s]?[a-zñA-ZÑ ]+$", message = "Nombre formato no válido.")
+    @Size(max = 100, message = "nombres no debe superar los 100 caracteres.")
     private String  nombres;
 
     @NotBlank(message = "Correo no debe ser vacio.")

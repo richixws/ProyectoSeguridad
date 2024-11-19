@@ -21,6 +21,7 @@ import pe.gob.bcrp.entities.Sistema;
 import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.util.Util;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -89,7 +90,8 @@ public class ModuloServiceImpl implements IModuloService {
             modulo.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             modulo.setUsuarioCreacion(usuario.getUsuario());
 
-            modulo.setOrderDate(new Date());
+            //modulo.setOrderDate(new Date());
+            modulo.setOrderDate(java.sql.Date.valueOf(LocalDate.now()));
 
             Modulo moduloNew = imoduloRepository.save(modulo);
             ModuloDTO moduloDtoNew = modelMapper.map(moduloNew, ModuloDTO.class);

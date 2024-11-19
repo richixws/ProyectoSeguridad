@@ -261,6 +261,7 @@ CREATE TABLE SW_FILES (
 CREATE TABLE SW_DOCUMENTO_IDENTIDAD (
     id_documento NUMBER(10) DEFAULT seq_sw_documento_identidad.NEXTVAL NOT NULL,
     tipo_documento VARCHAR2(25) NOT NULL,
+    longitud number(20) NOT NULL, 
     grupo_documento number(10) NOT NULL,  --1 .- identidad  2.-financiero
     CONSTRAINT UC_TIPO_NUMERO UNIQUE (tipo_documento),
     CONSTRAINT PK_SW_DOCUMENTO_IDENTIDAD PRIMARY KEY (id_documento),

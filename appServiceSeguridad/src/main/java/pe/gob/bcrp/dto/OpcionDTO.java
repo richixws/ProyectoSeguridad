@@ -20,9 +20,10 @@ public class OpcionDTO {
 
     @NotEmpty(message = "Nombre de Opcion no debe ser vacio")
     @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚ]+([\\-'\\s]?[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+)*$",message = "Nombre de opcion con formato incorrecto.")
+    @Size(max = 100, message = "nombre opcion no debe superar los 100 caracteres.")
     private String nombreOpcion;
 
     @NotEmpty(message = "Link de Opcion no debe ser vacio")
-    @Size(max = 200, message = "Link debe tener max 200 caracteres.")
+    @Size(max = 200, message = "url no debe superar los 200 caracteres.")
     private String url;
 }

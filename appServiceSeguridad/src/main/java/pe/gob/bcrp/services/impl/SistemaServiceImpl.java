@@ -246,7 +246,6 @@ public class SistemaServiceImpl implements ISistemaService {
             Usuario usuario=util.getUsuario();
 
             UUID codigoUuid=UUID.randomUUID();
-            System.out.println(codigoUuid.toString());
 
             Sistema sistema=new Sistema();
            // sistema.setCodigo(codigo);
@@ -285,7 +284,11 @@ public class SistemaServiceImpl implements ISistemaService {
             SistemaFormDTO SistemaFormDTO=modelMapper.map(sistemaNew,SistemaFormDTO.class);
 
             return SistemaFormDTO;
-        }catch (Exception e){
+        } catch (IllegalArgumentException e){
+        log.error("ERROR - Service savePersona() " + e.getMessage());
+        throw new IllegalArgumentException(e.getMessage());
+
+       } catch (Exception e){
             log.error(e.getMessage());
             throw new RuntimeException(e);
         }
@@ -310,6 +313,12 @@ public class SistemaServiceImpl implements ISistemaService {
         log.info("INI - actualizarSistema() ");
         try {
             Usuario usuario=util.getUsuario();//obtener usuario del sistema
+
+            // Optional<Sistema> sistemaExistente = sistemaRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(nombre);
+            boolean existeNombredeSistema=sistemaRepository.existsByNombreIgnoreCaseAndIdSistemaNot(nombre,idSistema);
+            if (existeNombredeSistema) {
+                throw new IllegalArgumentException("El número de sistema ya está registrado en otro Sistema.");
+            }
 
             Sistema sistemaExistente = sistemaRepository.findById(idSistema).orElseThrow(() -> new ResourceNotFoundException("Sistema no encontrado con el id: " + idSistema));
 
