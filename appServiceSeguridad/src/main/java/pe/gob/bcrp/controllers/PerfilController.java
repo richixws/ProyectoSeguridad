@@ -68,8 +68,12 @@ public class PerfilController {
             response.setStatus(1);
             response.setMessage("El Perfil fue guardado de manera exitosa");
             // response.setBody(entidadDTO);
-
-        }catch (Exception e){
+        } catch (ResourceNotFoundException e) {
+            log.error("ERROR - Perfil No encontrado " + e.getMessage());
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } catch (Exception e){
             log.error("ERROR - guardarPerfil | requestURL=perfil{}", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al guardar el Perfil "+ e.getMessage());
@@ -91,10 +95,10 @@ public class PerfilController {
             response.setStatus(1);
             response.setMessage("El perfil fue actualizado exitosamente");
 
-        }catch ( ResourceNotFoundException e) {
+        }catch (ResourceNotFoundException e) {
             log.error("ERROR - update perfil No encontrado " + e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar el perfil "+e.getMessage());
+            response.setMessage("Error al actualizar el perfil, "+e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         }catch (Exception e){
@@ -131,7 +135,7 @@ public class PerfilController {
         }catch (Exception e){
             log.error("ERROR - eliminarPerfil() {}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al eliminar el perfil "+e.getMessage());
+            response.setMessage("Error al eliminar el perfil: "+e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }

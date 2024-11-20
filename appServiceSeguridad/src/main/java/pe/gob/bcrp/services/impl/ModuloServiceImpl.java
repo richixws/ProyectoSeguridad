@@ -113,7 +113,7 @@ public class ModuloServiceImpl implements IModuloService {
 
             Usuario usuario=util.getUsuario();
 
-            Modulo modulo=imoduloRepository.findById(idModulo).orElseThrow(() -> new ResourceNotFoundException("Modulo a actualizar no encontrado :" + idModulo));
+            Modulo modulo=imoduloRepository.findById(idModulo).orElseThrow(() -> new ResourceNotFoundException("Modulo a actualizar no encontrado: " + idModulo));
 
             Sistema sistema=isistemaRepository.findById(moduloDto.getIdSistema()).orElseThrow(()->new ResourceNotFoundException(" Sistema no encontrando "));
 

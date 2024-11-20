@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @Service
@@ -96,6 +97,11 @@ public class PerfilServiceImpl implements IPerfilService {
 
         log.info(" INI - Service  savePerfil");
         try {
+            /*Optional<Perfil> exist = perfilRepository.findByNombreContainingIgnoreCaseIsDeletedFalse(perfilDTO.getNombrePerfil());
+            if(exist.isPresent()) {
+                throw new ResourceNotFoundException("El nombre del perfil se encuentra en uso, por favor ingrese un nuevo perfil.");
+            }*/
+
             Usuario usuario = util.getUsuario();
 
             Perfil perfil = modelMapper.map(perfilDTO, Perfil.class);
@@ -134,14 +140,14 @@ public class PerfilServiceImpl implements IPerfilService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(()-> new ResourceNotFoundException("Perfil no encontrado"+idPerfil));
+            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(()-> new ResourceNotFoundException("Perfil no encontrado: " + idPerfil));
 
             //Modulo modulo=moduloRepository.findById(opcionDto.getIdModulo())
             //        .orElseThrow(()-> new ResourceNotFoundException("no encontrado modulo a actualizar " + opcionDto.getIdModulo()));
 
-            Rol rol =rolRepository.findById(perfilDTO.getIdRol()).orElseThrow(()-> new ResourceNotFoundException("no encontrado rol "+perfilDTO.getIdRol()));
-            Sistema sistema=sistemaRepository.findById(perfilDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no encontrado sistema a actualizar"+ perfilDTO.getIdSistema()));
-            Entidad entidad=entidadRepository.findById(perfilDTO.getIdEntidad()).orElseThrow(()-> new ResourceNotFoundException("no encontrado entidad"));
+            Rol rol =rolRepository.findById(perfilDTO.getIdRol()).orElseThrow(()-> new ResourceNotFoundException("no encontrado rol: "+perfilDTO.getIdRol()));
+            Sistema sistema=sistemaRepository.findById(perfilDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no se encontró el sistema a actualizar: " + perfilDTO.getIdSistema()));
+            Entidad entidad=entidadRepository.findById(perfilDTO.getIdEntidad()).orElseThrow(()-> new ResourceNotFoundException("no se encontró la entidad"));
 
             rol.setSistema(sistema);
             perfil.setRol(rol);

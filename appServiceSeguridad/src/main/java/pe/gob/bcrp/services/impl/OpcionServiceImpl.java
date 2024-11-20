@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @Log4j2
@@ -91,6 +92,13 @@ public class OpcionServiceImpl  implements IOpcionService {
     public OpcionDTO saveOpcion(OpcionDTO opcionDto) {
        log.info(" INI - Service  saveOpcion");
        try {
+
+           Optional<Opcion> exist = opcionRepository.findByNombreOpcionContainingIgnoreCaseAndIsDeletedFalse(
+                   opcionDto.getNombreOpcion());
+           if(exist.isPresent()) {
+               throw new ResourceNotFoundException("El nombre de la opción se encuentra en uso, por favor ingrese una nueva opción.");
+           }
+
            Usuario usuario = util.getUsuario();
 
            Opcion opcion = modelMapper.map(opcionDto, Opcion.class);
@@ -123,12 +131,12 @@ public class OpcionServiceImpl  implements IOpcionService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Opcion opcion=opcionRepository.findById(idOpcion).orElseThrow(()-> new ResourceNotFoundException("no encontrado opcion "+idOpcion));
+            Opcion opcion=opcionRepository.findById(idOpcion).orElseThrow(()-> new ResourceNotFoundException("no encontrado opción: "+idOpcion));
 
             Modulo modulo=moduloRepository.findById(opcionDto.getIdModulo())
-                                          .orElseThrow(()-> new ResourceNotFoundException("no encontrado modulo a actualizar " + opcionDto.getIdModulo()));
+                                          .orElseThrow(()-> new ResourceNotFoundException("no se encontró el módulo a actualizar: " + opcionDto.getIdModulo()));
 
-            Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no encontrado sistema a actualizar"+ opcionDto.getIdSistema()));
+            Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no se encontró el sistema a actualizar: "+ opcionDto.getIdSistema()));
 
             modulo.setSistema(sistema);
             opcion.setModulo(modulo);
