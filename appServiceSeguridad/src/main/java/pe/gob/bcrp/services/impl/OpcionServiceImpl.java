@@ -162,7 +162,9 @@ public class OpcionServiceImpl  implements IOpcionService {
 
             Opcion opcion=opcionRepository.findById(idOpcion).orElseThrow(() -> new ResourceNotFoundException("Opcion no encontrado con "+ idOpcion));
             if(opcion!=null){
-
+                if(opcion.isDeleted()){
+                    throw new ResourceNotFoundException("La Opción no existe, ya se encuentra eliminado");
+                }
                 opcion.setDeleted(true);
                 opcion.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 opcion.setUsuarioEliminacion(usuario.getUsuario());

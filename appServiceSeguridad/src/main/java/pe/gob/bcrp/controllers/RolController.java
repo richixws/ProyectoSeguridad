@@ -117,7 +117,7 @@ public class RolController {
 
             boolean eliminado=rolService.deleteRole(idRol);
             if(!eliminado){
-                throw new ResourceNotFoundException("El rol a eliminar con id "+idRol+" no existe");
+                throw new ResourceNotFoundException("El rol no existe, ya se encuentra eliminado");
             }
             response.setStatus(1);
             response.setMessage("El rol ha sido eliminado con éxito");

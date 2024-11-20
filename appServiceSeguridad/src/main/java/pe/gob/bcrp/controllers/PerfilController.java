@@ -117,7 +117,7 @@ public class PerfilController {
 
             boolean eliminado=perfilService.deletePerfil(idPerfil);
             if(!eliminado){
-                throw new ResourceNotFoundException("El perfil a eliminar con Id "+idPerfil+" no existe");
+                throw new ResourceNotFoundException("El perfil no existe, ya se encuentra eliminado");
             }
             response.setStatus(1);
             response.setMessage("El perfil ha sido eliminado con éxito");
