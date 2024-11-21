@@ -7,10 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pe.gob.bcrp.entities.Perfil;
 
+import java.util.Optional;
+
 public interface IPerfilRepository  extends JpaRepository<Perfil, Integer> {
 
     public Page<Perfil> findByIsDeletedFalse(Pageable pageable);
 
+    //Optional<Perfil> findByNombreContainingIgnoreCaseIsDeletedFalse(String nombre);
 
     @Query("SELECT s FROM Perfil s WHERE " +
             "(:idSistema IS NULL OR s.rol.sistema.idSistema  = :idSistema) AND " +

@@ -85,7 +85,7 @@ public class OpcionController {
         }catch (ResourceNotFoundException e) {
             log.error("ERROR - Opcion No encontrado " + e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al Guardar la Opcion " + e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         }catch (Exception e){
@@ -110,10 +110,10 @@ public class OpcionController {
             response.setStatus(1);
             response.setMessage("La opcion fue actualizado exitosamente");
 
-        }catch ( ResourceNotFoundException e) {
+        }catch (ResourceNotFoundException e) {
             log.error("ERROR - update Opcion No encontrado " + e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar opcion "+e.getMessage());
+            response.setMessage("Error al actualizar opcion, "+e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         }catch (Exception e){

@@ -183,7 +183,7 @@ public class EntidadServiceImpl implements IEntidadService {
                 throw new IllegalArgumentException("Código debe tener un formato UUID válido");
             }
 
-            Entidad entidad=entidadRepository.findById(idEntidad).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado con id :" + entidadDto.getIdEntidad()));
+            Entidad entidad=entidadRepository.findById(idEntidad).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado con id: " + entidadDto.getIdEntidad()));
             DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
 
             DocumentoIdentidad identidad=new DocumentoIdentidad();

@@ -7,10 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pe.gob.bcrp.entities.Opcion;
 
+import java.util.Optional;
+
 public interface IOpcionRepository extends JpaRepository<Opcion, Integer> {
 
     public Page<Opcion> findByIsDeletedFalse(Pageable pageable);
 
+    Optional<Opcion> findByNombreOpcionContainingIgnoreCaseAndIsDeletedFalse(String nombreOpcion);
 
     @Query("SELECT s FROM Opcion s WHERE " +
             "(:idSistema IS NULL OR s.modulo.sistema.idSistema  = :idSistema) AND " +
