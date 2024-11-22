@@ -128,11 +128,11 @@ public class EntidadServiceImpl implements IEntidadService {
             String uuidCodExt = UUID.randomUUID().toString();
 
             DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
-            if(doc.getLongitud()!=entidadDto.getNumeroDocumento().length()){
+            /*if(doc.getLongitud()!=entidadDto.getNumeroDocumento().length()){
                 if(doc.getIdDocumentoIdentidad()==6){
                     throw new IllegalArgumentException("El número de RUC debe de ser de 11 digitos.");
                 }
-            }
+            }*/
 
             boolean existeNumeroDocumento = entidadRepository.existsByNumeroDocumento(entidadDto.getNumeroDocumento());
             if (existeNumeroDocumento) {

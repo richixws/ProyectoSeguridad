@@ -83,7 +83,7 @@ public class EntidadController {
             EntidadDTO entidadDTO=entidadService.saveEntidad(entidadDto);
 
             response.setStatus(1);
-            response.setMessage("la Entidad fue guardado de manera exitosa");
+            response.setMessage("La Entidad fue guardado de manera exitosa");
            // response.setBody(entidadDTO);
 
         } catch (IllegalArgumentException e) {
