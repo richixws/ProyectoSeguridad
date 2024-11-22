@@ -13,7 +13,8 @@ public class RegistroCreateUsuarioDTO {
     private Integer tipoDocumento;
 
     @NotBlank(message = "Número de documento no debe estar vacío.")
-    @Size(min = 8, max = 20, message = "Número de documento debe tener entre 8 y 20 caracteres.")
+    @Pattern(regexp = "^[0-9]+(\\\\.[0-9]+)?$", message = "Número de documento sólo admite números.")
+    @Size(min = 8, max = 8, message = "Número de documento debe tener 8 caracteres.")
     private String  numeroDocumento;
 
     @NotBlank(message = "Nombre no debe ser vacio")

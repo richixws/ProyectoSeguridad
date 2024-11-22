@@ -61,13 +61,17 @@ public class PersonaController {
             PersonaDTO newPersonaDTO=personaService.addPersona(personaDTO);
             response.setStatus(1);
             response.setMessage("la Persona fue guardado con exito");
-            return new ResponseEntity<>(response,HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }catch (Exception e){
             log.error(" ERROR - addPersona | requestUrl=persona");
             response.setStatus(0);
             response.setMessage("Error al guardar la Persona "+ e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update Persona REST API", description = "Actualiza la Persona en la base de datos")
