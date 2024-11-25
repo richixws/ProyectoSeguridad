@@ -1,28 +1,44 @@
-version: '3'
+version: '3.8'
 
 services:
-  
-  spring_app_seguridad:
-    container_name: app_seguridad
-    image: app-service-seguridad  # Reemplaza con el nombre de la imagen de tu aplicación Spring Boot
-    build: .
+  app:
+    image: app-service-seguridad:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - 1025:1025
+      - "${SERVER_PORT}:${SERVER_PORT}"
     environment:
-      SERVER_PORT: 1025
-      ORACLE_HOST: localhost
-      ORACLE_PORT: 1521
-      ORACLE_SERVICE_NAME: FREEPDB1
-      BD_USERNAME: bcrp_msauthentica_api
-      BD_PASSWORD: bcrp_msauthentica_api
-      KEYCLOAK_ISSUER: http://localhost:8080/realms/demo
-      KEYCLOAK_BASE_URI: http://localhost:8080/auth/realms/
-      KEYCLOAK_AUTH_URI: http://localhost:8080/realms/demo/protocol/openid-connect/auth
-      KEYCLOAK_INFO_URI: http://localhost:8080/realms/demo/protocol/openid-connect/userinfo
-      KEYCLOAK_TOKEN_URI: http://localhost:8080/realms/demo/protocol/openid-connect/token
-      KEYCLOAK_LOGOUT: http://localhost:8080/realms/demo/protocol/openid-connect/logout
-      KEYCLOAK_CERTS: http://localhost:8080/realms/demo/protocol/openid-connect/certs
-      KEYCLOAK_CLIENT_ID: seguridad-demo
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      ALLOWED_CORS_ORIGINS: http://localhost:4200
+      SERVER_PORT: ${SERVER_PORT}
+      ORACLE_HOST: ${ORACLE_HOST}
+      ORACLE_PORT: ${ORACLE_PORT}
+      ORACLE_SERVICE_NAME: ${ORACLE_SERVICE_NAME}
+      BD_USERNAME: ${BD_USERNAME}
+      BD_PASSWORD: ${BD_PASSWORD}
+      KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
+      KEYCLOAK_BASE_URI: ${KEYCLOAK_BASE_URI}
+      KEYCLOAK_AUTH_URI: ${KEYCLOAK_AUTH_URI}
+      KEYCLOAK_INFO_URI: ${KEYCLOAK_INFO_URI}
+      KEYCLOAK_TOKEN_URI: ${KEYCLOAK_TOKEN_URI}
+      KEYCLOAK_LOGOUT: ${KEYCLOAK_LOGOUT}
+      KEYCLOAK_CERTS: ${KEYCLOAK_CERTS}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      ALLOWED_CORS_ORIGINS: ${ALLOWED_CORS_ORIGINS}
+    depends_on:
+      - oracle
+      - redis
+
+  #oracle:
+  #  image: gvenzl/oracle-xe:21-slim
+  #  environment:
+  #    ORACLE_PASSWORD: 123
+  #    APP_USER: system
+  #  ports:
+  #    - "1521:1521"
+
+  #redis:
+  #  image: redis:6.0
+  #  ports:
+  #    - "6379:6379"

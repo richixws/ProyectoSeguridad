@@ -1,5 +1,6 @@
 package pe.gob.bcrp.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,73 +75,49 @@ public class KeycloakRestService {
 
             ResponseEntity<String> response = restTemplate.postForEntity(keycloakLogout, request, String.class);
 
-           Map<String, String> responseMsg = new HashMap<>();
+            Map<String, String> responseMsg = new HashMap<>();
             if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
 
-                responseMsg.put("message","Logout exitoso");
+                responseMsg.put("message", "Logout exitoso");
                 return ResponseEntity.ok(responseMsg);
             } else {
-               // responseMsg.put("message","Logout exitoso");
+                // responseMsg.put("message","Logout exitoso");
                 return ResponseEntity.status(response.getStatusCode()).body("Error en el logout: " + response.getBody());
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error durante el logout: " + e.getMessage());
         }
-
-
-
-      /**  try {
-            RestTemplate restTemplate = new RestTemplate();
-
-            Map<String, String> params = new HashMap<>();
-            params.put("client_id", clientId);
-            params.put("refresh_token", refreshToken);
-
-            restTemplate.postForObject(keycloakLogout, params, String.class);
-
-            return ResponseEntity.ok("Logout exitoso");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error durante el logout: " + e.getMessage());
-        }**/
     }
 
-
     /**
-    public boolean logout(String refreshToken) {
-       // String logoutUrl = keycloakLogoutEndpoint();  // URL del endpoint de logout de Keycloak
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("client_id", this.clientId);
-        map.add("client_secret", this.clientSecret);
-       // map.add("grant_type", this.grantType);
-        map.add("refresh_token", refreshToken);
-
-
-        // Crear las cabeceras HTTP (en caso de ser necesario)
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        // Crear la entidad de la solicitud con los parámetros y las cabeceras
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity(map, new HttpHeaders());
-
+     * Decodificar el nombre del usuario del payload del token JWT.
+     *
+     * @param token JWT
+     * @return Nombre del usuario o null si no se encuentra
+     */
+    public String extractNameFromToken(String token) throws Exception {
         try {
-            // Realizar la petición HTTP POST para hacer logout
+            // Dividir el token en sus partes
+            String[] parts = token.split("\\.");
+            if (parts.length < 2) {
+                throw new IllegalArgumentException("JWT no tiene el formato adecuado");
+            }
 
-            this.restTemplate.postForObject(this.keycloakLogout, request, String.class);
-           // restTemplate.postForEntity(this.keycloakLogout, request, String.class);
-            return true;
-            // Verificar si el código de respuesta es 200 OK
-          //  return response.getStatusCode() == HttpStatus.OK;
+            // Decodificar el payload (segunda parte)
+            String payload = new String(Base64.getDecoder().decode(parts[1]));
+
+            // Convertir el payload JSON a un mapa
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> claims = objectMapper.readValue(payload, Map.class);
+
+            // Retornar el valor del claim "name" (o el campo correspondiente)
+            return (String) claims.get("name");
         } catch (Exception e) {
-            log.error("Error during Keycloak logout", e.getMessage());
-            return false;
+            log.error("Error al decodificar el token JWT", e);
+            throw e;
         }
+    }
 
-
-     **/
-
-
-
-    
 }
 
 

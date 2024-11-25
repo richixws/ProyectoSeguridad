@@ -1,29 +1,38 @@
 package pe.gob.bcrp.config;
 
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.List;
+
 @Configuration
-@EnableWebMvc
-public class CorsConfig implements WebMvcConfigurer {
+//@EnableWebMvc
+public class CorsConfig {
     @Value("${allowed.cors.origins}")
-    String[] allowedOrigins;
+    private String allowedOrigins;
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedMethods("*")
-                .allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE")
-                .allowedOrigins(allowedOrigins);
+@Bean
+public CorsFilter corsFilter() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowCredentials(true);
+    configuration.addAllowedOrigin(allowedOrigins);
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));// Replace with your frontend URL
+    configuration.addAllowedHeader("*");
+    //configuration.addAllowedMethod("*");
 
-        /*registry
-                .addMapping("/api/v1/oauth/captcha/**")
-                .allowedMethods("*")
-                .allowedHeaders("*")
-                .allowedOrigins(allowedOrigins)
-                .allowCredentials(true);*/
-    }
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+
+    return new CorsFilter(source);
+}
+
+
 }
