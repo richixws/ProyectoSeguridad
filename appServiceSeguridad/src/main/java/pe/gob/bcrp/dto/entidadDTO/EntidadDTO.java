@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pe.gob.bcrp.dto.personaDTO.ValidateDni;
+import pe.gob.bcrp.dto.personaDTO.ValidateRuc;
 
 @Data
 @Builder
@@ -22,8 +24,8 @@ public class EntidadDTO {
     private  Integer  idDocumento;
 
     @NotEmpty(message = "numero de documento no puede ser vacio")
-    @Pattern(regexp = "^[0-9]*$", message = "Numero Documento solo se permiten números.")
-    //@Size(min = 8, max = 20, message = "Número de documento debe tener entre 8 y 20 caracteres.")
+    @Pattern(regexp = "^[0-9]+(\\\\.[0-9]+)?$", message = "Número de documento sólo admite números.")
+    @Size(min = 11, max = 20, message = "Número de documento debe tener entre 11 y 20 caracteres.")
     private String numeroDocumento;
 
     @NotEmpty(message = "nombre no puede ser vacio")
