@@ -20,9 +20,9 @@ public class SistemaFormDTO {
     @Column(unique = true, nullable = false)
     private String codigo;
 
-    @NotEmpty(message = "nombre no puede ser vacio")
-    @Pattern(regexp = "^[a-zñA-ZÑ0-9\\_](\\s?[a-zñA-ZÑ0-9\\_])*$", message = "Solo se permiten letras, números, guion bajo y espacios intermedios.")
-    @Size(max = 200, message = "Nombre debe tener max 200 caracteres.")
+    @NotEmpty(message = "El nombre no puede estar vacío")
+    @Pattern(regexp = "^[a-zA-ZñÑ]+(\\s[a-zA-ZñÑ]+)*$", message = "formato de nombre incorrecto, corrija")
+    @Size(max = 100, message = "El nombre debe tener como máximo 100 caracteres.")
     private String nombre;
 
     @NotEmpty(message = "versus no puede ser vacio")

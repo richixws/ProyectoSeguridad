@@ -23,7 +23,7 @@ public class EntidadDTO {
 
     @NotEmpty(message = "numero de documento no puede ser vacio")
     @Pattern(regexp = "^[0-9]*$", message = "Numero Documento solo se permiten números.")
-    //@Size(min = 8, max = 20, message = "Número de documento debe tener entre 8 y 20 caracteres.")
+    @Size(min =11, max = 20, message = "Número de documento debe tener entre 11 y 20 caracteres.")
     private String numeroDocumento;
 
     @NotEmpty(message = "nombre no puede ser vacio")

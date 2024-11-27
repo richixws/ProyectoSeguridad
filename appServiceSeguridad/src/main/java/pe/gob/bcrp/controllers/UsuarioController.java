@@ -35,7 +35,7 @@ public class UsuarioController {
 
     private IUsuarioService usuarioService;
 
-    private UsuarioController( IUsuarioService usuarioService ) {
+    public UsuarioController( IUsuarioService usuarioService ) {
         this.usuarioService = usuarioService;
     }
 

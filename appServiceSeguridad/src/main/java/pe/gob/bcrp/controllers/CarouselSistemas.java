@@ -19,7 +19,7 @@ import java.util.List;
 @Log4j2
 @RestController
 @RequestMapping("/api/v1")
-@Tag(name = "REST APIs Carousel",description = "REST APIs - find All Carousel Sistemas")
+//@Tag(name = "REST APIs Carousel",description = "REST APIs - find All Carousel Sistemas")
 public class CarouselSistemas {
 
     private ISistemaService sistemaService;
@@ -28,8 +28,8 @@ public class CarouselSistemas {
         this.sistemaService = sistemaService;
     }
 
-    @Operation(summary = "find All Carousel REST API", description = "Obtener todos los Sistemas de carousel de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@Operation(summary = "find All Carousel REST API", description = "Obtener todos los Sistemas de carousel de la base de datos")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/catalogo/sistemas")
     public ResponseEntity<List<SistemaDTO>> findAllCarouselSistemas() {

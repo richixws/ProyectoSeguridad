@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import pe.gob.bcrp.dto.personaDTO.ValidateDni;
+import pe.gob.bcrp.dto.personaDTO.ValidatePasaporte;
 import pe.gob.bcrp.dto.personaDTO.ValidateRuc;
 
 @Data
@@ -16,8 +17,8 @@ public class PersonaDTO {
 
     @NotBlank(message = "Número de documento no debe estar vacío.")
     @Pattern(regexp = "^[0-9]+(\\\\.[0-9]+)?$", message = "Número de documento sólo admite números.")
-    @Size(min = 8, max = 8, message = "Número de documento debe tener 8 caracteres.", groups = ValidateDni.class)
-    @Size(min = 11, max = 11, message = "Número de documento debe tener 11 caracteres.", groups = ValidateRuc.class)
+    @Size(min = 8, max = 8, message = "Número de documento dni debe tener 8 caracteres.", groups = ValidateDni.class)
+    @Size(min = 9, max = 9, message = "Número de documento pasaporte debe tener 9 caracteres.", groups = ValidatePasaporte.class)
     private String  numeroDocumento;
 
     @NotBlank(message = "Apellido Paterno no debe ser vacio")
