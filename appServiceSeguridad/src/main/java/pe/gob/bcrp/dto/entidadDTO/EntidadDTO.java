@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pe.gob.bcrp.dto.personaDTO.ValidateDni;
-import pe.gob.bcrp.dto.personaDTO.ValidateRuc;
 
 @Data
 @Builder
