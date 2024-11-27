@@ -1,9 +1,6 @@
 package pe.gob.bcrp.dto.entidadDTO;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,4 +34,8 @@ public class EntidadDTO {
     private String sigla;
     //@NotEmpty(message = "codigo externo no puede ser vacio")
     private String codExterno;
+    @NotNull(message = "Estado no puede ser vacío.")
+    @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
+    @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
+    private Integer estado;
 }

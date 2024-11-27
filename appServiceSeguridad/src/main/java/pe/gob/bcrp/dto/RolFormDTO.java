@@ -1,9 +1,6 @@
 package pe.gob.bcrp.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +22,10 @@ public class RolFormDTO {
     @Pattern(regexp = "^[a-zA-ZñÑ ]+$", message = "Nombre rol solo puede contener letras.")
     @Size(max = 100, message = "rol no debe superar los 100 caracteres.")
     private String  nombreRol;
+
+    @NotNull(message = "Estado no puede ser vacío.")
+    @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
+    @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
     private Integer estado;
 
 }

@@ -58,9 +58,8 @@ public class RegistroSistemaDTO {
     @Size(max = 100, message = "unidad organizacional no puede tener más de 100 caracteres.")
     private String unidOrganizacional;
 
-    // @NotEmpty(message = "loginMain no puede ser vacio")
-   // private String logoMain;
-
-    //@NotEmpty(message = "logoHead no puede ser vacio")
-    //private String logoHead;
+    @NotNull(message = "Estado no puede ser vacío.")
+    @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
+    @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
+    private Integer estado;
 }

@@ -45,4 +45,9 @@ public class PersonaDTO {
     @Pattern(regexp = ".+@.+\\..+", message = "Correo formato no válido.")
     @Email(message = "Correo formato no válido.")
     private String correo;
+
+    @NotNull(message = "Estado no puede ser vacío.")
+    @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
+    @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
+    private Integer estado;
 }

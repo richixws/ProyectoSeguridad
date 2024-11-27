@@ -1,9 +1,6 @@
 package pe.gob.bcrp.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
@@ -26,4 +23,9 @@ public class OpcionDTO {
     @NotEmpty(message = "Link de Opcion no debe ser vacio")
     @Size(max = 200, message = "url no debe superar los 200 caracteres.")
     private String url;
+
+    @NotNull(message = "Estado no puede ser vacío.")
+    @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
+    @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
+    private Integer estado;
 }
