@@ -4,8 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import pe.gob.bcrp.entities.Persona;
 import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IUsuarioRepository;
@@ -63,9 +66,34 @@ public class Util {
      * @return
      */
     public Usuario getUsuario() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        /**Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Usuario user=usuarioRepository.findByUsuario(authentication.getName()).orElseThrow(()->new  ResourceNotFoundException("Usuario no encontrado con nombre"+authentication.getName()));
-        return user;
+        return user;**/
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication instanceof JwtAuthenticationToken) {
+            Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+
+            // Extraer el claim 'name'
+            String name = jwt.getClaim("name");
+            String username = jwt.getClaim("preferred_username");
+            String firstName = jwt.getClaim("given_name");
+            String lastName = jwt.getClaim("family_name");
+            String email = jwt.getClaim("email");
+
+            // Crear y devolver el usuario con el nombre extraído
+            Usuario usuarioResp = new Usuario();
+            Persona persona=new Persona();
+
+            persona.setNombres(firstName);
+            persona.setApellidoPaterno(lastName);
+            persona.setCorreo(email);
+            usuarioResp.setPersona(persona);
+            usuarioResp.setUsuario(username);
+            return usuarioResp;
+        }
+
+        return null;
 
     }
 

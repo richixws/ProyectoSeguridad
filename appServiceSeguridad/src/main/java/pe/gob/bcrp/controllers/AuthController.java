@@ -58,7 +58,7 @@ public class AuthController {
     private String[] allowedCorsOrigins;
 
 
-    @CrossOrigin(origins = {"http://localhost:4200","http://172.30.107.212:4300"}, allowCredentials = "true" )
+    //@CrossOrigin(origins = {"http://localhost:4200","http://172.30.107.212:4300"}, allowCredentials = "true" )
     @Operation(summary = "Login REST API", description = "Inicio de seccion del usuario a la aplicacion")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping(value = "oauth/login")
@@ -84,7 +84,7 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
 
-           UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
+           /**UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
 
             if (usuarioDTO == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
@@ -92,11 +92,13 @@ public class AuthController {
 
             if(!this.passwordEncode.matches(dto.getPassword(), usuarioDTO.getPassword())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
-            }
+            }  **/
 
             String login = this.keycloakRestService.login(dto.getUsuario(), dto.getPassword());
             JwtDTO jwt =new ObjectMapper().readValue(login, JwtDTO.class);
 
+            // Decodificar el payload del token para obtener el nombre
+            String nombre = this.keycloakRestService.extractNameFromToken(jwt.getAccess_token());
 
             // Validar el token
            /**if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
@@ -106,7 +108,8 @@ public class AuthController {
 
             Map<String, String> response = new HashMap<>();
            // response.put("id", String.valueOf(usuarioDTO.getIdUsuario()));
-            response.put("nombre", usuarioDTO.getPersona().getNombres().concat(" "+usuarioDTO.getPersona().getApellidoPaterno()));
+           // response.put("nombre", usuarioDTO.getPersona().getNombres().concat(" "+usuarioDTO.getPersona().getApellidoPaterno()));
+            response.put("nombre", nombre);
             response.put("token", jwt.getAccess_token());
             response.put("expires_in", String.valueOf(jwt.getExpires_in()));
             response.put("refreshToken",jwt.getRefresh_token());

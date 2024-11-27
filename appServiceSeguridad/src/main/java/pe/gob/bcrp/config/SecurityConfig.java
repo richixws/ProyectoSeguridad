@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -32,7 +33,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
+  /**
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors()
@@ -68,7 +69,7 @@ public class SecurityConfig {
             return new UsernamePasswordAuthenticationToken(
                     userDetails, jwt, userDetails.getAuthorities());
         };
-    }
+    } **/
 
     // Agregar el JwtDecoder, importante para decodificar y validar los tokens JWT
     @Bean
@@ -76,6 +77,30 @@ public class SecurityConfig {
         // Reemplaza esta URL con la URL correcta de tu Keycloak
        // String issuerUri = "http://localhost:8080/realms/ejemplo1";
         return JwtDecoders.fromIssuerLocation(keycloakIssuerUrl);
+    }
+
+
+    @Autowired
+    private JwtAuthenticationConverter jwtAuthenticationConverter;
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
+                .csrf(csfr -> csfr.disable())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/v1/oauth/login").permitAll()
+                        .requestMatchers("/api/v1/oauth/validarToken").permitAll()
+                        .requestMatchers("/api/v1/oauth/refreshToken").permitAll()
+                        .requestMatchers("/api/v1/oauth/logout").permitAll()
+                        .requestMatchers("/api/v1/oauth/captcha").permitAll()
+                        .requestMatchers("/api/v1/search/**").permitAll()
+                        .requestMatchers("/api/media/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .build();
     }
 
 }
