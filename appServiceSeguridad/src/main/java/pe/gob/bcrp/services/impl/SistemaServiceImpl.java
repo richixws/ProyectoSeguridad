@@ -61,7 +61,7 @@ public class SistemaServiceImpl implements ISistemaService {
             if(usuario !=null && usuario.getPersona()!=null){
                 Persona persona=usuario.getPersona();
                 String nombreCompleto= persona.getNombres().concat(" "+persona.getApellidoPaterno());
-                usuarioResponsableDTO.setCodigo(persona.getIdPersona());
+                usuarioResponsableDTO.setCodigo(1);
                 usuarioResponsableDTO.setUsuario(nombreCompleto);
                 listUserResp.add(usuarioResponsableDTO);
             }

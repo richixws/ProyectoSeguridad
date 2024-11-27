@@ -58,9 +58,14 @@ public class PersonaController {
          log.info(" INI - addPersona | requestUrl=persona");
          ResponseDTO<PersonaDTO> response=new ResponseDTO<>();
         try {
-            PersonaDTO newPersonaDTO=personaService.addPersona(personaDTO);
+            PersonaDTO newPersonaDTO = personaService.addPersona(personaDTO);
             response.setStatus(1);
             response.setMessage("la Persona fue guardado con exito");
+
+        }catch (ResourceNotFoundException e){
+                response.setStatus(0);
+                response.setMessage(e.getMessage());
+                return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
             response.setStatus(0);
             response.setMessage(e.getMessage());
@@ -88,8 +93,15 @@ public class PersonaController {
             response.setStatus(1);
             response.setMessage("la Persona fue actualizado de manera exitosa");
 
-
-        }catch (Exception e){
+        }catch (ResourceNotFoundException e){
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+       }catch (Exception e){
             log.error(" ERROR - updatePersona | requestUrl=persona/idpersona");
             response.setStatus(0);
             response.setMessage("Error al actualizar la Persona "+ e.getMessage());

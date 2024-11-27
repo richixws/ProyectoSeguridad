@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.PersonaDTO;
 import pe.gob.bcrp.dto.personaDTO.ValidateDni;
+import pe.gob.bcrp.dto.personaDTO.ValidatePasaporte;
 import pe.gob.bcrp.dto.personaDTO.ValidateRuc;
 import pe.gob.bcrp.dto.response.PersonaResponse;
 import pe.gob.bcrp.entities.DocumentoIdentidad;
@@ -90,22 +91,24 @@ public class PersonaServiceImpl  implements IPersonaService {
     public PersonaDTO addPersona(PersonaDTO personaDTO) {
         log.info("INFO - Service AddPersona() ");
 
-        DocumentoIdentidad doc=documentoIdentidadRepository.findById(personaDTO.getTipoDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
+      //  DocumentoIdentidad doc=documentoIdentidadRepository.findById(personaDTO.getTipoDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
+        DocumentoIdentidad doc = documentoIdentidadRepository.findByIdDocumentoIdentidadAndGrupoDocumento(personaDTO.getTipoDocumento(), 1)
+                .orElseThrow(() -> new ResourceNotFoundException("Documento de identidad no encontrado "));
 
         Set<ConstraintViolation<PersonaDTO>> violations;
         try(ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
             Validator validator = factory.getValidator();
-            if(doc != null){
+            if(doc != null && doc.getGrupoDocumento().equals(1)){
                 if(Objects.equals(doc.getIdDocumentoIdentidad(), 1)) {
                     violations = validator.validate(personaDTO, ValidateDni.class);
                 } else {
-                    violations = validator.validate(personaDTO, ValidateRuc.class);
+                    violations = validator.validate(personaDTO, ValidatePasaporte.class);
                 }
             } else {
                 if(Objects.equals(personaDTO.getTipoDocumento(), 1)) {
                     violations = validator.validate(personaDTO, ValidateDni.class);
                 } else {
-                    violations = validator.validate(personaDTO, ValidateRuc.class);
+                    violations = validator.validate(personaDTO, ValidatePasaporte.class);
                 }
             }
 
@@ -148,7 +151,33 @@ public class PersonaServiceImpl  implements IPersonaService {
     public PersonaDTO updatePersona(Integer idPersona, PersonaDTO personaDTO) {
 
         log.info("INFO - Service UpdatePersona() ");
-        try {
+
+            DocumentoIdentidad doc = documentoIdentidadRepository.findByIdDocumentoIdentidadAndGrupoDocumento(personaDTO.getTipoDocumento(), 1)
+                    .orElseThrow(() -> new ResourceNotFoundException("Documento de identidad no encontrado "));
+
+            Set<ConstraintViolation<PersonaDTO>> violations;
+            try(ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+                Validator validator = factory.getValidator();
+                if(doc != null && doc.getGrupoDocumento().equals(1)){
+                    if(Objects.equals(doc.getIdDocumentoIdentidad(), 1)) {
+                        violations = validator.validate(personaDTO, ValidateDni.class);
+                    } else {
+                        violations = validator.validate(personaDTO, ValidatePasaporte.class);
+                    }
+                } else {
+                    if(Objects.equals(personaDTO.getTipoDocumento(), 1)) {
+                        violations = validator.validate(personaDTO, ValidateDni.class);
+                    } else {
+                        violations = validator.validate(personaDTO, ValidatePasaporte.class);
+                    }
+                }
+
+                if(!violations.isEmpty()) {
+                    var obj = violations.stream().findFirst().get();
+                    throw new IllegalArgumentException(obj.getMessage());
+                }
+
+
             Usuario usuario = util.getUsuario();
             boolean existeDocumentoIdentidad = iPersonaRepository.existsByNumeroDocumentoAndIdPersonaNot(personaDTO.getNumeroDocumento(), idPersona);
             if (existeDocumentoIdentidad) {
@@ -174,11 +203,13 @@ public class PersonaServiceImpl  implements IPersonaService {
             PersonaDTO newPersonaDTO=modelMapper.map(personaUpd,PersonaDTO.class);
             return newPersonaDTO;
 
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
         } catch (IllegalArgumentException e) {
             log.error("ERROR - Service updatePersona() - " + e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }catch (Exception e ){
-            throw new RuntimeException("ERROR Service - updatePersona() "+e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 

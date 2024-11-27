@@ -34,7 +34,7 @@ public class SistemaController {
     private IUploadFileService uploadFileService;
 
 
-    private SistemaController(ISistemaService sistemaService, IUploadFileService uploadFileService) {
+    public SistemaController(ISistemaService sistemaService, IUploadFileService uploadFileService) {
         this.sistemaService = sistemaService;
         this.uploadFileService = uploadFileService;
     }

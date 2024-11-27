@@ -124,15 +124,11 @@ public class EntidadServiceImpl implements IEntidadService {
         log.info("INI - Service() saveEntidad()");
         try {
 
+            DocumentoIdentidad doc = documentoIdentidadRepository.findByIdDocumentoIdentidadAndGrupoDocumento(entidadDto.getIdDocumento(), 2)
+                    .orElseThrow(() -> new ResourceNotFoundException("Documento de identidad no encontrado"));
+
             Usuario usuario=util.getUsuario();
             String uuidCodExt = UUID.randomUUID().toString();
-
-            DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
-            /*if(doc.getLongitud()!=entidadDto.getNumeroDocumento().length()){
-                if(doc.getIdDocumentoIdentidad()==6){
-                    throw new IllegalArgumentException("El número de RUC debe de ser de 11 digitos.");
-                }
-            }*/
 
             boolean existeNumeroDocumento = entidadRepository.existsByNumeroDocumento(entidadDto.getNumeroDocumento());
             if (existeNumeroDocumento) {
@@ -153,11 +149,12 @@ public class EntidadServiceImpl implements IEntidadService {
             EntidadDTO entidadDtoNew=modelMapper.map(entidadNew, EntidadDTO.class);
             return entidadDtoNew;
 
+        }catch (ResourceNotFoundException e){
+            log.error("ERROR -Service saveEntidad() {}", e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
         }catch (IllegalArgumentException e){
            throw  new IllegalArgumentException(e.getMessage());
-        }
-
-        catch (Exception e){
+        }catch (Exception e){
             log.error("ERROR - saveEntidad() "+e.getMessage());
             throw new RuntimeException("Error al guardar el sistema " + e.getMessage());
         }
@@ -171,6 +168,11 @@ public class EntidadServiceImpl implements IEntidadService {
 
             Usuario usuario=util.getUsuario();
 
+            Entidad entidad=entidadRepository.findById(idEntidad).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado"));
+
+            DocumentoIdentidad doc = documentoIdentidadRepository.findByIdDocumentoIdentidadAndGrupoDocumento(entidadDto.getIdDocumento(), 2)
+                    .orElseThrow(() -> new ResourceNotFoundException("Documento de identidad no encontrado "));
+
             boolean existeNumeroDocumento = entidadRepository.existsByNumeroDocumentoAndIdEntidadNot( entidadDto.getNumeroDocumento(), idEntidad);
             if (existeNumeroDocumento) {
                 throw new IllegalArgumentException("El número de documento ya está registrado en otra entidad.");
@@ -183,8 +185,8 @@ public class EntidadServiceImpl implements IEntidadService {
                 throw new IllegalArgumentException("Código debe tener un formato UUID válido");
             }
 
-            Entidad entidad=entidadRepository.findById(idEntidad).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado con id: " + entidadDto.getIdEntidad()));
-            DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
+
+           // DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
 
             DocumentoIdentidad identidad=new DocumentoIdentidad();
             identidad.setIdDocumentoIdentidad(doc.getIdDocumentoIdentidad());

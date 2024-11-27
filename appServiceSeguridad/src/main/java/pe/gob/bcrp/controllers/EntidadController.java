@@ -86,6 +86,10 @@ public class EntidadController {
             response.setMessage("La Entidad fue guardado de manera exitosa");
            // response.setBody(entidadDTO);
 
+        } catch (ResourceNotFoundException e){
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
           response.setStatus(0);
           response.setMessage(e.getMessage());

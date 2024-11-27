@@ -13,26 +13,26 @@ public class RegistroSistemaDTO {
     private String codigo;
 
     @NotEmpty(message = "nombre no puede ser vacio.")
-    @Size(max = 200, message = "nombre sistema no puede tener más de 100 caracteres.")
-    @Pattern(regexp = "^[a-zñA-ZÑ0-9\\_](\\s?[a-zñA-ZÑ0-9\\_])*$", message = "nombre sistema con formato incorrecto.")
+    @Size(max = 100, message = "nombre sistema no puede tener más de 100 caracteres.")
+    @Pattern(regexp = "^[a-zA-ZñÑ]+(\\s[a-zA-ZñÑ]+)*$", message = "nombre con formato incorrecto, corrija")
     private String nombre;
 
     @NotEmpty(message = "versus no puede ser vacio")
     @Pattern(regexp = "^[a-zñA-ZÑ0-9\\_](\\s?[a-zñA-ZÑ0-9\\_])*$", message = "Version con formato incorrecto")
-    @Size(max = 50, message = "version no puede tener más de 50 caracteres.")
+    @Size(max = 100, message = "version no puede tener más de 50 caracteres.")
     public String version;
 
-    @NotEmpty(message = "usuario responsable no puede ser vacio")
-    @Size(max = 50, message = "version no puede tener más de 50 caracteres.")
-    @Pattern(regexp = "^[a-zA-ZñÑ0-9áéíóúÁÉÍÓÚüÜ ]*$", message = "Solo se permiten letras, números y espacios.")
+    @NotEmpty(message = "nombre usuario responsable no puede ser vacio")
+    @Size(max = 100, message = "usuario responsable no puede tener más de 100 caracteres.")
+    @Pattern(regexp = "^[a-zA-ZñÑ]+(\\s[a-zA-ZñÑ]+)*$", message = "usuario Responsable con formato incorrecto, corrija")
     private String usuarioResponsable;
 
-    @NotEmpty(message = "usuario responsable alterno no puede ser vacio")
-    @Pattern(regexp = "^[a-zA-ZñÑ0-9áéíóúÁÉÍÓÚüÜ ]*$", message = "Solo se permiten letras, números y espacios.")
-    @Size(max = 50, message = "version no puede tener más de 50 caracteres.")
+    @NotEmpty(message = "nombre usuario responsable alterno no puede ser vacio")
+    @Pattern(regexp = "^[a-zA-ZñÑ]+(\\s[a-zA-ZñÑ]+)*$", message = "usuario Responsable Alterno con formato incorrecto, corrija")
+    @Size(max = 100, message = "version no puede tener más de 100 caracteres.")
     private String usuarioResponsableAlt;
 
-    @NotNull(message = "Usuario responsable no puede ser vacio")
+    @NotNull(message = "usuario responsable no puede ser vacio")
     @Min(value = 1, message = "El valor debe ser mayor o igual a 1")
     private  Integer idUsuarioResponsable;
 
@@ -54,8 +54,8 @@ public class RegistroSistemaDTO {
     private Integer idEstadoCritico;
 
     @NotEmpty(message = "Unidad organizacional no puede ser vacio")
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$", message = "unidad organizacional con formato incorrecto. Solo se permiten letras y espacios simples.")
-    @Size(max = 200, message = "version no puede tener más de 200 caracteres.")
+    @Pattern(regexp = "^[a-zA-ZñÑ]+(\\s[a-zA-ZñÑ]+)*$", message = "unidad organizacional con formato incorrecto, corrija")
+    @Size(max = 100, message = "unidad organizacional no puede tener más de 100 caracteres.")
     private String unidOrganizacional;
 
     // @NotEmpty(message = "loginMain no puede ser vacio")
