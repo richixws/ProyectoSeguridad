@@ -191,7 +191,7 @@ public class SistemaServiceImpl implements ISistemaService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Sistema sistema=sistemaRepository.findById(idSistema).orElseThrow(()-> new ResourceNotFoundException("Id de Sistema  no encontrado"));
+            Sistema sistema=sistemaRepository.findById(idSistema).orElseThrow(()-> new ResourceNotFoundException(" Sistema  no encontrado a eliminar"));
             List<Files> listFiles=filesRepository.findAllByIdIdentidad(idSistema);
 
             if(sistema!=null && !listFiles.isEmpty()){
@@ -233,8 +233,6 @@ public class SistemaServiceImpl implements ISistemaService {
                                          MultipartFile multiLogoMain,
                                          MultipartFile multiLogoHead,
                                          String url,
-                                         String usuarioResponsable,
-                                         String usuarioResponsableAlt,
                                          Integer idUsuarioResponsable,
                                          Integer idUsuarioResponsableAlt,
                                          String urlExterno,
@@ -246,7 +244,7 @@ public class SistemaServiceImpl implements ISistemaService {
             if (sistemaExistente.isPresent()){
                 throw new IllegalArgumentException("El nombre del sistema se encuentra en uso, por favor ingrese un nuevo sistema.");
             }
-            Usuario usuario=util.getUsuario();
+            Usuario usuarioAutenticado =util.getUsuario();
 
             UUID codigoUuid=UUID.randomUUID();
 
@@ -256,10 +254,17 @@ public class SistemaServiceImpl implements ISistemaService {
             sistema.setNombre(nombre);
             sistema.setVersion(version);
             sistema.setUrl(url);
-            sistema.setUsuarioResponsable(usuarioResponsable);
-            sistema.setUsuarioResponsableAlterno(usuarioResponsableAlt);
+
+            if (!usuarioAutenticado.getIdUsuario().equals(idUsuarioResponsable)) {
+                throw new IllegalArgumentException("El ID del usuario responsable no coincide con el usuario autenticado.");
+            }
+
             sistema.setIdUsuarioResponsable(idUsuarioResponsable);
+            sistema.setUsuarioResponsable(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
+
             sistema.setIdUsuarioResponsableAlterno(idUsuarioResponsableAlt);
+            sistema.setUsuarioResponsableAlterno(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
+
 
             sistema.setUrlExterno(urlExterno);
             sistema.setEstadoCritico(String.valueOf(idestadoCritico));
@@ -277,10 +282,10 @@ public class SistemaServiceImpl implements ISistemaService {
             }
 
             sistema.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
-            sistema.setUsuarioCreacion(usuario.getUsuario());
+            sistema.setUsuarioCreacion(usuarioAutenticado.getUsuario());
             Sistema sistemaNew=sistemaRepository.save(sistema);
 
-            //almacenarDatosDeArchivo(sistemaNew);
+            //almacenarDatosDeArchivo;
             uploadFileService.almacenarDatosFile(multiLogoHead,sistemaNew.getIdSistema(),"Modulo Sistema");
             uploadFileService.almacenarDatosFile(multiLogoMain,sistemaNew.getIdSistema(),"Modulo Sistema");
 
@@ -305,8 +310,6 @@ public class SistemaServiceImpl implements ISistemaService {
                                             MultipartFile logoMain,
                                             MultipartFile logoHead,
                                             String url,
-                                            String usuarioResponsable,
-                                            String usuarioResponsableAlt,
                                             Integer idUsuarioResponsable,
                                             Integer idUsuarioResponsableAlt,
                                             String urlExterno,
@@ -315,12 +318,12 @@ public class SistemaServiceImpl implements ISistemaService {
                                             ) throws IOException {
         log.info("INI - actualizarSistema() ");
         try {
-            Usuario usuario=util.getUsuario();//obtener usuario del sistema
+            Usuario usuarioAutenticado=util.getUsuario();//obtener usuario del sistema
 
             // Optional<Sistema> sistemaExistente = sistemaRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(nombre);
             boolean existeNombredeSistema=sistemaRepository.existsByNombreIgnoreCaseAndIdSistemaNot(nombre,idSistema);
             if (existeNombredeSistema) {
-                throw new IllegalArgumentException("El número de sistema ya está registrado en otro Sistema.");
+                throw new IllegalArgumentException("El Nombre del sistema ya está registrado en otro Sistema.");
             }
 
             Sistema sistemaExistente = sistemaRepository.findById(idSistema).orElseThrow(() -> new ResourceNotFoundException("Sistema no encontrado con el id: " + idSistema));
@@ -331,8 +334,17 @@ public class SistemaServiceImpl implements ISistemaService {
                 sistemaExistente.setNombre(nombre);
                 sistemaExistente.setVersion(version);
                 sistemaExistente.setUrl(url);
-                sistemaExistente.setUsuarioResponsable(usuarioResponsable);
-                sistemaExistente.setUsuarioResponsableAlterno(usuarioResponsableAlt);
+
+                if (!usuarioAutenticado.getIdUsuario().equals(idUsuarioResponsable)) {
+                    throw new IllegalArgumentException("El ID del usuario responsable no coincide con el usuario autenticado.");
+                }
+
+                sistemaExistente.setIdUsuarioResponsable(idUsuarioResponsable);
+                sistemaExistente.setUsuarioResponsable(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
+
+                sistemaExistente.setIdUsuarioResponsableAlterno(idUsuarioResponsableAlt);
+                sistemaExistente.setUsuarioResponsableAlterno(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
+
                 sistemaExistente.setIdUsuarioResponsable(idUsuarioResponsable);
                 sistemaExistente.setIdUsuarioResponsableAlterno(idUsuarioResponsableAlt);
 
@@ -370,7 +382,7 @@ public class SistemaServiceImpl implements ISistemaService {
                 // 4. Guardar el sistema actualizado en la base de datos
 
                 sistemaExistente.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
-                sistemaExistente.setUsuarioActualizacion(usuario.getUsuario());
+                sistemaExistente.setUsuarioActualizacion(usuarioAutenticado.getUsuario());
                 Sistema sistemaActualizado = sistemaRepository.save(sistemaExistente);
                 // 5. Mapear el sistema actualizado a un DTO
                 SistemaFormDTO sistemaFormDTO = modelMapper.map(sistemaActualizado, SistemaFormDTO.class);

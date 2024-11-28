@@ -20,7 +20,7 @@ import pe.gob.bcrp.services.IRolService;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
-@Tag(name = "REST APIs Rol",description = "REST APIs - get All Roles, save Rol, update Rol, delete Rol")
+@Tag(name = "Rol",description = "Operaciones de Rol - Listar Roles, Guardar Rol, Actualizar Rol, Eliminar Rol")
 public class RolController {
 
 
@@ -30,15 +30,15 @@ public class RolController {
         this.rolService = rolService;
     }
 
-    @Operation(summary = "get All Roles REST API", description = "Obtener la lista de todos los Roles de la base de datos")
+    @Operation(summary = "Listar Roles", description = "Obtener la lista de todos los Roles de la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/roles")
     public ResponseEntity<RolResponse> getAllRoles(
             @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = "10",   required = false) Integer pageSize,
-            @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
-            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "sortBy", defaultValue = "idRol", required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = "desc", required = false) String sortOrder,
             @RequestParam(name = "idSistema", required = false) Integer idSistema,
             @RequestParam(name = "idRol", required = false) Integer idRol ){
 
@@ -54,7 +54,7 @@ public class RolController {
         }
     }
 
-    @Operation(summary = "Save Rol REST API", description = "Guarda el Rol en la base de datos")
+    @Operation(summary = "Guardar Rol", description = "Guarda el Rol en la base de datos")
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/rol")
@@ -77,7 +77,7 @@ public class RolController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update Rol REST API", description = "Actualiza el Rol en la base de datos")
+    @Operation(summary = "Actualizar Rol", description = "Actualiza el Rol por el IdRol en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/rol/{idRol}")
@@ -106,7 +106,7 @@ public class RolController {
     }
 
 
-    @Operation(summary = "Delete Rol REST API", description = "Elimina el rol por el IdRol de la base de datos")
+    @Operation(summary = "Eliminar Rol", description = "Elimina el rol por el IdRol de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/rol/{idRol}")

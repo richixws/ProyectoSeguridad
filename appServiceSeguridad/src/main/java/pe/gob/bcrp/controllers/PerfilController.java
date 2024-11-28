@@ -22,7 +22,7 @@ import pe.gob.bcrp.services.IPerfilService;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
-@Tag(name = "REST APIs Perfil",description = "REST APIs - get All Perfiles, save Prefil, update Perfil, delete Perfil")
+@Tag(name = "Perfil",description = "Operaciones del Perfil - listar Perfiles, Guardar Prefil, Actualizar Perfil, eliminar Perfil")
 public class PerfilController {
 
     private IPerfilService perfilService;
@@ -31,15 +31,15 @@ public class PerfilController {
         this.perfilService = perfilService;
     }
 
-    @Operation(summary = "get All Perfiles REST API", description = "Obtener la lista de todos los Perfiles de la base de datos")
+    @Operation(summary = "Listar Perfiles ", description = "Obtener la lista de todos los Perfiles de la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/perfiles")
     public ResponseEntity<PerfilResponse> getAllPerfiles(
             @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = "10",   required = false) Integer pageSize,
-            @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
-            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "sortBy", defaultValue = "idPerfil", required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = "desc", required = false) String sortOrder,
             @RequestParam(name = "idSistema", required = false) Integer idSistema,
             @RequestParam(name = "idPerfil", required = false) Integer idPerfil ){
 
@@ -55,7 +55,7 @@ public class PerfilController {
         }
     }
 
-    @Operation(summary = "Save Perfil REST API", description = "Guarda el Perfil en la base de datos")
+    @Operation(summary = "Guardar Perfil", description = "Guarda el Perfil en la base de datos")
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/perfil")
@@ -82,7 +82,7 @@ public class PerfilController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update Perfil REST API", description = "Actualiza el Perfil en la base de datos")
+    @Operation(summary = "Actualizar Perfil", description = "Actualiza el Perfil en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/perfil/{idPerfil}")
@@ -110,7 +110,7 @@ public class PerfilController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Delete Perfil REST API", description = "Elimina el perfil por el IdPerfil de la base de datos")
+    @Operation(summary = "Elimina Perfil", description = "Elimina el perfil por el IdPerfil de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/perfil/{idPerfil}")

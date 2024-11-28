@@ -30,7 +30,7 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @CrossOrigin(origins = "*", maxAge = 3600)
 //@PreAuthorize("hasRole('user_client_role') or hasRole('admin_client_role')")
-@Tag(name = "REST APIs Usuario",description = "REST APIs - get All Usuarios, save Usuario, update Usuario,inhabilitar Usuario, upload Usuarios")
+@Tag(name = "Usuario",description = "Operaciones Usuario - Listar Usuarios, Guardar Usuario, Actualizar Usuario, Inhabilitar Usuario, Cargar Usuarios")
 public class UsuarioController {
 
     private IUsuarioService usuarioService;
@@ -41,15 +41,15 @@ public class UsuarioController {
 
 
 
-    @Operation(summary = "get All Usuarios REST API", description = "Obtener la lista de todos los usuarios de la base de datos")
+    @Operation(summary = "Listar Usuarios", description = "Obtener la lista de todos los usuarios de la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/usuarios")
     public ResponseEntity<UsuarioResponse> getAllUsuarios(
             @RequestParam(name = "pageNumber",  defaultValue = "0",  required = false) Integer pageNumber,
             @RequestParam(name = "pageSize",    defaultValue = "50", required = false) Integer pageSize,
-            @RequestParam(name = "sortBy",      defaultValue = "persona.nombres", required = false) String sortBy,
-            @RequestParam(name = "sortOrder",   defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "sortBy",      defaultValue = "idUsuario", required = false) String sortBy,
+            @RequestParam(name = "sortOrder",   defaultValue = "desc", required = false) String sortOrder,
             @RequestParam(name = "tipoDocumento",   required = false)   Integer tipoDocumento,
             @RequestParam(name = "numeroDocumento", required = false)   String  numeroDocumento,
             @RequestParam(name = "nombres",         required = false)   String  nombres,
@@ -68,7 +68,7 @@ public class UsuarioController {
     }
 
 
-    @Operation(summary = "Upload Usuarios REST API", description = "Cargar la lista de usuarios desde archivo csv.")
+    @Operation(summary = "Cargar Usuarios", description = "Cargar la lista de usuarios desde archivo csv.")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/upload/usuarios")
@@ -99,7 +99,7 @@ public class UsuarioController {
 
     }
 
-    @Operation(summary = "Save Usuario REST API", description = "Guarda el usuario en la base de datos")
+    @Operation(summary = "Guardar Usuario", description = "Guarda el usuario en la base de datos")
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/usuario",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -140,7 +140,7 @@ public class UsuarioController {
 
 
 
-    @Operation(summary = "Update Usuario REST API", description = "Actualiza el usuario en la base de datos")
+    @Operation(summary = "Actualizar Usuario", description = "Actualiza el usuario en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/usuario/{idUsuario}")
@@ -172,7 +172,7 @@ public class UsuarioController {
     }
 
 
-    @Operation(summary = "Inhabilitar Usuario REST API", description = "Inhabilita el usuario en particular de la base de datos")
+    @Operation(summary = "Inhabilitar Usuario", description = "Inhabilita el usuario en particular de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PutMapping("/usuario/{idUsuario}/inhabilitar")
     public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> InhabilitarUsuario(@PathVariable("idUsuario") Integer idusuario) {

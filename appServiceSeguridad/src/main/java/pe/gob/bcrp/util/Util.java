@@ -90,6 +90,7 @@ public class Util {
             persona.setCorreo(email);
             usuarioResp.setPersona(persona);
             usuarioResp.setUsuario(username);
+            usuarioResp.setIdUsuario(1);
             return usuarioResp;
         }
 

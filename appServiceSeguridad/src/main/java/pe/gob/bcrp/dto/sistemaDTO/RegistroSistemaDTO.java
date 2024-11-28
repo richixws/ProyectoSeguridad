@@ -22,22 +22,15 @@ public class RegistroSistemaDTO {
     @Size(max = 100, message = "version no puede tener más de 50 caracteres.")
     public String version;
 
-    @NotEmpty(message = "nombre usuario responsable no puede ser vacio")
-    @Size(max = 100, message = "usuario responsable no puede tener más de 100 caracteres.")
-    @Pattern(regexp = "^[a-zA-ZñÑ]+(\\s[a-zA-ZñÑ]+)*$", message = "usuario Responsable con formato incorrecto, corrija")
-    private String usuarioResponsable;
-
-    @NotEmpty(message = "nombre usuario responsable alterno no puede ser vacio")
-    @Pattern(regexp = "^[a-zA-ZñÑ]+(\\s[a-zA-ZñÑ]+)*$", message = "usuario Responsable Alterno con formato incorrecto, corrija")
-    @Size(max = 100, message = "version no puede tener más de 100 caracteres.")
-    private String usuarioResponsableAlt;
 
     @NotNull(message = "usuario responsable no puede ser vacio")
-    @Min(value = 1, message = "El valor debe ser mayor o igual a 1")
+    @Min(value = 1, message = "El Usuario Responsable debe ser mayor o igual a 1")
+    @Max(value = 1, message = "El Usuario Responsable no debe ser mayor o igual a 1")
     private  Integer idUsuarioResponsable;
 
     @NotNull(message = "Usuario responsable Alterno no puede ser vacio")
-    @Min(value = 1, message = "El valor debe ser mayor o igual a 1")
+    @Min(value = 1, message = "El Usuario Responsable Alterno debe ser mayor o igual a 1")
+    @Max(value = 1, message = "El Usuario Responsable Alterno  no debe ser mayor o igual a 1")
     private  Integer idUsuarioResponsableAlt;
 
     @NotEmpty(message = "url no puede ser vacio")
@@ -58,8 +51,8 @@ public class RegistroSistemaDTO {
     @Size(max = 100, message = "unidad organizacional no puede tener más de 100 caracteres.")
     private String unidOrganizacional;
 
-    @NotNull(message = "Estado no puede ser vacío.")
-    @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
-    @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
-    private Integer estado;
+    //@NotNull(message = "Estado no puede ser vacío.")
+    //@Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
+    //@Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
+   //private Integer estado;
 }

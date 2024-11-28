@@ -153,7 +153,7 @@ public class IUploadFileServiceImpl implements IUploadFileService {
     }**/
     public void delete(String filePath) throws IOException {
         // Verificar si el archivo existe antes de eliminarlo
-        Path path = Paths.get(folderLocation + filePath);
+        Path path = Paths.get(folderLocation,filePath);
         if (Files.exists(path)) {
             Files.delete(path);  // Eliminar el archivo si existe
         }

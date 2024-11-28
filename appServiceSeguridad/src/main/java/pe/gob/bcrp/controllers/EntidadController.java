@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
-@Tag(name = "REST APIs Entidad",description = "REST APIs - get All Entidades, find All Documento, save Entidad, update Entidad, delete Entidad")
+@Tag(name = "Entidad",description = "Operaciones de la Entidad  - Listar Entidades, Guardar Entidad, Actualizar Entidad, Eliminar Entidad")
 public class EntidadController {
 
 
@@ -32,8 +32,8 @@ public class EntidadController {
         this.entidadService = entidadService;
     }
 
-    @Operation(summary = "find All Documento Identidad REST API", description = "Obtener la lista de los documentos de identidad de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@Operation(summary = "find All Documento Identidad REST API", description = "Obtener la lista de los documentos de identidad de la base de datos")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/entidad/documentos")
     public ResponseEntity<List<DocumentoIdentidadDTO>> findAllDocumentoIdentidad(){
@@ -47,7 +47,7 @@ public class EntidadController {
         }
     }
 
-    @Operation(summary = "get All Entidades REST API", description = "Obtener la lista de todos las Entidades de la base de datos")
+    @Operation(summary = "Listar las Entidades", description = "Obtener la lista de todos las Entidades de la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/entidades")
@@ -55,7 +55,7 @@ public class EntidadController {
             @RequestParam(name = "pageNumber", defaultValue = "0",      required = false) Integer pageNumber,
             @RequestParam(name = "pageSize",   defaultValue = "50",     required = false) Integer pageSize,
             @RequestParam(name = "sortBy",     defaultValue = "idEntidad", required = false) String sortBy,
-            @RequestParam(name = "sortOrder",  defaultValue = "asc",    required = false) String sortOrder,
+            @RequestParam(name = "sortOrder",  defaultValue = "desc",    required = false) String sortOrder,
             @RequestParam(name = "nombre",     required = false) String nombre,
             @RequestParam(name = "tipoDocumento",   required = false) Integer tipoDocumento,
             @RequestParam(name = "numeroDocumento", required = false) String numeroDocumento
@@ -71,7 +71,7 @@ public class EntidadController {
         }
     }
 
-    @Operation(summary = "Save Entidad REST API", description = "Guarda la Entidad en la base de datos")
+    @Operation(summary = "Guardar Entidad", description = "Guarda la Entidad en la base de datos")
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/entidad")
@@ -103,7 +103,7 @@ public class EntidadController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update Entidad REST API", description = "Actualiza la Entidad en la base de datos")
+    @Operation(summary = "Actualizar Entidad", description = "Actualiza la Entidad en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/entidad/{idEntidad}")
@@ -139,7 +139,7 @@ public class EntidadController {
 
     }
 
-    @Operation(summary = "Delete Entidad REST API", description = "Elimina la Entidad por el IdEntidad de la base de datos")
+    @Operation(summary = "Eliminar Entidad", description = "Elimina la Entidad por el IdEntidad de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/entidad/{idEntidad}")

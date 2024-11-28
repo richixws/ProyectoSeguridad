@@ -35,7 +35,7 @@ import java.util.UUID;
 //@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1")
-@Tag(name = "REST APIs Auth",description = "REST APIs - login, Validar Token, refresh Token, cerrar Sesion, getCaptcha")
+@Tag(name = "Oauth",description = "Operaciones de seguridad de la aplicacion - login, refresh Token, cerrar Sesion, obtener Captcha")
 public class AuthController {
 
     @Autowired
@@ -135,8 +135,8 @@ public class AuthController {
 
     }
 
-    @Operation(summary = "Validar Token REST API", description = "Validar token de acceso")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+   // @Operation(summary = "Validar Token REST API", description = "Validar token de acceso")
+   // @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("oauth/validarToken")
    public ResponseEntity<?> ValidarToken(@RequestHeader("Authorization") String authHeader) {
 
@@ -166,7 +166,7 @@ public class AuthController {
 
     }
 
-    @Operation(summary = "Refresh Token REST API", description = "Refresh token de acceso")
+    @Operation(summary = "Refresh Token REST API", description = "Obtener nuevo token de acceso")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("oauth/refreshToken")
     public ResponseEntity<TokenResponse> refreshToken(@RequestBody Map<String, String> request) {
@@ -187,7 +187,7 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "logout REST API", description = "logout de acceso")
+    @Operation(summary = "Cerrar Sesion REST API", description = "cerrar la sesion de acceso")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("oauth/logout")
     public ResponseEntity<?> cerrarSesion(@RequestParam("refreshToken") String refreshToken) {
@@ -214,8 +214,8 @@ public class AuthController {
 
     }
 
-    @CrossOrigin(origins = {"http://localhost:4200","http://172.30.107.212:4300"}, allowCredentials = "true" )
-    @Operation(summary = "Captcha REST API", description = "obtener captcha")
+    //@CrossOrigin(origins = {"http://localhost:4200","http://172.30.107.212:4300"}, allowCredentials = "true" )
+    @Operation(summary = "Captcha REST API", description = "obtener captcha de acceso")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("oauth/captcha")
     public ResponseEntity<CaptchaResponse> getCaptcha(HttpSession session) {

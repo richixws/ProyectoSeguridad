@@ -26,7 +26,7 @@ import java.util.List;
 @Log4j2
 @RestController
 @RequestMapping("/api/v1")
-@Tag(name = "REST APIs Sistema",description = "REST APIs - get All Sistemas, save Sistema, update Sistema,delete Sistema,find AllUsuarios Responsables, find All Estados Criticos")
+@Tag(name = "Sistema",description = "Operaciones de Sistema - Listar Sistemas, Guardar Sistema, Actualizar Sistema,Eliminar Sistema, Listar Usuarios Responsables, Listar Estados Criticos")
 public class SistemaController {
 
 
@@ -42,7 +42,7 @@ public class SistemaController {
     /**
      * Metodo Listar usuarios responsables del los Sistemas
      * **/
-    @Operation(summary = "find All Usuarios Sistema REST API", description = "Obtener la lista de los usuarios responsables del sistema de la base de datos")
+    @Operation(summary = "Listar Usuarios Sistema", description = "Obtener la lista de los usuarios responsables del sistema de la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistema/usuarios")
@@ -62,7 +62,7 @@ public class SistemaController {
     /**
      * Metodo Listar estados del los Sistemas
      * **/
-    @Operation(summary = "find All Estado Sistema REST API", description = "Obtener la lista de los estados del sistema de la base de datos")
+    @Operation(summary = "Listar Estado Sistema", description = "Obtener la lista de los estados del sistema de la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistema/estados")
@@ -82,15 +82,15 @@ public class SistemaController {
    /**
     * Metodo Listar todos los Sistemas
     * **/
-    @Operation(summary = "get All Sistemas REST API", description = "Obtener la lista de todos los sistemas de la base de datos")
+    @Operation(summary = "Listar Sistemas", description = "Obtener la lista de todos los sistemas de la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistemas")
     public ResponseEntity<SistemaResponse> getAllSistemas(
-            @RequestParam(name = "pageNumber", defaultValue = "0",  required = false) Integer pageNumber,
-            @RequestParam(name = "pageSize", defaultValue = "50",   required = false) Integer pageSize,
-            @RequestParam(name = "sortBy", defaultValue = "nombre", required = false) String sortBy,
-            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "pageNumber", defaultValue = "0",    required = false)      Integer pageNumber,
+            @RequestParam(name = "pageSize",   defaultValue = "50",   required = false)      Integer pageSize,
+            @RequestParam(name = "sortBy",     defaultValue = "idSistema", required = false) String sortBy,
+            @RequestParam(name = "sortOrder",  defaultValue = "desc", required = false)      String sortOrder,
             @RequestParam(name = "nombre", required = false) String nombre,
             @RequestParam(name = "version", required = false) String version
             ){
@@ -109,7 +109,7 @@ public class SistemaController {
     /**
      * Metodo Eliminar sistema por idSistema
      * **/
-    @Operation(summary = "Elimina Sistema REST API", description = "Elimina el sistema por el Id de la base de datos")
+    @Operation(summary = "Eliminar Sistema", description = "Elimina el sistema por el Id de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/sistema/{idSistema}")
@@ -180,7 +180,7 @@ public class SistemaController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }  **/
 
-    @Operation(summary = "Save Sistema REST API", description = "Guarda el Sistema en la base de datos")
+    @Operation(summary = "Guardar Sistema", description = "Guarda el Sistema en la base de datos")
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -196,7 +196,7 @@ public class SistemaController {
             validarLogo(multiLogoMain);
             validarLogo(multiLogoHead);
             SistemaFormDTO sistemaDto=sistemaService.guardarSistema(registroSistemaDTO.getNombre(),registroSistemaDTO.getVersion(),
-                    multiLogoMain,multiLogoHead,registroSistemaDTO.getUrl(), registroSistemaDTO.getUsuarioResponsable(),registroSistemaDTO.getUsuarioResponsableAlt()
+                    multiLogoMain,multiLogoHead,registroSistemaDTO.getUrl()
                     ,registroSistemaDTO.getIdUsuarioResponsable(),registroSistemaDTO.getIdUsuarioResponsableAlt(),registroSistemaDTO.getUrlExterno(),
                     registroSistemaDTO.getIdEstadoCritico(),registroSistemaDTO.getUnidOrganizacional());
             response.setStatus(1);
@@ -267,7 +267,7 @@ public class SistemaController {
     }**/
 
 
-    @Operation(summary = "Update Sistema REST API", description = "Actualiza el Sistema en la base de datos")
+    @Operation(summary = "Actualizar Sistema", description = "Actualiza el Sistema en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -286,7 +286,6 @@ public class SistemaController {
             validarLogo(multiLogoHead);
             SistemaFormDTO sistemaDto = sistemaService.actualizarSistema(registroSistemaDTO.getIdSistema(), registroSistemaDTO.getNombre(),
                     registroSistemaDTO.getVersion(), multiLogoMain, multiLogoHead, registroSistemaDTO.getUrl(),
-                    registroSistemaDTO.getUsuarioResponsable(),registroSistemaDTO.getUsuarioResponsableAlt(),
                     registroSistemaDTO.getIdUsuarioResponsable(),registroSistemaDTO.getIdUsuarioResponsableAlt(),
                     registroSistemaDTO.getUrlExterno(),registroSistemaDTO.getIdEstadoCritico(),registroSistemaDTO.getUnidOrganizacional());
 
@@ -324,12 +323,12 @@ public class SistemaController {
             throw new IllegalArgumentException("El logo es obligatorio.");
         }
 
-        // Validar el tamaño máximo permitido (por ejemplo, 2MB)
+        // Validar el tamaño máximo permitido  2MB
         if (logo.getSize() > 2 * 1024 * 1024) { // 2MB en bytes
             throw new IllegalArgumentException("El logo no debe exceder los 2MB.");
         }
 
-        // Validar el tipo de archivo (por ejemplo, aceptar solo PDF o imágenes)
+        // Validar el tipo de archivo  aceptar solo  imágenes
         String contentType = logo.getContentType();
         if (!"image/jpeg".equals(contentType) && !"image/png".equals(contentType)) {
             throw new IllegalArgumentException("El logo debe estar en formato de imagen (JPEG o PNG).");
