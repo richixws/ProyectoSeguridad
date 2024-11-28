@@ -205,7 +205,8 @@ public class SistemaServiceImpl implements ISistemaService {
 
                 filesRepository.deleteAll(listFiles);
 
-                sistema.setDeleted(true);
+                //sistema.setDeleted(true);
+                sistema.setEstado(1);
                 sistema.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 sistema.setUsuarioEliminacion(usuario.getUsuario());
                 sistemaRepository.save(sistema);

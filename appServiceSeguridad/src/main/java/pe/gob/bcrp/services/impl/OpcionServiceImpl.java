@@ -173,7 +173,8 @@ public class OpcionServiceImpl  implements IOpcionService {
                 if(opcion.isDeleted()){
                     throw new ResourceNotFoundException("La Opción no existe, ya se encuentra eliminado");
                 }
-                opcion.setDeleted(true);
+                //opcion.setDeleted(true);
+                opcion.setEstado(1);
                 opcion.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 opcion.setUsuarioEliminacion(usuario.getUsuario());
 

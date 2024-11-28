@@ -232,7 +232,8 @@ public class EntidadServiceImpl implements IEntidadService {
                 if(entidad.isDeleted()){
                     throw new ResourceNotFoundException("La entidad no existe, ya se encuentra eliminado");
                 }
-                entidad.setDeleted(true);
+                //entidad.setDeleted(true);
+                entidad.setEstado(1);
                 entidad.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 entidad.setUsuarioEliminacion(usuario.getUsuario());
 

@@ -225,7 +225,8 @@ public class PersonaServiceImpl  implements IPersonaService {
                 if(persona.isDeleted()){
                     throw new ResourceNotFoundException("La Persona no existe, ya se encuentra eliminado");
                 }
-               persona.setDeleted(true);
+               //persona.setDeleted(true);
+                persona.setEstado(1);
                persona.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                persona.setUsuarioActualizacion(usuario.getUsuario());
                iPersonaRepository.save(persona);

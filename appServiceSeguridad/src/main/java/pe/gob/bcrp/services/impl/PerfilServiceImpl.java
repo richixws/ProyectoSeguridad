@@ -187,7 +187,8 @@ public class PerfilServiceImpl implements IPerfilService {
                 if(perfil.isDeleted()){
                     throw new ResourceNotFoundException("El perfil no existe, ya se encuentra eliminado");
                 }
-                perfil.setDeleted(true);
+                //perfil.setDeleted(true);
+                perfil.setEstado(1);
                 perfil.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 perfil.setUsuarioEliminacion(usuario.getUsuario());
 
