@@ -16,7 +16,7 @@ public class OpcionDTO {
     private Integer idSistema;
 
     @NotEmpty(message = "Nombre de Opcion no debe ser vacio")
-    @Pattern(regexp = "^[a-zñA-ZÑ](\\s?[a-zñA-ZÑ])*$",message = "Nonbre de opcion con formato incorrecto")
+    @Pattern(regexp = "^[a-zA-ZñÑáéíóúÁÉÍÓÚ](\\s?[a-zA-ZñÑáéíóúÁÉÍÓÚ])*$", message = "Nombre de opción con formato incorrecto")
     @Size(max = 100, message = "nombre opcion no debe superar los 100 caracteres.")
     private String nombreOpcion;
 

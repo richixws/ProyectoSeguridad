@@ -19,7 +19,7 @@ import pe.gob.bcrp.services.IOpcionService;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
-@Tag(name = "REST APIs Opcion",description = "REST APIs - get All Opciones, save Opcion, update Opcion, delete Opcion")
+@Tag(name = "Opcion",description = "Operaciones de la Opcion - listar Opciones, Guardar Opcion, Actualizar Opcion, Eliminar Opcion")
 public class OpcionController {
 
 
@@ -39,15 +39,15 @@ public class OpcionController {
      * @param idModulo
      * @return
      */
-    @Operation(summary = "get All Opciones REST API", description = "Obtener la lista de todos las opciones de la base de datos")
+    @Operation(summary = "Listar Opciones", description = "Obtener la lista de todos las opciones de la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/opciones")
     public ResponseEntity<OpcionResponse> getAllOpciones(
             @RequestParam(name = "pageNumber",  defaultValue = "0",     required = false) Integer pageNumber,
             @RequestParam(name = "pageSize",    defaultValue = "10",    required = false) Integer pageSize,
-            @RequestParam(name = "sortBy",      defaultValue = "nombreOpcion", required = false) String sortBy,
-            @RequestParam(name = "sortOrder",   defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "sortBy",      defaultValue = "idOpcion", required = false) String sortBy,
+            @RequestParam(name = "sortOrder",   defaultValue = "desc", required = false) String sortOrder,
             @RequestParam(name = "idSistema",   required = false) Integer idSistema,
             @RequestParam(name = "idModulo",    required = false) Integer idModulo ){
 
@@ -68,7 +68,7 @@ public class OpcionController {
      * @param opcionDTO
      * @return
      */
-    @Operation(summary = "Save Opcion REST API", description = "Guarda la Opcion en la base de datos")
+    @Operation(summary = "Guardar Opcion", description = "Guarda la Opcion en la base de datos")
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/opcion")
@@ -97,7 +97,7 @@ public class OpcionController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update Opcion REST API", description = "Actualiza la Opcion en la base de datos")
+    @Operation(summary = "Actualizar Opcion", description = "Actualiza la Opcion en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/opcion/{idOpcion}")
@@ -130,7 +130,7 @@ public class OpcionController {
      * @param idOpcion
      * @return
      */
-    @Operation(summary = "Delete Opcion REST API", description = "Elimina la Opcion por el IdOpcion de la base de datos")
+    @Operation(summary = "Eliminar Opcion", description = "Elimina la Opcion por el IdOpcion de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/opcion/{idOpcion}")

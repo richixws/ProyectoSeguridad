@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
-@Tag(name = "REST APIs Documento Identidad",description = "REST APIs - get All Documentos Identidad")
+@Tag(name = "Documento Identidad",description = "Operaciones Documento Identidad- Listar Documentos Identidad")
 public class DocumentoIdentidadController {
 
 
@@ -31,7 +31,7 @@ public class DocumentoIdentidadController {
         this.documentoIdentidadService = documentoIdentidadService;
     }
 
-    @Operation(summary = "get All Documento Identidad REST API", description = "Obtener todos los documentos de identidad de la base de datos")
+    @Operation(summary = "Listar Documento Identidad", description = "Obtener todos los documentos de identidad de la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/documento/identidad")

@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SW_PERFIL", schema = "BD_SEGURIDAD")
+@Table(name = "SW_PERFIL", schema = "BCRP_MSAUTHENTICA_API")
 public class Perfil {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "perfil_seq")
-    @SequenceGenerator(name = "perfil_seq", sequenceName = "BD_SEGURIDAD.seq_sw_perfil", allocationSize = 1)
+    @SequenceGenerator(name = "perfil_seq", sequenceName = "BCRP_MSAUTHENTICA_API.seq_sw_perfil", allocationSize = 1)
     @Column(name = "id_perfil",nullable = false)
     private Integer idPerfil;
 

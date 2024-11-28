@@ -19,7 +19,7 @@ import pe.gob.bcrp.services.IModuloService;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins ="*", allowedHeaders = "*")
-@Tag(name = "REST APIs Modulo",description = "REST APIs - get All Modulo, save Modulo, update Modulo, delete Modulo")
+@Tag(name = "Modulo",description = "Operaciones de Modulo - listar Modulo, Guardar Modulo, Actualizar Modulo, Eliminar Modulo")
 public class ModuloController {
 
 
@@ -29,15 +29,15 @@ public class ModuloController {
         this.moduloService = moduloService;
     }
 
-    @Operation(summary = "get All Modulos REST API", description = "Obtener la lista de todos los Modulos de la base de datos")
+    @Operation(summary = "Listar Modulos", description = "Obtener la lista de todos los Modulos de la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/modulos")
     public ResponseEntity<ModuloResponse> getAllModulos(
             @RequestParam(name = "pageNumber",  defaultValue = "0",  required = false) Integer pageNumber,
             @RequestParam(name = "pageSize",    defaultValue = "10",   required = false) Integer pageSize,
-            @RequestParam(name = "sortBy",      defaultValue = "nombreModulo", required = false) String sortBy,
-            @RequestParam(name = "sortOrder",   defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "sortBy",      defaultValue = "idModulo", required = false) String sortBy,
+            @RequestParam(name = "sortOrder",   defaultValue = "desc", required = false) String sortOrder,
             @RequestParam(name = "idSistema", required = false) Integer idSistema
     ){
 
@@ -52,7 +52,7 @@ public class ModuloController {
         }
     }
 
-    @Operation(summary = "Save Modulo REST API", description = "Guarda el Modulo en la base de datos")
+    @Operation(summary = "Guardar Modulo", description = "Guarda el Modulo en la base de datos")
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/modulo")
@@ -75,7 +75,7 @@ public class ModuloController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update Modulo REST API", description = "Actualiza el Modulo en la base de datos")
+    @Operation(summary = "Actualizar Modulo", description = "Actualiza el Modulo en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/modulo/{idModulo}")
@@ -105,7 +105,7 @@ public class ModuloController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete Modulo REST API", description = "Elimina el Modulo por el IdModulo de la base de datos")
+    @Operation(summary = "Eliminar Modulo", description = "Elimina el Modulo por el IdModulo de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/modulo/{idModulo}")
