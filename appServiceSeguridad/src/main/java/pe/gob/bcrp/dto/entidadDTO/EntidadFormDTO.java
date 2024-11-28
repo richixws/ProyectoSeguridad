@@ -16,4 +16,6 @@ public class EntidadFormDTO {
     private String  nombre;
     private String  sigla;
     private String  codExterno;
+    private Integer  estado;
+    private boolean isDeleted;
 }

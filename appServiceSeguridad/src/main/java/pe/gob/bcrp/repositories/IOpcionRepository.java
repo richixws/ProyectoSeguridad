@@ -19,8 +19,8 @@ public interface IOpcionRepository extends JpaRepository<Opcion, Integer> {
 
     @Query("SELECT s FROM Opcion s WHERE " +
             "(:idSistema IS NULL OR s.modulo.sistema.idSistema  = :idSistema) AND " +
-            "(:idModulo IS NULL OR  s.modulo.idModulo = :idModulo) AND " +
-            "s.isDeleted = false")
+            "(:idModulo IS NULL OR  s.modulo.idModulo = :idModulo) ")
+            //"AND s.isDeleted = false")
     Page<Opcion> findByFilters(
                                 @Param("idSistema") Integer idSistema,
                                 @Param("idModulo") Integer idModulo,

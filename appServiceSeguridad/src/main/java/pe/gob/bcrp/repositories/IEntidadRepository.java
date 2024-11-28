@@ -13,8 +13,8 @@ import java.util.Optional;
 public interface IEntidadRepository extends JpaRepository<Entidad, Integer> {
 
     public Optional<Entidad> findByNombre(String nombre);
-    public List<Entidad> findByIsDeletedFalse();
-    public Page<Entidad> findByIsDeletedFalse(Pageable pageable);
+    // public List<Entidad> findByIsDeletedFalse();
+    //public Page<Entidad> findByIsDeletedFalse(Pageable pageable);
 
     boolean existsByNumeroDocumento(String numeroDocumento);
 
@@ -33,8 +33,8 @@ public interface IEntidadRepository extends JpaRepository<Entidad, Integer> {
     @Query("SELECT s FROM Entidad s WHERE " +
             "(:nombre IS NULL OR LOWER(s.nombre) = LOWER(:nombre)) AND " +
             "(:tipoDocumento IS NULL OR s.documentoIdentidad.idDocumentoIdentidad = :tipoDocumento) AND " +
-            "(:numeroDocumento IS NULL OR s.numeroDocumento = :numeroDocumento) AND " +
-            "s.isDeleted = false")
+            "(:numeroDocumento IS NULL OR s.numeroDocumento = :numeroDocumento) ")
+            //"AND s.isDeleted = false")
     Page<Entidad> findByFilters(@Param("nombre") String nombre,
                                 @Param("tipoDocumento") Integer tipoDocumento,
                                 @Param("numeroDocumento") String numeroDocumento,

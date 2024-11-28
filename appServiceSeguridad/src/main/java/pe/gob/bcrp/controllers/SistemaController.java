@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.response.SistemaResponse;
 import pe.gob.bcrp.dto.sistemaDTO.RegistroSistemaDTO;
+import pe.gob.bcrp.dto.sistemaDTO.SistemaFormDTO;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.ISistemaService;
 import pe.gob.bcrp.services.IUploadFileService;
@@ -184,9 +185,9 @@ public class SistemaController {
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO<SistemaFormDTO>> saveSistema(   @Valid @ModelAttribute RegistroSistemaDTO registroSistemaDTO,
-                                                                      @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
-                                                                      @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead
+    public ResponseEntity<ResponseDTO<SistemaFormDTO>> saveSistema(@Valid @ModelAttribute RegistroSistemaDTO registroSistemaDTO,
+                                                                   @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
+                                                                   @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead
                                                                      ) throws InvalidCredentialsException {
         log.info("INFO - Guardar Sistema ");
         ResponseDTO<SistemaFormDTO> response=new ResponseDTO();

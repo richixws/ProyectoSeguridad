@@ -55,7 +55,7 @@ public class RolServiceImpl implements IRolService {
             if(idSistema!=null ) {
                 pageRol=rolRepository.findByFilters(idSistema,idRol,pageDetails);
             }else{
-                pageRol = rolRepository.findByIsDeletedFalse(pageDetails);
+                pageRol = rolRepository.findAll(pageDetails);
             }
 
             List<Rol> roles = pageRol.getContent();
@@ -177,9 +177,8 @@ public class RolServiceImpl implements IRolService {
                 if(rol.isDeleted()){
                     throw new ResourceNotFoundException("El Rol no existe, ya se encuentra eliminado");
                 }
-                //rol.setDeleted(true);
+                rol.setDeleted(true);
                 //rol.setEstado(0);
-                rol.setEstado(1);
                 rol.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 rol.setUsuarioEliminacion(usuario.getUsuario());
 

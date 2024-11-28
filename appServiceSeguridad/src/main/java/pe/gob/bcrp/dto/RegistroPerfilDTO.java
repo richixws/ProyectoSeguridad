@@ -17,4 +17,8 @@ public class RegistroPerfilDTO {
     private String nombrePerfil;
 
     private String nombreSistema;
+
+    private Integer  estado;
+
+    private Boolean isDeleted;
 }

@@ -2,7 +2,6 @@ package pe.gob.bcrp.dto.response;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pe.gob.bcrp.dto.OpcionDTO;
 import pe.gob.bcrp.dto.RolDTO;
 
 import java.io.Serializable;

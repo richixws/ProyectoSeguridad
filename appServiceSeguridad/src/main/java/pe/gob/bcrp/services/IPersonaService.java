@@ -1,6 +1,6 @@
 package pe.gob.bcrp.services;
 
-import pe.gob.bcrp.dto.PersonaDTO;
+import pe.gob.bcrp.dto.personaDTO.PersonaDTO;
 import pe.gob.bcrp.dto.response.PersonaResponse;
 
 public interface IPersonaService {

@@ -10,7 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import pe.gob.bcrp.dto.OpcionDTO;
+import pe.gob.bcrp.dto.opcionDTO.OpcionDTO;
+import pe.gob.bcrp.dto.opcionDTO.opcionFormDTO;
 import pe.gob.bcrp.dto.response.OpcionResponse;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IModuloRepository;
@@ -57,13 +58,13 @@ public class OpcionServiceImpl  implements IOpcionService {
             if(idSistema!=null || idModulo!=null) {
                 pageOpciones=opcionRepository.findByFilters(idSistema,idModulo,pageDetails);
             }else{
-                pageOpciones = opcionRepository.findByIsDeletedFalse(pageDetails);
+                pageOpciones = opcionRepository.findAll(pageDetails);
             }
 
             List<Opcion> opciones = pageOpciones.getContent();
 
-            List<OpcionDTO> opcionDTOS = opciones.stream().map(opc -> {
-                 OpcionDTO opcionDTO = modelMapper.map(opc, OpcionDTO.class);
+            List<opcionFormDTO> opcionDTOS = opciones.stream().map(opc -> {
+                opcionFormDTO opcionDTO = modelMapper.map(opc, opcionFormDTO.class);
                  if (opc.getModulo() != null) { // Asignar tipoDocumento a partir de DocumentoIdentidad
                     opcionDTO.setIdModulo(opc.getModulo().getIdModulo());
                     opcionDTO.setIdSistema(opc.getModulo().getSistema().getIdSistema());
@@ -181,8 +182,7 @@ public class OpcionServiceImpl  implements IOpcionService {
                 if(opcion.isDeleted()){
                     throw new ResourceNotFoundException("La Opción no existe, ya se encuentra eliminado");
                 }
-                //opcion.setDeleted(true);
-                opcion.setEstado(1);
+                opcion.setDeleted(true);;
                 opcion.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 opcion.setUsuarioEliminacion(usuario.getUsuario());
 

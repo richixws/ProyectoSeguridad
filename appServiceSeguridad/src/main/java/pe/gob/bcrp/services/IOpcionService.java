@@ -1,5 +1,5 @@
 package pe.gob.bcrp.services;
-import pe.gob.bcrp.dto.OpcionDTO;
+import pe.gob.bcrp.dto.opcionDTO.OpcionDTO;
 import pe.gob.bcrp.dto.response.OpcionResponse;
 
 public interface IOpcionService {

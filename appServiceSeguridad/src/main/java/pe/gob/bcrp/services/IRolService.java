@@ -1,9 +1,6 @@
 package pe.gob.bcrp.services;
 
-import pe.gob.bcrp.dto.ModuloDTO;
-import pe.gob.bcrp.dto.RolDTO;
 import pe.gob.bcrp.dto.RolFormDTO;
-import pe.gob.bcrp.dto.response.ModuloResponse;
 import pe.gob.bcrp.dto.response.RolResponse;
 
 public interface IRolService {

@@ -84,7 +84,7 @@ public class EntidadServiceImpl implements IEntidadService {
             if(nombre!=null || tipoDocumento !=null || numeroDocumento!=null  ){
                 pageEntidades=entidadRepository.findByFilters(nombre,tipoDocumento,numeroDocumento,pageDetails);
             }else{
-                pageEntidades = entidadRepository.findByIsDeletedFalse(pageDetails);
+                pageEntidades = entidadRepository.findAll(pageDetails);
             }
 
             List<Entidad> entidades = pageEntidades.getContent();
@@ -232,8 +232,7 @@ public class EntidadServiceImpl implements IEntidadService {
                 if(entidad.isDeleted()){
                     throw new ResourceNotFoundException("La entidad no existe, ya se encuentra eliminado");
                 }
-                //entidad.setDeleted(true);
-                entidad.setEstado(1);
+                entidad.setDeleted(true);
                 entidad.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 entidad.setUsuarioEliminacion(usuario.getUsuario());
 

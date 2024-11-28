@@ -1,10 +1,10 @@
 package pe.gob.bcrp.services;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.response.SistemaResponse;
+import pe.gob.bcrp.dto.sistemaDTO.SistemaDTO;
+import pe.gob.bcrp.dto.sistemaDTO.SistemaFormDTO;
 
 import java.io.IOException;
 import java.util.List;

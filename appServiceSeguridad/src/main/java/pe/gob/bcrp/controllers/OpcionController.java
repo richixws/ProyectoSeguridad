@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.*;
+import pe.gob.bcrp.dto.opcionDTO.OpcionDTO;
 import pe.gob.bcrp.dto.response.OpcionResponse;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IOpcionService;

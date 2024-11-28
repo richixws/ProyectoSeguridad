@@ -10,7 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import pe.gob.bcrp.dto.ModuloDTO;
+import pe.gob.bcrp.dto.moduloDTO.ModuloDTO;
+import pe.gob.bcrp.dto.moduloDTO.ModuloFormDTO;
 import pe.gob.bcrp.dto.response.ModuloResponse;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IModuloRepository;
@@ -55,12 +56,12 @@ public class ModuloServiceImpl implements IModuloService {
              if(idSistema!=null){
                  pageModulos=imoduloRepository.findByFilters(idSistema,pageDetails);
              }else{
-                 pageModulos = imoduloRepository.findByIsDeletedFalse(pageDetails);
+                 pageModulos = imoduloRepository.findAll(pageDetails);
             }
 
             List<Modulo> modulo = pageModulos.getContent();
-            List<ModuloDTO> moduloDTOS = modulo.stream()
-                                                 .map(mod -> modelMapper.map(mod, ModuloDTO.class))
+            List<ModuloFormDTO> moduloDTOS = modulo.stream()
+                                                 .map(mod -> modelMapper.map(mod, ModuloFormDTO.class))
                                                  .toList();
 
             ModuloResponse moduloResponse = new ModuloResponse();
@@ -172,8 +173,7 @@ public class ModuloServiceImpl implements IModuloService {
                     throw new ResourceNotFoundException("El Modulo no existe, ya se encuentra eliminado");
                 }
                 //entidadRepository.deleteById(id);
-                //modulo.setDeleted(true);
-                modulo.setEstado(1);
+                modulo.setDeleted(true);
                 modulo.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 modulo.setUsuarioEliminacion(usuario.getUsuario());
 
