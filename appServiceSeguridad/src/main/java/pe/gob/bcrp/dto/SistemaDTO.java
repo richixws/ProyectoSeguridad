@@ -55,7 +55,7 @@ public class SistemaDTO {
     @NotEmpty(message = "unidad organizacional no puede ser vacio")
     private String unidadOrganizacional;
 
-
+    private Integer  estado;
 
 
 

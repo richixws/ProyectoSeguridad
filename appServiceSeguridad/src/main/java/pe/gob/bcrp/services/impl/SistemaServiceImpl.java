@@ -162,6 +162,7 @@ public class SistemaServiceImpl implements ISistemaService {
                         sistemaDTO.setUrlExterno(s.getUrlExterno());
                         sistemaDTO.setIdEstadoCritico(s.getEstadoCritico());
                         sistemaDTO.setUnidadOrganizacional(s.getUnidadOrganizacional());
+                        sistemaDTO.setEstado(s.getEstado());
 
                         return sistemaDTO;
                     }).toList();
