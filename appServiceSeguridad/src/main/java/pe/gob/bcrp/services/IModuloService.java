@@ -1,6 +1,6 @@
 package pe.gob.bcrp.services;
 
-import pe.gob.bcrp.dto.ModuloDTO;
+import pe.gob.bcrp.dto.moduloDTO.ModuloDTO;
 import pe.gob.bcrp.dto.response.ModuloResponse;
 
 public interface IModuloService {

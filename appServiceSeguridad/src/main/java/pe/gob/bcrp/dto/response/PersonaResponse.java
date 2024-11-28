@@ -3,7 +3,7 @@ package pe.gob.bcrp.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pe.gob.bcrp.dto.PersonaDTO;
+import pe.gob.bcrp.dto.personaDTO.PersonaFormDTO;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PersonaResponse {
 
-    private List<PersonaDTO> content;
+    private List<PersonaFormDTO> content;
     private Integer pageNumber;
     private Integer pageSize;
     private Long totalElements;

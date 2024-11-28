@@ -10,12 +10,12 @@ import pe.gob.bcrp.entities.Modulo;
 public interface IModuloRepository extends JpaRepository<Modulo, Integer> {
 
 
-    public Page<Modulo> findByIsDeletedFalse(Pageable pageable);
+    //public Page<Modulo> findByIsDeletedFalse(Pageable pageable);
 
 
     @Query("SELECT s FROM Modulo s WHERE " +
-            "(:idSistema IS NULL OR s.sistema.idSistema = :idSistema) AND " +
-            "s.isDeleted = false")
+            "(:idSistema IS NULL OR s.sistema.idSistema = :idSistema)  ")
+            //"AND s.isDeleted = false")
     Page<Modulo> findByFilters(@Param("idSistema") Integer idSistema,Pageable pageable);
 
 

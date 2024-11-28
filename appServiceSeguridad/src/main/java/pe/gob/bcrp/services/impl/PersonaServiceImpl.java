@@ -13,13 +13,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import pe.gob.bcrp.dto.PersonaDTO;
+import pe.gob.bcrp.dto.personaDTO.PersonaDTO;
+import pe.gob.bcrp.dto.personaDTO.PersonaFormDTO;
 import pe.gob.bcrp.dto.personaDTO.ValidateDni;
 import pe.gob.bcrp.dto.personaDTO.ValidatePasaporte;
-import pe.gob.bcrp.dto.personaDTO.ValidateRuc;
 import pe.gob.bcrp.dto.response.PersonaResponse;
 import pe.gob.bcrp.entities.DocumentoIdentidad;
 import pe.gob.bcrp.entities.Persona;
@@ -64,11 +62,11 @@ public class PersonaServiceImpl  implements IPersonaService {
             if(nombre!=null){
                  pagePersona=iPersonaRepository.findByFilters(nombre,pageDetails);
             }else {
-                  pagePersona=iPersonaRepository.findByIsDeletedFalse(pageDetails);
+                  pagePersona=iPersonaRepository.findAll(pageDetails);
             }
             var personas=pagePersona.getContent();
             var lisPersonasDto= personas.stream()
-                                        .map(persona -> modelMapper.map(persona, PersonaDTO.class))
+                                        .map(persona -> modelMapper.map(persona, PersonaFormDTO.class))
                                         .collect(Collectors.toList());
 
             PersonaResponse personaResponse = new PersonaResponse();
@@ -225,8 +223,7 @@ public class PersonaServiceImpl  implements IPersonaService {
                 if(persona.isDeleted()){
                     throw new ResourceNotFoundException("La Persona no existe, ya se encuentra eliminado");
                 }
-               //persona.setDeleted(true);
-                persona.setEstado(1);
+               persona.setDeleted(true);
                persona.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                persona.setUsuarioActualizacion(usuario.getUsuario());
                iPersonaRepository.save(persona);

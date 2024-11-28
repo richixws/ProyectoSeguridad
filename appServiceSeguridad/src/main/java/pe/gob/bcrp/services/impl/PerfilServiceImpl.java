@@ -59,7 +59,7 @@ public class PerfilServiceImpl implements IPerfilService {
             if(idSistema!=null || idPerfil!=null) {
                 pagePerfiles=perfilRepository.findByFilters(idSistema,idPerfil,pageDetails);
             }else{
-                pagePerfiles = perfilRepository.findByIsDeletedFalse(pageDetails);
+                pagePerfiles = perfilRepository.findAll(pageDetails);
             }
 
             List<Perfil> perfiles = pagePerfiles.getContent();
@@ -187,8 +187,7 @@ public class PerfilServiceImpl implements IPerfilService {
                 if(perfil.isDeleted()){
                     throw new ResourceNotFoundException("El perfil no existe, ya se encuentra eliminado");
                 }
-                //perfil.setDeleted(true);
-                perfil.setEstado(1);
+                perfil.setDeleted(true);
                 perfil.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 perfil.setUsuarioEliminacion(usuario.getUsuario());
 

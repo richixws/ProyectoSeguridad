@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.response.SistemaResponse;
+import pe.gob.bcrp.dto.sistemaDTO.SistemaDTO;
+import pe.gob.bcrp.dto.sistemaDTO.SistemaFormDTO;
 import pe.gob.bcrp.enumerador.EstadoCritico;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IFilesRepository;
@@ -138,7 +140,7 @@ public class SistemaServiceImpl implements ISistemaService {
                 pageEntidades = sistemaRepository.findByFilters( nombre, version, pageDetails);
             }else{
 
-               pageEntidades = sistemaRepository.findByIsDeletedFalse(pageDetails);
+               pageEntidades = sistemaRepository.findAll(pageDetails);
 
             }
 
@@ -163,7 +165,7 @@ public class SistemaServiceImpl implements ISistemaService {
                         sistemaDTO.setIdEstadoCritico(s.getEstadoCritico());
                         sistemaDTO.setUnidadOrganizacional(s.getUnidadOrganizacional());
                         sistemaDTO.setEstado(s.getEstado());
-
+                        sistemaDTO.setDeleted(s.isDeleted());
                         return sistemaDTO;
                     }).toList();
 
@@ -206,8 +208,7 @@ public class SistemaServiceImpl implements ISistemaService {
 
                 filesRepository.deleteAll(listFiles);
 
-                //sistema.setDeleted(true);
-                sistema.setEstado(1);
+                sistema.setDeleted(true);
                 sistema.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 sistema.setUsuarioEliminacion(usuario.getUsuario());
                 sistemaRepository.save(sistema);
