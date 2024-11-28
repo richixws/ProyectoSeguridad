@@ -105,8 +105,8 @@ public class OpcionServiceImpl  implements IOpcionService {
            opcion.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
            opcion.setUsuarioCreacion(usuario.getUsuario());
 
-           Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no encontrado sistema"));
-           Modulo modulo = moduloRepository.findById(opcionDto.getIdModulo()).orElseThrow(()-> new ResourceNotFoundException("no encontrado modulo"));
+           Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no se encontro el sistema a guardar"));
+           Modulo modulo = moduloRepository.findById(opcionDto.getIdModulo()).orElseThrow(()-> new ResourceNotFoundException("no se encontro el modulo a guardar"));
 
            modulo.setSistema(sistema);
            opcion.setModulo(modulo);
@@ -116,10 +116,10 @@ public class OpcionServiceImpl  implements IOpcionService {
            return opcionDtoNew;
 
        }catch (ResourceNotFoundException e){
-           log.error("ERROR - updateEntidad() "+e.getMessage());
+           log.error("ERROR - save Opcion() {}", e.getMessage());
            throw e;
        }catch (Exception e) {
-           log.error( "ERROR - saveOpcion() "+e.getMessage() );
+           log.error("ERROR - saveOpcion() {}", e.getMessage());
            throw  new RuntimeException("Error al guardar opcion"+e.getMessage());
        }
     }
@@ -131,10 +131,15 @@ public class OpcionServiceImpl  implements IOpcionService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Opcion opcion=opcionRepository.findById(idOpcion).orElseThrow(()-> new ResourceNotFoundException("no encontrado opción: "+idOpcion));
+            Opcion opcion=opcionRepository.findById(idOpcion).orElseThrow(()-> new ResourceNotFoundException("no se encontrado opción a actualizar"));
+
+            boolean existeNombredeModulo=opcionRepository.existsByNombreOpcionIgnoreCaseAndAndIdOpcionNot(opcionDto.getNombreOpcion(),idOpcion);
+            if (existeNombredeModulo) {
+                throw new IllegalArgumentException("El Nombre de la opcion ya está registrado en otra Opcion.");
+            }
 
             Modulo modulo=moduloRepository.findById(opcionDto.getIdModulo())
-                                          .orElseThrow(()-> new ResourceNotFoundException("no se encontró el módulo a actualizar: " + opcionDto.getIdModulo()));
+                                          .orElseThrow(()-> new ResourceNotFoundException("no se encontró el módulo a actualizar." + opcionDto.getIdModulo()));
 
             Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no se encontró el sistema a actualizar: "+ opcionDto.getIdSistema()));
 
@@ -150,8 +155,11 @@ public class OpcionServiceImpl  implements IOpcionService {
             OpcionDTO opcionDtoUpd=modelMapper.map(opcionSave, OpcionDTO.class);
             return opcionDtoUpd;
 
+        }  catch (IllegalArgumentException e) {
+            log.error("ERROR - update Opcion() - {}", e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - updateEntidad() "+e.getMessage());
+            log.error("ERROR - update Opcion() "+e.getMessage());
             throw e;
         }catch (Exception e) {
             log.error( "ERROR - updateOpcion() "+e.getMessage() );

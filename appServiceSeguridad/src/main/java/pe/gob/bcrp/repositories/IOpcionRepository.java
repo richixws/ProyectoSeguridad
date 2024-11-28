@@ -15,6 +15,8 @@ public interface IOpcionRepository extends JpaRepository<Opcion, Integer> {
 
     Optional<Opcion> findByNombreOpcionContainingIgnoreCaseAndIsDeletedFalse(String nombreOpcion);
 
+    boolean existsByNombreOpcionIgnoreCaseAndAndIdOpcionNot(String nombre,Integer idOpcion);
+
     @Query("SELECT s FROM Opcion s WHERE " +
             "(:idSistema IS NULL OR s.modulo.sistema.idSistema  = :idSistema) AND " +
             "(:idModulo IS NULL OR  s.modulo.idModulo = :idModulo) AND " +

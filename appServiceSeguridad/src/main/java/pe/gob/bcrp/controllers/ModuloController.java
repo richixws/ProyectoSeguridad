@@ -66,6 +66,10 @@ public class ModuloController {
             response.setMessage("El Modulo fue guardado de manera exitosa");
             // response.setBody(entidadDTO);
 
+        }catch (IllegalArgumentException e) {
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }catch (Exception e){
             log.error("ERROR - guardarEntidad | requestURL=entidadDto");
             response.setStatus(0);

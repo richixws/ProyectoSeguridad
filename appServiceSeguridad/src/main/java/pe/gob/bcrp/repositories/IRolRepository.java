@@ -5,11 +5,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import pe.gob.bcrp.entities.Modulo;
 import pe.gob.bcrp.entities.Rol;
+
+import java.util.Optional;
 
 public interface IRolRepository  extends JpaRepository<Rol, Integer> {
 
     public Page<Rol> findByIsDeletedFalse(Pageable pageable);
+    Optional<Rol> findByNombreContainingIgnoreCaseAndIsDeletedFalse(String nombre);
+
+    boolean existsByNombreIgnoreCaseAndAndIdRolNot(String nombre,Integer idRol);
 
     @Query("SELECT s FROM Rol s WHERE " + "(:idSistema IS NULL OR s.sistema.idSistema  = :idSistema) AND " +
                                              "(:idRol IS NULL OR  s.idRol = :idRol) AND " +

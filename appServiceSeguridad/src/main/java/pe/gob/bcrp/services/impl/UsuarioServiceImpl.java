@@ -340,7 +340,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Override
     public UsuarioDTO buscarPorUsuarioLogin(String usuario) {
-        Optional<Usuario> usuarioLogin=usuarioRepository.findByUsuario(usuario);
+       Optional<Usuario> usuarioLogin=usuarioRepository.findByUsuario(usuario);
+       // Optional<Usuario> usuarioLogin=usuarioRepository.findByUsuarioAndEstadoAndIsDeletedFalse(usuario,estado);
+
         UsuarioDTO dto= mapToDTO(usuarioLogin.get());
        // UsuarioDTO dto=modelMapper.map(usuarioLogin,UsuarioDTO.class);
         return dto;

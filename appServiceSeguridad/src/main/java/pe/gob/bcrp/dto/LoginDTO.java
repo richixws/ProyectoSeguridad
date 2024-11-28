@@ -8,8 +8,8 @@ public class LoginDTO {
     private String password;
 
     //captcha
-    private String captcha;
+    /**private String captcha;
     private String hiddenCaptcha;
-    private String tokenUuid;
+    private String tokenUuid;**/
 
 }

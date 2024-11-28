@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface IUsuarioRepository extends JpaRepository<Usuario, Integer> {
 
    Optional<Usuario> findByUsuario(String usuario);
+   //Optional<Usuario> findByUsuarioAndEstadoAndIsDeletedFalse(String usuario, String estado);
 
    public Page<Usuario> findByIsDeletedFalse(Pageable pageable);
 

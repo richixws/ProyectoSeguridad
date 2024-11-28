@@ -97,10 +97,11 @@ public class PerfilServiceImpl implements IPerfilService {
 
         log.info(" INI - Service  savePerfil");
         try {
-            /*Optional<Perfil> exist = perfilRepository.findByNombreContainingIgnoreCaseIsDeletedFalse(perfilDTO.getNombrePerfil());
-            if(exist.isPresent()) {
-                throw new ResourceNotFoundException("El nombre del perfil se encuentra en uso, por favor ingrese un nuevo perfil.");
-            }*/
+
+            Optional<Perfil> perfilExistente = perfilRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(perfilDTO.getNombrePerfil());
+            if (perfilExistente.isPresent()){
+                throw new IllegalArgumentException("El nombre del perfil se encuentra en uso, por favor ingrese un nuevo perfil.");
+            }
 
             Usuario usuario = util.getUsuario();
 
@@ -108,11 +109,10 @@ public class PerfilServiceImpl implements IPerfilService {
             perfil.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             perfil.setUsuarioCreacion(usuario.getUsuario());
 
-            //Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no encontrado sistema"));
-            //Modulo modulo = moduloRepository.findById(opcionDto.getIdModulo()).orElseThrow(()-> new ResourceNotFoundException("no encontrado modulo"));
-           Rol rol= rolRepository.findById(perfilDTO.getIdRol()).orElseThrow(()-> new ResourceNotFoundException("Rol no encontrado"));
-           Sistema sistema=sistemaRepository.findById(perfilDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("Sistema no encontrado"));
-           Entidad entidad=entidadRepository.findById(perfilDTO.getIdEntidad()).orElseThrow(()-> new ResourceNotFoundException("Entidad no encontrado"));
+
+           Rol rol= rolRepository.findById(perfilDTO.getIdRol()).orElseThrow(()-> new ResourceNotFoundException("Rol a guardar no encontrado"));
+           Sistema sistema=sistemaRepository.findById(perfilDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("Sistema a guardar no encontrado"));
+           Entidad entidad=entidadRepository.findById(perfilDTO.getIdEntidad()).orElseThrow(()-> new ResourceNotFoundException("Entidad a guardar no encontrado"));
            rol.setSistema(sistema);
            perfil.setRol(rol);
            perfil.setEntidad(entidad);
@@ -122,6 +122,9 @@ public class PerfilServiceImpl implements IPerfilService {
            PerfilDTO perfilDtoNew=modelMapper.map(perfilSave, PerfilDTO.class);
            return perfilDtoNew;
 
+        }catch (IllegalArgumentException e) {
+            log.error("ERROR - save Perfil() - {}", e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
             log.error("ERROR -Service save Perfil() "+e.getMessage());
             throw e;
@@ -140,11 +143,12 @@ public class PerfilServiceImpl implements IPerfilService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(()-> new ResourceNotFoundException("Perfil no encontrado: " + idPerfil));
+            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(()-> new ResourceNotFoundException("Perfil a actualizar no encontrado"));
 
-            //Modulo modulo=moduloRepository.findById(opcionDto.getIdModulo())
-            //        .orElseThrow(()-> new ResourceNotFoundException("no encontrado modulo a actualizar " + opcionDto.getIdModulo()));
-
+            boolean existeNombredePerfil=perfilRepository.existsByNombreIgnoreCaseAndAndIdPerfilNot(perfil.getNombre(),idPerfil);
+            if (existeNombredePerfil) {
+                throw new IllegalArgumentException("El Nombre del Modulo ya está registrado en otro Sistema.");
+            }
             Rol rol =rolRepository.findById(perfilDTO.getIdRol()).orElseThrow(()-> new ResourceNotFoundException("no encontrado rol: "+perfilDTO.getIdRol()));
             Sistema sistema=sistemaRepository.findById(perfilDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no se encontró el sistema a actualizar: " + perfilDTO.getIdSistema()));
             Entidad entidad=entidadRepository.findById(perfilDTO.getIdEntidad()).orElseThrow(()-> new ResourceNotFoundException("no se encontró la entidad"));
@@ -163,6 +167,9 @@ public class PerfilServiceImpl implements IPerfilService {
             PerfilDTO perfilDtoUpd=modelMapper.map(perfilSave, PerfilDTO.class);
             return perfilDtoUpd;
 
+        }catch (IllegalArgumentException e) {
+            log.error("ERROR - update Perfil() - {}", e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
             log.error("ERROR -Service update Perfil() "+e.getMessage());
             throw e;

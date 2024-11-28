@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @Service
@@ -86,6 +87,11 @@ public class ModuloServiceImpl implements IModuloService {
             log.info("INI - saveModulo()");
             Usuario usuario = util.getUsuario();
 
+            Optional<Modulo> moduloExistente = imoduloRepository.findByNombreModuloContainingIgnoreCaseAndIsDeletedFalse(moduloDto.getNombreModulo());
+            if (moduloExistente.isPresent()){
+                throw new IllegalArgumentException("El nombre del modulo se encuentra en uso, por favor ingrese un nuevo modulo.");
+            }
+
             Modulo modulo = modelMapper.map(moduloDto, Modulo.class);
             modulo.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             modulo.setUsuarioCreacion(usuario.getUsuario());
@@ -97,8 +103,12 @@ public class ModuloServiceImpl implements IModuloService {
             ModuloDTO moduloDtoNew = modelMapper.map(moduloNew, ModuloDTO.class);
             return moduloDtoNew;
 
-        }catch (Exception e){
-            log.error("ERROR - saveModulo() "+e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("ERROR - Service saveModulo() {}", e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
+
+        } catch (Exception e){
+            log.error("ERROR -Service saveModulo() {}", e.getMessage());
             throw new RuntimeException("Error al guardar el modulo" + e.getMessage());
         }
     }
@@ -115,7 +125,12 @@ public class ModuloServiceImpl implements IModuloService {
 
             Modulo modulo=imoduloRepository.findById(idModulo).orElseThrow(() -> new ResourceNotFoundException("Modulo a actualizar no encontrado: " + idModulo));
 
-            Sistema sistema=isistemaRepository.findById(moduloDto.getIdSistema()).orElseThrow(()->new ResourceNotFoundException(" Sistema no encontrando "));
+            boolean existeNombredeModulo=imoduloRepository.existsByNombreModuloIgnoreCaseAndAndIdModuloNot(moduloDto.getNombreModulo(),idModulo);
+            if (existeNombredeModulo) {
+                throw new IllegalArgumentException("El Nombre del Modulo ya está registrado en otro Sistema.");
+            }
+
+            Sistema sistema=isistemaRepository.findById(moduloDto.getIdSistema()).orElseThrow(()->new ResourceNotFoundException(" Sistema a actualizar no encontrado."));
 
             modulo.setSistema(sistema);
             modulo.setNombreModulo(moduloDto.getNombreModulo());

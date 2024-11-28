@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.RolDTO;
 import pe.gob.bcrp.dto.RolFormDTO;
 import pe.gob.bcrp.dto.response.RolResponse;
+import pe.gob.bcrp.entities.Modulo;
 import pe.gob.bcrp.entities.Rol;
 import pe.gob.bcrp.entities.Sistema;
 import pe.gob.bcrp.entities.Usuario;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -94,20 +96,28 @@ public class RolServiceImpl implements IRolService {
         try {
             Usuario usuario = util.getUsuario();
 
+            Optional<Rol> moduloExistente = rolRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(rolDTO.getNombreRol());
+            if (moduloExistente.isPresent()){
+                throw new IllegalArgumentException("El nombre del rol se encuentra en uso, por favor ingrese un nuevo rol.");
+            }
+
             Rol rol = modelMapper.map(rolDTO, Rol.class);
             rol.setEstado(1);
             rol.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             rol.setUsuarioCreacion(usuario.getUsuario());
 
-            Sistema sistema=sistemaRepository.findById(rolDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException(" Sistema no encontrado "));
+            Sistema sistema=sistemaRepository.findById(rolDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException(" Sistema a guardar no encontrado"));
             rol.setSistema(sistema);
 
             Rol rolSave=rolRepository.save(rol);
             RolFormDTO rolFormDTO = modelMapper.map(rol, RolFormDTO.class);
             return rolFormDTO;
 
+        }catch (IllegalArgumentException e) {
+            log.error("ERROR - service saveRole {}", e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e) {
-             log.error( "ERROR - service saveRole "+e.getMessage() );
+            log.error("ERROR - service save Role {}", e.getMessage());
              throw e;
         }catch (Exception e) {
             log.error( "ERROR -service saveRole "+e.getMessage() );
@@ -121,9 +131,14 @@ public class RolServiceImpl implements IRolService {
         log.info(" INI - Service  updateRole");
         try {
             Usuario usuario = util.getUsuario();
-            Rol rol = rolRepository.findById(idRol).orElseThrow(() -> new ResourceNotFoundException(" Rol no encontrado "));
+            Rol rol = rolRepository.findById(idRol).orElseThrow(() -> new ResourceNotFoundException(" Rol a actualizar no encontrado"));
 
-            Sistema sistema = sistemaRepository.findById(rolDto.getIdSistema()).orElseThrow(() -> new ResourceNotFoundException(" Sistema no encontrado "));
+            boolean existeNombredeModulo=rolRepository.existsByNombreIgnoreCaseAndAndIdRolNot(rolDto.getNombreRol(),idRol);
+            if (existeNombredeModulo) {
+                throw new IllegalArgumentException("El Nombre del rol ya se encuentra registrado en otro rol.");
+            }
+
+            Sistema sistema = sistemaRepository.findById(rolDto.getIdSistema()).orElseThrow(() -> new ResourceNotFoundException(" Sistema a actualizar no encontrado"));
             rol.setSistema(sistema);
             rol.setNombre(rolDto.getNombreRol());
            // rol.setEstado(rolDto.getEstado());
@@ -136,6 +151,9 @@ public class RolServiceImpl implements IRolService {
             RolFormDTO rolDTOUpd = modelMapper.map(rol, RolFormDTO.class);
             return rolDTOUpd;
 
+        }catch (IllegalArgumentException e) {
+            log.error("ERROR - service update Role {}", e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
             log.error("ERROR - Service  updateRole() "+e.getMessage());
             throw e;
