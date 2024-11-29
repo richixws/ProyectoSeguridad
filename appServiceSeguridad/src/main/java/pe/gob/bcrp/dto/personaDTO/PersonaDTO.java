@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class PersonaDTO {
 
 
@@ -43,8 +44,8 @@ public class PersonaDTO {
     @Email(message = "Correo formato no válido.")
     private String correo;
 
-    @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
-    @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
+    @Min(value = 0, message = "Estado sólo admite el número 0 o 1.")
+    @Max(value = 1, message = "Estado sólo admite el número 0 o 1.")
     @Builder.Default
     private Integer estado = 1;
 }

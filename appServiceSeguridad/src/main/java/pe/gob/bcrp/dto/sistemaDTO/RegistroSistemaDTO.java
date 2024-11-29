@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class RegistroSistemaDTO {
 
     private Integer idSistema;
@@ -52,8 +53,8 @@ public class RegistroSistemaDTO {
     @Size(max = 100, message = "unidad organizacional no puede tener más de 100 caracteres.")
     private String unidOrganizacional;
 
-    @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
-    @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
+    @Min(value = 0, message = "Estado sólo admite el número 0 o 1.")
+    @Max(value = 1, message = "Estado sólo admite el número 0 o 1.")
     @Builder.Default
     private Integer estado = 1;
 }

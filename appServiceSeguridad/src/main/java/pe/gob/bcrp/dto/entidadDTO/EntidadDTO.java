@@ -35,8 +35,8 @@ public class EntidadDTO {
     //@NotEmpty(message = "codigo externo no puede ser vacio")
     private String codExterno;
 
-    @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
-    @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
+    @Min(value = 0, message = "Estado sólo admite el número 0 o 1.")
+    @Max(value = 1, message = "Estado sólo admite el número 0 o 1.")
     @Builder.Default
     private Integer estado = 1;
 }

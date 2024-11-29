@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
+@Builder
 public class ModuloDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -26,8 +27,8 @@ public class ModuloDTO implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date orderDate;
 
-    @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
-    @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
+    @Min(value = 0, message = "Estado sólo admite el número 0 o 1.")
+    @Max(value = 1, message = "Estado sólo admite el número 0 o 1.")
     @Builder.Default
     private Integer estado = 1;
 }
