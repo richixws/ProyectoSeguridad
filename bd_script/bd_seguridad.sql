@@ -29,6 +29,7 @@ CREATE TABLE SW_PERSONA (
     nombres VARCHAR2(50) NOT NULL,
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
     correo varchar(100) NOT NULL,
+    estado NUMBER(1) DEFAULT 1 NOT NULL,
     
     hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
     hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
@@ -50,6 +51,7 @@ CREATE TABLE SW_SISTEMA (
     logo_head VARCHAR2(50) NOT NULL,
     url VARCHAR2(500) NOT NULL,
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,--DEFAULT 0 establece el valor predeterminado como false (no eliminado).
+    estado NUMBER(1) DEFAULT 1 NOT NULL,
     user_responsable varchar2(100)NOT NULL,
     id_user_responsable number(10) NOT NULL,
     user_responsable_alterno varchar2(100) NULL,
@@ -74,6 +76,7 @@ CREATE TABLE SW_OPCION (
     nombre VARCHAR2(100) NOT NULL,
     url VARCHAR2(300) NOT NULL,
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
+    estado NUMBER(1) DEFAULT 1 NOT NULL,
     
     
     hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
@@ -95,6 +98,7 @@ CREATE TABLE SW_ENTIDAD (
     sigla VARCHAR2(50),
     cod_externo VARCHAR2(50),
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
+    estado NUMBER(1) DEFAULT 1 NOT NULL,
     
     hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
     hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
@@ -114,6 +118,7 @@ CREATE TABLE SW_MODULO (
     nombre varchar(100) NOT NULL,
     order_date DATE NOT NULL,
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
+    estado NUMBER(1) DEFAULT 1 NOT NULL,
     
     hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
     hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
@@ -167,6 +172,7 @@ CREATE TABLE SW_ROL (
     estado NUMBER(1) NOT NULL,
   --  ultlin NUMBER(10) NOT NULL,
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
+    estado NUMBER(1) DEFAULT 1 NOT NULL,
     
     hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
     hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
@@ -185,6 +191,7 @@ CREATE TABLE SW_PERFIL (
     id_rol NUMBER(10) NOT NULL,
     nombre VARCHAR2(500) NOT NULL,
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
+    estado NUMBER(1) DEFAULT 1 NOT NULL,
     
     
     hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle

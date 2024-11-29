@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: service-seguridad
-          image: app-service-seguridadv1
+          image: app-service-seguridad
           ports:
             - containerPort: 80
 ---

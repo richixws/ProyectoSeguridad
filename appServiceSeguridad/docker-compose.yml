@@ -21,7 +21,7 @@ services:
       KEYCLOAK_INFO_URI: http://172.30.107.211:443/realms/demo/protocol/openid-connect/userinfo
       KEYCLOAK_TOKEN_URI: http://172.30.107.211:443/realms/demo/protocol/openid-connect/token
       KEYCLOAK_LOGOUT: http://172.30.107.211:443/realms/demo/protocol/openid-connect/logout
-      KEYCLOAK_CERTS: $http://172.30.107.211:443/realms/demo/protocol/openid-connect/certs
+      KEYCLOAK_CERTS: http://172.30.107.211:443/realms/demo/protocol/openid-connect/certs
       KEYCLOAK_CLIENT_ID: seguridad-demo
       REDIS_HOST: redis
       REDIS_PORT: 6379
