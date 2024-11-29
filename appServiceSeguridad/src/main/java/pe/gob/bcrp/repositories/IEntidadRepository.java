@@ -14,7 +14,7 @@ public interface IEntidadRepository extends JpaRepository<Entidad, Integer> {
 
     public Optional<Entidad> findByNombre(String nombre);
     // public List<Entidad> findByIsDeletedFalse();
-    //public Page<Entidad> findByIsDeletedFalse(Pageable pageable);
+    public Page<Entidad> findByIsDeletedFalse(Pageable pageable);
 
     boolean existsByNumeroDocumento(String numeroDocumento);
 

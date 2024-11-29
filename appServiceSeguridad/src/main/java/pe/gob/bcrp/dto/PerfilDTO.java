@@ -2,9 +2,11 @@ package pe.gob.bcrp.dto;
 
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class PerfilDTO {
 
 
@@ -25,9 +27,8 @@ public class PerfilDTO {
     @Size(max = 100, message = "perfil no debe superar los 100 caracteres.")
     private String nombrePerfil;
 
-    @NotNull(message = "Estado no puede ser vacío.")
-    @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
-    @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
-    private Integer estado;
-
+    @Min(value = 0, message = "Estado sólo admite el número 0 o 1.")
+    @Max(value = 1, message = "Estado sólo admite el número 0 o 1.")
+    @Builder.Default
+    private Integer estado = 1;
 }
