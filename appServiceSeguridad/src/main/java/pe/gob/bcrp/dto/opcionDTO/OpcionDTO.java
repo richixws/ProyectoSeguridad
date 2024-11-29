@@ -1,6 +1,7 @@
 package pe.gob.bcrp.dto.opcionDTO;
 
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
@@ -24,8 +25,8 @@ public class OpcionDTO {
     @Size(max = 200, message = "url no debe superar los 200 caracteres.")
     private String url;
 
-    @NotNull(message = "Estado no puede ser vacío.")
     @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
     @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
-    private Integer estado;
+    @Builder.Default
+    private Integer estado = 1;
 }

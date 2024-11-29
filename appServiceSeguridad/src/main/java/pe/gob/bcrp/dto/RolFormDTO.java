@@ -23,9 +23,9 @@ public class RolFormDTO {
     @Size(max = 100, message = "rol no debe superar los 100 caracteres.")
     private String  nombreRol;
 
-    @NotNull(message = "Estado no puede ser vacío.")
     @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
     @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
-    private Integer estado;
+    @Builder.Default
+    private Integer estado = 1;
 
 }

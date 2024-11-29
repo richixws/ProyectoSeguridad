@@ -2,6 +2,7 @@ package pe.gob.bcrp.dto.moduloDTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -25,8 +26,8 @@ public class ModuloDTO implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date orderDate;
 
-    @NotNull(message = "Estado no puede ser vacío.")
     @Min(value = 0, message = "Estadp sólo admite el número 0 o 1.")
     @Max(value = 1, message = "Estadp sólo admite el número 0 o 1.")
-    private Integer estado;
+    @Builder.Default
+    private Integer estado = 1;
 }
