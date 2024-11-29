@@ -1,5 +1,6 @@
 package pe.gob.bcrp.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import pe.gob.bcrp.dto.RolDTO;
@@ -9,7 +10,8 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class RolResponse implements Serializable {
+@AllArgsConstructor
+public class RolResponse  {
 
     private List<RolDTO> content;
     private Integer pageNumber;

@@ -239,7 +239,8 @@ public class SistemaServiceImpl implements ISistemaService {
                                          Integer idUsuarioResponsableAlt,
                                          String urlExterno,
                                          Integer idestadoCritico,
-                                         String unidOrganizacional) throws IOException {
+                                         String unidOrganizacional,
+                                         Integer estado) throws IOException {
         log.info("INI - guardarSistema() ");
         try {
             Optional<Sistema> sistemaExistente = sistemaRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(nombre);
@@ -271,6 +272,7 @@ public class SistemaServiceImpl implements ISistemaService {
             sistema.setUrlExterno(urlExterno);
             sistema.setEstadoCritico(String.valueOf(idestadoCritico));
             sistema.setUnidadOrganizacional(unidOrganizacional);
+            sistema.setEstado(estado);
 
             if(multiLogoMain != null){
                 //sistema.setLogoMain(multiLogoMain.getOriginalFilename());
@@ -316,7 +318,8 @@ public class SistemaServiceImpl implements ISistemaService {
                                             Integer idUsuarioResponsableAlt,
                                             String urlExterno,
                                             Integer idestadoCritico,
-                                            String unidOrganizacional
+                                            String unidOrganizacional,
+                                            Integer estado
                                             ) throws IOException {
         log.info("INI - actualizarSistema() ");
         try {
@@ -353,6 +356,7 @@ public class SistemaServiceImpl implements ISistemaService {
                 sistemaExistente.setUrlExterno(urlExterno);
                 sistemaExistente.setEstadoCritico(String.valueOf(idestadoCritico));
                 sistemaExistente.setUnidadOrganizacional(unidOrganizacional);
+                sistemaExistente.setEstado(estado);
 
 
 

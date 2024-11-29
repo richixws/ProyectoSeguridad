@@ -1,7 +1,9 @@
 package pe.gob.bcrp.dto.personaDTO;
 
 import jakarta.validation.constraints.*;
+import lombok.Data;
 
+@Data
 public class PersonaFormDTO {
 
     private Integer idPersona;

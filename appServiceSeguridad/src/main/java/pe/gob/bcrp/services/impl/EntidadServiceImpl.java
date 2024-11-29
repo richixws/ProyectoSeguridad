@@ -197,6 +197,7 @@ public class EntidadServiceImpl implements IEntidadService {
             entidad.setNombre(entidadDto.getNombre());
             entidad.setSigla(entidadDto.getSigla());
             entidad.setCodExterno(entidadDto.getCodExterno());
+            entidad.setEstado(entidadDto.getEstado());
             entidad.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             entidad.setUsuarioActualizacion(usuario.getUsuario());
 

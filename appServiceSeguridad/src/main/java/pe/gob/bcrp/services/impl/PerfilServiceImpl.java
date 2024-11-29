@@ -122,12 +122,13 @@ public class PerfilServiceImpl implements IPerfilService {
            PerfilDTO perfilDtoNew=modelMapper.map(perfilSave, PerfilDTO.class);
            return perfilDtoNew;
 
-        }catch (IllegalArgumentException e) {
-            log.error("ERROR - save Perfil() - {}", e.getMessage());
-            throw new IllegalArgumentException(e.getMessage());
+
         }catch (ResourceNotFoundException e){
             log.error("ERROR -Service save Perfil() "+e.getMessage());
             throw e;
+        }catch (IllegalArgumentException e) {
+            log.error("ERROR - save Perfil() - {}", e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }catch (Exception e) {
             log.error( "ERROR -Service savePerfil() "+e.getMessage() );
             throw  new RuntimeException("Error al guardar perfil"+e.getMessage());
@@ -157,6 +158,7 @@ public class PerfilServiceImpl implements IPerfilService {
             perfil.setRol(rol);
             perfil.setEntidad(entidad);
             perfil.setNombre(perfilDTO.getNombrePerfil());
+            perfil.setEstado(perfilDTO.getEstado());
 
 
             perfil.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
@@ -189,7 +191,7 @@ public class PerfilServiceImpl implements IPerfilService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(() -> new ResourceNotFoundException("Opcion no encontrado con "+ idPerfil));
+            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(() -> new ResourceNotFoundException("Opcion no encontrado a eliminar"));
             if(perfil!=null){
                 if(perfil.isDeleted()){
                     throw new ResourceNotFoundException("El perfil no existe, ya se encuentra eliminado");

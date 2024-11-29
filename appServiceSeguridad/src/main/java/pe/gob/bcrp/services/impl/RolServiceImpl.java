@@ -141,7 +141,7 @@ public class RolServiceImpl implements IRolService {
             Sistema sistema = sistemaRepository.findById(rolDto.getIdSistema()).orElseThrow(() -> new ResourceNotFoundException(" Sistema a actualizar no encontrado"));
             rol.setSistema(sistema);
             rol.setNombre(rolDto.getNombreRol());
-           // rol.setEstado(rolDto.getEstado());
+            rol.setEstado(rolDto.getEstado());
            // rol.setUltLin(rolDto.getUltLin());
 
             rol.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));

@@ -1,7 +1,10 @@
 package pe.gob.bcrp.dto.moduloDTO;
 
+import lombok.Data;
+
 import java.util.Date;
 
+@Data
 public class ModuloFormDTO {
 
     private Integer idModulo;

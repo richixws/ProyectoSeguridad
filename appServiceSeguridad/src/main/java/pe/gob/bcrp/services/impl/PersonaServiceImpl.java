@@ -194,6 +194,7 @@ public class PersonaServiceImpl  implements IPersonaService {
             //persona.setDocuIdentidad(personaDTO.getTipoDocumento());
             persona.setNumeroDocumento(personaDTO.getNumeroDocumento());
             persona.setCorreo(personaDTO.getCorreo());
+            persona.setEstado(personaDTO.getEstado());
 
             persona.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             persona.setUsuarioActualizacion(usuario.getUsuario());
@@ -232,7 +233,7 @@ public class PersonaServiceImpl  implements IPersonaService {
 
         } catch (ResourceNotFoundException e) {
             log.error("ERROR Service - DeletePersona() "+e.getMessage());
-            throw new RuntimeException("ERROR Service - DeletePersona() "+e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
         return estado;
     }

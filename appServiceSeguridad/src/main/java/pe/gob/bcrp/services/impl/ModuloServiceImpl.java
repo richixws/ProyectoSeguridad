@@ -135,6 +135,7 @@ public class ModuloServiceImpl implements IModuloService {
 
             modulo.setSistema(sistema);
             modulo.setNombreModulo(moduloDto.getNombreModulo());
+            modulo.setEstado(moduloDto.getEstado());
             modulo.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             modulo.setUsuarioActualizacion(usuario.getUsuario());
 

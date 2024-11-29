@@ -199,7 +199,7 @@ public class SistemaController {
             SistemaFormDTO sistemaDto=sistemaService.guardarSistema(registroSistemaDTO.getNombre(),registroSistemaDTO.getVersion(),
                     multiLogoMain,multiLogoHead,registroSistemaDTO.getUrl()
                     ,registroSistemaDTO.getIdUsuarioResponsable(),registroSistemaDTO.getIdUsuarioResponsableAlt(),registroSistemaDTO.getUrlExterno(),
-                    registroSistemaDTO.getIdEstadoCritico(),registroSistemaDTO.getUnidOrganizacional());
+                    registroSistemaDTO.getIdEstadoCritico(),registroSistemaDTO.getUnidOrganizacional(),registroSistemaDTO.getEstado());
             response.setStatus(1);
             response.setMessage("El Sistema fue guardado de manera exitosa");
             //response.setBody(sistemaDto);
@@ -288,7 +288,7 @@ public class SistemaController {
             SistemaFormDTO sistemaDto = sistemaService.actualizarSistema(registroSistemaDTO.getIdSistema(), registroSistemaDTO.getNombre(),
                     registroSistemaDTO.getVersion(), multiLogoMain, multiLogoHead, registroSistemaDTO.getUrl(),
                     registroSistemaDTO.getIdUsuarioResponsable(),registroSistemaDTO.getIdUsuarioResponsableAlt(),
-                    registroSistemaDTO.getUrlExterno(),registroSistemaDTO.getIdEstadoCritico(),registroSistemaDTO.getUnidOrganizacional());
+                    registroSistemaDTO.getUrlExterno(),registroSistemaDTO.getIdEstadoCritico(),registroSistemaDTO.getUnidOrganizacional(),registroSistemaDTO.getEstado());
 
             response.setStatus(1);
             response.setMessage("El Sistema fue actualizado de manera exitosa");

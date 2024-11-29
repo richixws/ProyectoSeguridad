@@ -65,7 +65,12 @@ public class PerfilController {
             response.setStatus(1);
             response.setMessage("El Perfil fue guardado de manera exitosa");
             // response.setBody(entidadDTO);
-        } catch (ResourceNotFoundException e) {
+        }catch (IllegalArgumentException e) {
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
+        }catch (ResourceNotFoundException e) {
             log.error("ERROR - Perfil No encontrado " + e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
@@ -91,6 +96,13 @@ public class PerfilController {
             PerfilDTO perfilDto=perfilService.updatePerfil(perfilDTO,idPerfil);
             response.setStatus(1);
             response.setMessage("El perfil fue actualizado exitosamente");
+
+        }
+         catch (IllegalArgumentException e) {
+             log.error("ERROR | update perfil{}", e.getMessage());
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
 
         }catch (ResourceNotFoundException e) {
             log.error("ERROR - update perfil No encontrado " + e.getMessage());

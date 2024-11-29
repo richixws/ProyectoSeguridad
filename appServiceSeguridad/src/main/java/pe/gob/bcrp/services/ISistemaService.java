@@ -25,7 +25,8 @@ public interface ISistemaService {
                                          Integer        idUsuarioResponsableAlt,
                                          String         urlExterno,
                                          Integer        idEstadoCritico,
-                                         String         unidOrganizacional) throws IOException;
+                                         String         unidOrganizacional,
+                                         Integer        esatdo) throws IOException;
 
     public SistemaFormDTO actualizarSistema(Integer       idSistema,
                                             String        nombre,
@@ -37,6 +38,7 @@ public interface ISistemaService {
                                             Integer       idUsuarioResponsableAlt,
                                             String        urlExterno,
                                             Integer       idEstadoCritico,
-                                            String        unidOrganizacional)throws IOException;
+                                            String        unidOrganizacional,
+                                            Integer       estado)throws IOException;
     public boolean  deleteSistema(Integer idSistema);
 }

@@ -68,7 +68,7 @@ public class AuthController {
 
         try {
 
-           /**String tokenUuid = (String) session.getAttribute("uuid");
+            /**String tokenUuid = (String) session.getAttribute("uuid");
             if(tokenUuid == null){
                 Map<String, String> response = Map.of("mensaje", "Por favor generar un nuevo captcha");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
@@ -82,7 +82,7 @@ public class AuthController {
                 Map<String, String> response = Map.of("mensaje", "Token captcha inválido");
                 session.invalidate();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            } **/
+            }**/
 
            UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
 

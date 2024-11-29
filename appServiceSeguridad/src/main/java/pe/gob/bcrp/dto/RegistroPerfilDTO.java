@@ -20,5 +20,5 @@ public class RegistroPerfilDTO {
 
     private Integer  estado;
 
-    private Boolean isDeleted;
+    private boolean isDeleted;
 }

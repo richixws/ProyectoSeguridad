@@ -148,6 +148,7 @@ public class OpcionServiceImpl  implements IOpcionService {
             opcion.setModulo(modulo);
             opcion.setNombreOpcion(opcionDto.getNombreOpcion());
             opcion.setUrl(opcionDto.getUrl());
+            opcion.setEstado(opcionDto.getEstado());
 
             opcion.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             opcion.setUsuarioActualizacion(usuario.getUsuario());

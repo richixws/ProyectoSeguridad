@@ -14,7 +14,7 @@ public interface IRolRepository  extends JpaRepository<Rol, Integer> {
 
     public Page<Rol> findByIsDeletedFalse(Pageable pageable);
     Optional<Rol> findByNombreContainingIgnoreCaseAndIsDeletedFalse(String nombre);
-
+    //boolean existsBy(String numeroDocumento);
     boolean existsByNombreIgnoreCaseAndAndIdRolNot(String nombre,Integer idRol);
 
     @Query("SELECT s FROM Rol s WHERE " + "(:idSistema IS NULL OR s.sistema.idSistema  = :idSistema) AND " +

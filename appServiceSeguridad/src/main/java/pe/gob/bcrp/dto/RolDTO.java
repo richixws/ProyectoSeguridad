@@ -10,7 +10,7 @@ public class RolDTO {
     private String   nombreSistema;
     private String   nombreRol;
     private Integer  estado;
-    private Boolean isDeleted;
+    private boolean isDeleted;
    //private Integer ultLin;
 
 }
