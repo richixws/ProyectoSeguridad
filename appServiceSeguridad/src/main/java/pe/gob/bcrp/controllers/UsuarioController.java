@@ -201,6 +201,35 @@ public class UsuarioController {
           }
     }
 
+    @Operation(summary = "Asigne Rol a usuario", description = "Asigna rol con todos los perfiles al usuario")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @PostMapping("/usuario/{idUsuario}/{idRol}")
+    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> AsignarRolToUsuario(@PathVariable("idUsuario") Integer idusuario,
+                                                                               @PathVariable("idRol") Integer idRol) {
+        log.info("INI - Asigne Rol a usuario | requestURL=IdUsuario,IdRol");
+        ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
+        try {
+            boolean result = usuarioService.AddProfilesToUsuario(idusuario, idRol);
+            if(!result){
+                throw new ResourceNotFoundException("Ocurrió un error al asignar rol a usuario");
+            }
+            response.setStatus(1);
+            response.setMessage("Se asigno el rol al usuario");
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        }catch (ResourceNotFoundException e){
+            log.error("ERROR - AsignarRolToUsuario {}", e.getMessage());
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+
+        }catch (Exception e){
+            log.error(" ERROR - AsignarRolToUsuario | requestURL=IdUsuario ");
+            response.setStatus(0);
+            response.setMessage("Error al asignar rol a usuario "+e.getMessage() );
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }
+
 
     // validar archivo sustento
     private void validarArchivoSustento(MultipartFile sustento) {

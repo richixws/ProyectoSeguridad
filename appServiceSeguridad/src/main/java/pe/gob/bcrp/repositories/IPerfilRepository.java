@@ -5,9 +5,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import pe.gob.bcrp.entities.Modulo;
 import pe.gob.bcrp.entities.Perfil;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IPerfilRepository  extends JpaRepository<Perfil, Integer> {
@@ -27,6 +27,7 @@ public interface IPerfilRepository  extends JpaRepository<Perfil, Integer> {
                                 @Param("idSistema") Integer idSistema,
                                 @Param("idPerfil")  Integer idPerfil,
                                 Pageable pageable);
-
-
+    @Query("SELECT p FROM Perfil p WHERE " +
+            "p.rol.idRol  = :idRol")
+    List<Perfil> findByRolAndDeletedFalseCustom(Integer idRol);
 }
