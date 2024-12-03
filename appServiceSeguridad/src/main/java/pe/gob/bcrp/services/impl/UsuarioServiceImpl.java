@@ -21,13 +21,9 @@ import pe.gob.bcrp.dto.response.UsuarioResponse;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroCreateUsuarioDTO;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroUsuarioDTO;
 import pe.gob.bcrp.dto.usuarioDTO.UsuarioFormDTO;
-import pe.gob.bcrp.entities.DocumentoIdentidad;
-import pe.gob.bcrp.entities.Persona;
-import pe.gob.bcrp.entities.Usuario;
+import pe.gob.bcrp.entities.*;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
-import pe.gob.bcrp.repositories.IDocumentoIdentidadRepository;
-import pe.gob.bcrp.repositories.IPersonaRepository;
-import pe.gob.bcrp.repositories.IUsuarioRepository;
+import pe.gob.bcrp.repositories.*;
 import pe.gob.bcrp.services.IUploadFileService;
 import pe.gob.bcrp.services.IUsuarioService;
 import pe.gob.bcrp.util.Util;
@@ -62,6 +58,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     private IUploadFileService uploadFileService;
 
+    private IPerfilRepository perfilRepository;
+    private IPerfilUsuarioRepository perfilUsuarioRepository;
 
     @Override
     @Cacheable(value = "usuarios", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #nombres,#tipoDocumento,#numeroDocumento,#idSistema, #ambito}")
@@ -334,7 +332,35 @@ public class UsuarioServiceImpl implements IUsuarioService {
         return estado;
     }
 
+    @Override
+    @CacheEvict(value = "usuarios", allEntries = true)
+    public boolean AddProfilesToUsuario(Integer idUsuario, Integer idRol) {
 
+        log.info("INI - Asignar perfiles a Usuario()");
+        boolean estado = false;
+        try {
+
+            Usuario usuario=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            if(usuario != null){
+                List<Perfil> perfiles = perfilRepository.findByRolAndDeletedFalseCustom(idRol);
+                List<PerfilUsuario> perfilUsuarios = new ArrayList<>();
+
+                for (Perfil perfil: perfiles) {
+                    PerfilUsuario obj = new PerfilUsuario();
+                    obj.setPerfil(perfil);
+                    obj.setUsuario(usuario);
+                    perfilUsuarios.add(obj);
+                }
+
+                perfilUsuarioRepository.saveAll(perfilUsuarios);
+                estado=true;
+            }
+        }catch (ResourceNotFoundException e){
+            log.error("ERROR - AddProfilesToUsuario() "+e.getMessage());
+            e.printStackTrace();
+        }
+        return estado;
+    }
 
 
 

@@ -41,4 +41,5 @@ public interface IUsuarioService {
   // usado en le Login
   public UsuarioDTO buscarPorUsuarioLogin(String usuario );
 
+  boolean AddProfilesToUsuario(Integer idUsuario, Integer idRol);
 }
