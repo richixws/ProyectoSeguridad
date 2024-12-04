@@ -335,7 +335,6 @@ public class UsuarioServiceImpl implements IUsuarioService {
     @Override
     @CacheEvict(value = "usuarios", allEntries = true)
     public boolean AddProfilesToUsuario(Integer idUsuario, Integer idRol) {
-
         log.info("INI - Asignar perfiles a Usuario()");
         boolean estado = false;
         try {
@@ -344,16 +343,19 @@ public class UsuarioServiceImpl implements IUsuarioService {
             if(usuario != null){
                 List<Perfil> perfiles = perfilRepository.findByRolAndDeletedFalseCustom(idRol);
                 List<PerfilUsuario> perfilUsuarios = new ArrayList<>();
+                if(perfiles != null) {
+                    for (Perfil perfil: perfiles) {
+                        PerfilUsuario obj = new PerfilUsuario();
+                        obj.setPerfil(perfil);
+                        obj.setUsuario(usuario);
+                        perfilUsuarios.add(obj);
+                    }
 
-                for (Perfil perfil: perfiles) {
-                    PerfilUsuario obj = new PerfilUsuario();
-                    obj.setPerfil(perfil);
-                    obj.setUsuario(usuario);
-                    perfilUsuarios.add(obj);
+                    perfilUsuarioRepository.saveAll(perfilUsuarios);
+                    estado=true;
+                } else {
+                    throw new ResourceNotFoundException("Perfiles no encontrados");
                 }
-
-                perfilUsuarioRepository.saveAll(perfilUsuarios);
-                estado=true;
             }
         }catch (ResourceNotFoundException e){
             log.error("ERROR - AddProfilesToUsuario() "+e.getMessage());

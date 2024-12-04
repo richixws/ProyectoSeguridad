@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.apache.coyote.BadRequestException;
 import org.apache.http.auth.InvalidCredentialsException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IUsuarioService;
 import pe.gob.bcrp.services.impl.UsuarioServiceImpl;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Log4j2
@@ -216,13 +218,19 @@ public class UsuarioController {
             response.setStatus(1);
             response.setMessage("Se asigno el rol al usuario");
             return new ResponseEntity<>(response,HttpStatus.OK);
-        }catch (ResourceNotFoundException e){
+        } catch (ResourceNotFoundException e){
             log.error("ERROR - AsignarRolToUsuario {}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
 
-        }catch (Exception e){
+        } catch (DataAccessException e){
+            log.error("ERROR - AddProfilesToUsuario() "+e.getMessage());
+            response.setStatus(0);
+            response.setMessage("No se puede volver a asignar el mismo rol al usuario");
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+
+        } catch (Exception e){
             log.error(" ERROR - AsignarRolToUsuario | requestURL=IdUsuario ");
             response.setStatus(0);
             response.setMessage("Error al asignar rol a usuario "+e.getMessage() );
