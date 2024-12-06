@@ -58,11 +58,13 @@ public class Usuario implements Serializable {
     @Column(name = "is_deleted")
     private boolean isDeleted=false;
 
+    //@Column(name = "otp")
+    //private String otp;
+
+    //@Column(columnDefinition = "TIMESTAMP",name = "otp_generated_time")
+    //private LocalDateTime otpGeneratedTime;
 
 
-    //mapeo relacional con perfil
-    //@OneToMany(mappedBy = "usuario")
-    //private Set<PerfilUsuario> perfilUsuarios;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "SW_PERFIL_USUARIO", schema = "BCRP_MSAUTHENTICA_API",
             joinColumns = @JoinColumn(name = "id_usuario"),

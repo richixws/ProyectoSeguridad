@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pe.gob.bcrp.entities.Persona;
 
+import java.util.Optional;
+
 
 public interface IPersonaRepository extends JpaRepository<Persona, Integer> {
 
@@ -24,6 +26,9 @@ public interface IPersonaRepository extends JpaRepository<Persona, Integer> {
     @Query("SELECT s FROM Persona s WHERE " + "(:nombre IS NULL OR s.nombres = :nombre) ")
             //"AND s.isDeleted = false")
     Page<Persona> findByFilters(@Param("nombre") String nombre, Pageable pageable);
+
+    //para envio de otp
+    Optional<Persona> findByCorreo(String email);
 
 
 }

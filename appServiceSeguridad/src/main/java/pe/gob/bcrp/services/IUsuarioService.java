@@ -41,4 +41,9 @@ public interface IUsuarioService {
   // usado en le Login
   public UsuarioDTO buscarPorUsuarioLogin(String usuario );
 
+ // void verify(String email,String otp);
+  public Boolean regenerateOtp(String email);
+
+  public Boolean  validateOTP(String username, String otp);
+
 }

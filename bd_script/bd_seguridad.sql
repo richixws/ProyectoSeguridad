@@ -141,6 +141,10 @@ CREATE TABLE SW_USUARIO (
     password VARCHAR2(100) NULL,--NOT
     estado varchar(100) NOT NULL,
     
+   --otp varchar(10) NULL,
+    --verified NUMBER(1) DEFAULT 0, --1=true,  0=false.
+    --otp_generated_time TIMESTAMP NULL,
+    
     is_deleted NUMBER(1) DEFAULT 0 NOT NULL,
     hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
     hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación

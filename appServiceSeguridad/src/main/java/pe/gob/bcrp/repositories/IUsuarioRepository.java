@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import pe.gob.bcrp.entities.Persona;
 import pe.gob.bcrp.entities.Usuario;
 
 import java.util.Optional;
@@ -39,6 +40,10 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer> {
            "JOIN Sistema s ON r.sistema.idSistema = s.idSistema " +
            "WHERE s.idSistema = :idSistema")
    Page<Usuario> findBySistemaId(@Param("idSistema") Integer idSistema, Pageable pageable);
+
+
+   //para menejo de otp
+   Optional<Usuario> findByPersona(Persona persona);
 
 
 

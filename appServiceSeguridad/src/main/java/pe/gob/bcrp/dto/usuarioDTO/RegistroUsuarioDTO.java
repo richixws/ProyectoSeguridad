@@ -3,7 +3,6 @@ package pe.gob.bcrp.dto.usuarioDTO;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-import javax.annotation.Nullable;
 
 @Data
 public class RegistroUsuarioDTO {

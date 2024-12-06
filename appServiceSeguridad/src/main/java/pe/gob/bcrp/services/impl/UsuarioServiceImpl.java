@@ -1,5 +1,6 @@
 package pe.gob.bcrp.services.impl;
 
+import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
@@ -28,13 +29,16 @@ import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IDocumentoIdentidadRepository;
 import pe.gob.bcrp.repositories.IPersonaRepository;
 import pe.gob.bcrp.repositories.IUsuarioRepository;
+import pe.gob.bcrp.services.IEmailService;
 import pe.gob.bcrp.services.IUploadFileService;
 import pe.gob.bcrp.services.IUsuarioService;
+import pe.gob.bcrp.util.TotpUtils;
 import pe.gob.bcrp.util.Util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -61,6 +65,12 @@ public class UsuarioServiceImpl implements IUsuarioService {
     private Util util;
 
     private IUploadFileService uploadFileService;
+
+    private TotpUtils totpUtils;
+
+    private IEmailService emailService;
+
+    private OtpGenerator generateOTP;
 
 
     @Override
@@ -349,12 +359,64 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
 
+
     // convert Entity into DTO
     private UsuarioDTO mapToDTO(Usuario usuario){
         UsuarioDTO usuarioDTO = modelMapper.map(usuario, UsuarioDTO.class);
         return usuarioDTO;
     }
 
+
+    @Override
+    public Boolean regenerateOtp(String email) {
+
+        Persona persona = personaRepository.findByCorreo(email)
+                .orElseThrow(() -> new RuntimeException("No user found with this email: " + email));
+
+        Usuario user = usuarioRepository.findByPersona(persona)
+                .orElseThrow(() -> new RuntimeException("User not found for the given email"));
+
+
+        //Usuario user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+       // String otp = totpUtils.generateOtp();
+        String otp = generateOTP.generateOTP(user.getUsuario());
+        if (otp == null)
+        {
+            log.error("OTP generator is not working...");
+            return false;
+        }
+
+        log.info("Generated OTP: {}", otp);
+
+        try {
+            emailService.sendOtpEmail(email, otp);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to send otp please try again");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+       //user.setOtp(otp);
+       // user.setOtpGeneratedTime(LocalDateTime.now());
+       // Usuario userResp=usuarioRepository.save(user);
+
+        return true;
+        //return "Email sent... please verify account within 1 minute";
+    }
+
+    @Override
+    public Boolean validateOTP(String username, String otp) {
+
+        // get OTP from cache
+        Integer cacheOTP = generateOTP.getOPTByKey(username);
+        if (cacheOTP!=null && cacheOTP.equals(Integer.parseInt(otp)))
+        {
+            generateOTP.clearOTPFromCache(username);
+            return true;
+        }
+        return false;
+
+
+    }
 
 
 }

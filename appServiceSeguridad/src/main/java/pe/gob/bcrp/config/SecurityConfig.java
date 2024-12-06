@@ -96,6 +96,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/oauth/captcha").permitAll()
                         .requestMatchers("/api/v1/search/**").permitAll()
                         .requestMatchers("/api/media/**").permitAll()
+                        .requestMatchers("/api/v1/oauth/regenerate-otp").permitAll()
+                        .requestMatchers("/api/v1/oauth/verify-otp").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
