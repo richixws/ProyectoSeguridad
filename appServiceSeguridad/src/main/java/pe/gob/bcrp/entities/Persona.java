@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SW_PERSONA", schema = "BCRP_MSAUTHENTICA_API")
+@Table(name = "SW_PERSONA")
 public class Persona  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "persona_seq")
-    @SequenceGenerator(name = "persona_seq", sequenceName = "BCRP_MSAUTHENTICA_API.seq_sw_persona", allocationSize = 1,initialValue = 1)
+    @SequenceGenerator(name = "persona_seq", sequenceName = "seq_sw_persona", allocationSize = 1,initialValue = 1)
     @Column(name = "id_persona", nullable = false)
     private Integer idPersona;
 

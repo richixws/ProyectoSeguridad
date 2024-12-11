@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SW_FILES", schema = "BCRP_MSAUTHENTICA_API")
+@Table(name = "SW_FILES")
 public class Files implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -20,7 +20,7 @@ public class Files implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "files_seq")
-    @SequenceGenerator(name = "files_seq", sequenceName = "BCRP_MSAUTHENTICA_API.seq_sw_files", allocationSize = 1,initialValue = 1)
+    @SequenceGenerator(name = "files_seq", sequenceName = "seq_sw_files", allocationSize = 1,initialValue = 1)
     @Column(name = "id_files", nullable = false)
     private Long idFiles;
 

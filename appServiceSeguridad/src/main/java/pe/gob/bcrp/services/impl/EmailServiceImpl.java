@@ -22,8 +22,6 @@ public class EmailServiceImpl implements IEmailService {
 
     @Override
     public void sendOtpEmail(String email, String otp)  throws UnsupportedEncodingException, MessagingException {
-       // String subject = "Email verification";
-        //String body ="your verification otp is: "+otp;
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
@@ -37,15 +35,8 @@ public class EmailServiceImpl implements IEmailService {
                 + "<br>"
                 + "<p>Nota: esta OTP expirará en 5 minutos.</p>";
 
-
-        //mimeMessageHelper.setSubject("Verify OTP");
         mimeMessageHelper.setSubject(subject);
         mimeMessageHelper.setText(content,true);
-        /**mimeMessageHelper.setText("""
-        <div>
-          <a href="http://localhost:8082/verify-account?email=%s&otp=%s" target="_blank">click link to verify</a>
-        </div>
-        """.formatted(email, otp), true);**/
 
         javaMailSender.send(mimeMessage);
     }

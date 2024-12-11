@@ -110,9 +110,9 @@ public class AuthController {
            // response.put("id", String.valueOf(usuarioDTO.getIdUsuario()));
            // response.put("nombre", usuarioDTO.getPersona().getNombres().concat(" "+usuarioDTO.getPersona().getApellidoPaterno()));
             response.put("nombre", nombre);
-            response.put("token", jwt.getAccess_token());
+            response.put("access_token", jwt.getAccess_token());
             response.put("expires_in", String.valueOf(jwt.getExpires_in()));
-            response.put("refreshToken",jwt.getRefresh_token());
+            response.put("refresh_token",jwt.getRefresh_token());
             response.put("refresh_expires_in", String.valueOf(jwt.getRefresh_expires_in()));
             return ResponseEntity.ok(response);
 
