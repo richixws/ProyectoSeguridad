@@ -1,5 +1,6 @@
 package pe.gob.bcrp.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -75,6 +76,7 @@ public class EntidadController {
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/entidad")
+    @JsonView(Views.Create.class)
     public  ResponseEntity<ResponseDTO<EntidadDTO>> saveEntidad(@Valid @RequestBody  EntidadDTO entidadDto){
 
         log.info("INI - guardarEntidad | requestURL=entidadDto");
@@ -107,6 +109,7 @@ public class EntidadController {
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/entidad/{idEntidad}")
+    @JsonView(Views.Update.class)
     public ResponseEntity<ResponseDTO<EntidadDTO>> updateEntidad(@PathVariable("idEntidad") Integer idEntidad,
                                                                  @Validated @RequestBody EntidadDTO entidadDTO){
         log.info("INI - updateEntidad | requestURL=entidad");

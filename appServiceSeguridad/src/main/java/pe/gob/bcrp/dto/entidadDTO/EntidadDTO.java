@@ -1,10 +1,12 @@
 package pe.gob.bcrp.dto.entidadDTO;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pe.gob.bcrp.dto.Views;
 
 @Data
 @Builder
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class EntidadDTO {
 
 
-    private Integer idEntidad;
+    //private Integer idEntidad;
 
     @NotNull(message = "documento no puede ser vacio")
     private  Integer  idDocumento;
@@ -33,6 +35,7 @@ public class EntidadDTO {
     @Pattern(regexp = "^[a-zñA-ZÑ0-9_](\\s?[a-zñA-ZÑ0-9_])*$", message = "Sigla contiene caracteres no permitidos")
     private String sigla;
     //@NotEmpty(message = "codigo externo no puede ser vacio")
+    @JsonView(Views.Update.class)
     private String codExterno;
 
     @Min(value = 0, message = "Estado sólo admite el número 0 o 1.")

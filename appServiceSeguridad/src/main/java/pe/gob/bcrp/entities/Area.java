@@ -15,14 +15,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "SW_AREA" , schema = "BCRP_MSAUTHENTICA_API")
+@Table(name = "SW_AREA")
 public class Area implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "area_seq")
-    @SequenceGenerator(name = "area_seq", sequenceName = "BCRP_MSAUTHENTICA_API.seq_sw_area", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "area_seq", sequenceName = "seq_sw_area", allocationSize = 1, initialValue = 1)
     @Column(name = "id_area", nullable = false)
     private Integer idArea;
 

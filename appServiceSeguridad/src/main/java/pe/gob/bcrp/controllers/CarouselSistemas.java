@@ -1,5 +1,6 @@
 package pe.gob.bcrp.controllers;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ public class CarouselSistemas {
 
     //@Operation(summary = "find All Carousel REST API", description = "Obtener todos los Sistemas de carousel de la base de datos")
     //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @Hidden
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/catalogo/sistemas")
     public ResponseEntity<List<SistemaDTO>> findAllCarouselSistemas() {
