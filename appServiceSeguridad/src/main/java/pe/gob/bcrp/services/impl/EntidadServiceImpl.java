@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -82,7 +83,7 @@ public class EntidadServiceImpl implements IEntidadService {
             Page<Entidad> pageEntidades=null;
 
             if(nombre!=null || tipoDocumento !=null || numeroDocumento!=null  ){
-                pageEntidades=entidadRepository.findByFilters(nombre,tipoDocumento,numeroDocumento,pageDetails);
+                pageEntidades=entidadRepository.findByFilters(Objects.requireNonNull(nombre).toLowerCase(),tipoDocumento,numeroDocumento,pageDetails);
             }else{
                 pageEntidades = entidadRepository.findAll(pageDetails);
             }

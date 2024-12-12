@@ -31,7 +31,7 @@ public interface IEntidadRepository extends JpaRepository<Entidad, Integer> {
             "(:numeroDocumento IS NULL OR s.numeroDocumento = :numeroDocumento) AND " +
             "s.isDeleted = false")**/
     @Query("SELECT s FROM Entidad s WHERE " +
-            "(:nombre IS NULL OR LOWER(s.nombre) = LOWER(:nombre)) AND " +
+            "(:nombre IS NULL OR LOWER(s.nombre) LIKE %:nombre%) AND " +
             "(:tipoDocumento IS NULL OR s.documentoIdentidad.idDocumentoIdentidad = :tipoDocumento) AND " +
             "(:numeroDocumento IS NULL OR s.numeroDocumento = :numeroDocumento) ")
             //"AND s.isDeleted = false")

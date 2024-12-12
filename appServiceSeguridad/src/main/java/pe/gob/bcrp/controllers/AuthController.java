@@ -81,7 +81,7 @@ public class AuthController {
            UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
 
             if (usuarioDTO == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
             }
 
            /** if(!this.passwordEncode.matches(dto.getPassword(), usuarioDTO.getPassword())) {
@@ -95,10 +95,10 @@ public class AuthController {
             String nombre = this.keycloakRestService.extractNameFromToken(jwt.getAccess_token());
 
 
-            boolean estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());
+            /*boolean estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());
             if(estadoOtp){
                 log.info("se envio en codigo verificador");
-            }
+            }*/
 
             // Validar el token
            /**if (!jwtValidationService.validateToken(jwt.getAccess_token())) {

@@ -56,9 +56,9 @@ public class EntidadController {
             @RequestParam(name = "pageSize",   defaultValue = "50",     required = false) Integer pageSize,
             @RequestParam(name = "sortBy",     defaultValue = "idEntidad", required = false) String sortBy,
             @RequestParam(name = "sortOrder",  defaultValue = "desc",    required = false) String sortOrder,
-            @RequestParam(name = "nombre",     required = false) String nombre,
-            @RequestParam(name = "tipoDocumento",   required = false) Integer tipoDocumento,
-            @RequestParam(name = "numeroDocumento", required = false) String numeroDocumento
+            @RequestParam(name = "name",     required = false) String nombre,
+            @RequestParam(name = "documentType",   required = false) Integer tipoDocumento,
+            @RequestParam(name = "documentNumber", required = false) String numeroDocumento
             ){
         log.info("INI - getAllEntidades | requestURL=entidades");
         try {
@@ -106,8 +106,8 @@ public class EntidadController {
     @Operation(summary = "Actualizar Entidad", description = "Actualiza la Entidad en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/entidad/{idEntidad}")
-    public ResponseEntity<ResponseDTO<EntidadDTO>> updateEntidad(@PathVariable("idEntidad") Integer idEntidad,
+    @PutMapping("/entidad/{entityId}")
+    public ResponseEntity<ResponseDTO<EntidadDTO>> updateEntidad(@PathVariable("entityId") Integer idEntidad,
                                                                  @Validated @RequestBody EntidadDTO entidadDTO){
         log.info("INI - updateEntidad | requestURL=entidad");
         ResponseDTO<EntidadDTO> response=new ResponseDTO();
@@ -142,8 +142,8 @@ public class EntidadController {
     @Operation(summary = "Eliminar Entidad", description = "Elimina la Entidad por el IdEntidad de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/entidad/{idEntidad}")
-    public ResponseEntity<ResponseDTO<EntidadDTO>> deleteEntidad(@PathVariable("idEntidad") Integer idEntidad){
+    @DeleteMapping("/entidad/{entityId}")
+    public ResponseEntity<ResponseDTO<EntidadDTO>> deleteEntidad(@PathVariable("entityId") Integer idEntidad){
         ResponseDTO<EntidadDTO> response=new ResponseDTO<>();
         log.info("INI - eliminarEntidad | requestURL=entidadDto");
         try {

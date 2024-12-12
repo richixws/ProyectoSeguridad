@@ -23,10 +23,10 @@ public class GlobalExceptionHandler {
 
         List<String> errors = ex.getBindingResult().getFieldErrors()
                // .stream().map(err-> "el campo '"+err.getField()+"'"+err.getDefaultMessage())
-                .stream().map(err-> "el campo "+err.getDefaultMessage())
+                .stream().map(err-> "El campo "+err.getDefaultMessage())
                 .collect(Collectors.toList());
 
         response.put("message", errors);
-        return new ResponseEntity<Map<String,Object>>(response,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<Map<String,Object>>(response,HttpStatus.PRECONDITION_FAILED);
     }
 }
