@@ -1,6 +1,7 @@
 package pe.gob.bcrp.controllers;
 
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -70,8 +71,9 @@ public class UsuarioController {
     }
 
 
-    @Operation(summary = "Cargar Usuarios", description = "Cargar la lista de usuarios desde archivo csv.")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@Operation(summary = "Cargar Usuarios", description = "Cargar la lista de usuarios desde archivo csv.")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @Hidden
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/upload/usuarios")
     public ResponseEntity<ResponseDTO<?>>  uploadUsuarios(@RequestParam("file") MultipartFile file) {

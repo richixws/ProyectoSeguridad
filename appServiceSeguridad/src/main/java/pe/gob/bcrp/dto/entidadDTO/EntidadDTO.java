@@ -1,11 +1,13 @@
 package pe.gob.bcrp.dto.entidadDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pe.gob.bcrp.dto.Views;
 
 @Data
 @Builder
@@ -16,6 +18,9 @@ public class EntidadDTO {
     @JsonProperty("entityId")
     private Integer idEntidad;
     @JsonProperty("documentId")
+
+    //private Integer idEntidad;
+
     @NotNull(message = "documento no puede ser vacio")
     private  Integer  idDocumento;
     @JsonProperty("documentNumber")
@@ -35,6 +40,7 @@ public class EntidadDTO {
     private String sigla;
     //@NotEmpty(message = "codigo externo no puede ser vacio")
     @JsonProperty("externalCode")
+    @JsonView(Views.Update.class)
     private String codExterno;
     @JsonProperty("state")
     @Min(value = 0, message = "Estado sólo admite el número 0 o 1.")

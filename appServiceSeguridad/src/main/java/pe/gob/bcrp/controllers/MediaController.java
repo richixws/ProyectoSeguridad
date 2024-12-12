@@ -1,5 +1,6 @@
 package pe.gob.bcrp.controllers;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.Resource;
@@ -21,14 +22,14 @@ public class MediaController {
 
     private final StorageService storageService;
 
-
+    @Hidden
     @PostMapping("/upload")
     Map<String, String> upload(@RequestParam("file") MultipartFile multipartFile) {
         Map<String, String> fileData  = storageService.store(multipartFile);
         return fileData;
     }
 
-
+    @Hidden
     @GetMapping("/{filename}")
     ResponseEntity<Resource> getResource(@PathVariable String filename) throws IOException {
         Resource resource = storageService.loadAsResource(filename);

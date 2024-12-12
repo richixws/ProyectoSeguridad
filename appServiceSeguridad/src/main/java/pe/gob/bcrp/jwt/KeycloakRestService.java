@@ -1,9 +1,12 @@
 package pe.gob.bcrp.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.UserResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import pe.gob.bcrp.dto.JwtDTO;
 
 import java.util.Base64;
 import java.util.HashMap;
@@ -44,8 +48,11 @@ public class KeycloakRestService {
 
       @Value("${keycloak.scope}")
       private String scope;
-    
-    public String login(String username, String password) {
+    @Autowired
+    private RedisTokenService redisTokenService;
+
+    public String login(String username, String password) throws JsonProcessingException {
+
     	MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
     	map.add("username", username);
     	map.add("password",password);
@@ -54,8 +61,18 @@ public class KeycloakRestService {
         map.add("scope",scope);
       //  map.add("client_secret", this.clientSecret);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity(map, new HttpHeaders());
-        return this.restTemplate.postForObject(this.keycloakTokenUri, request, String.class);
+        //HttpEntity<MultiValueMap<String, String>> request = new HttpEntity(map, new HttpHeaders());
+       // return this.restTemplate.postForObject(this.keycloakTokenUri, request, String.class);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, new HttpHeaders());
+        String loginResponse = this.restTemplate.postForObject(this.keycloakTokenUri, request, String.class);
+
+        // Convertir respuesta a JwtDTO
+        JwtDTO jwt = new ObjectMapper().readValue(loginResponse, JwtDTO.class);
+
+        // Invalidar tokens anteriores y almacenar el nuevo
+        redisTokenService.invalidatePreviousTokens(username, jwt.getAccess_token());
+
+        return loginResponse;
     }
 
 

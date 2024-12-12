@@ -3,15 +3,14 @@ package pe.gob.bcrp.controllers;
 
 import cn.apiclub.captcha.Captcha;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +55,7 @@ public class AuthController {
     @Operation(summary = "Login REST API", description = "Inicio de seccion del usuario a la aplicacion")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping(value = "oauth/login")
-    public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto, HttpSession session) throws Exception {
+    public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
 
         log.info("INI - login | requestURL=login");
 
@@ -84,9 +83,8 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
             }
 
-           /** if(!this.passwordEncode.matches(dto.getPassword(), usuarioDTO.getPassword())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
-            }  **/
+
+
 
             String login = this.keycloakRestService.login(dto.getUsuario(), dto.getPassword());
             JwtDTO jwt =new ObjectMapper().readValue(login, JwtDTO.class);
@@ -95,10 +93,10 @@ public class AuthController {
             String nombre = this.keycloakRestService.extractNameFromToken(jwt.getAccess_token());
 
 
-            /*boolean estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());
+            /**boolean estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());
             if(estadoOtp){
                 log.info("se envio en codigo verificador");
-            }*/
+            }**7
 
             // Validar el token
            /**if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
@@ -109,7 +107,7 @@ public class AuthController {
             Map<String, String> response = new HashMap<>();
            // response.put("id", String.valueOf(usuarioDTO.getIdUsuario()));
            // response.put("nombre", usuarioDTO.getPersona().getNombres().concat(" "+usuarioDTO.getPersona().getApellidoPaterno()));
-            response.put("nombre", nombre);
+            response.put("name", nombre);
             response.put("access_token", jwt.getAccess_token());
             response.put("expires_in", String.valueOf(jwt.getExpires_in()));
             response.put("refresh_token",jwt.getRefresh_token());
@@ -137,6 +135,7 @@ public class AuthController {
 
    // @Operation(summary = "Validar Token REST API", description = "Validar token de acceso")
    // @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @Hidden
     @PostMapping("oauth/validarToken")
    public ResponseEntity<?> ValidarToken(@RequestHeader("Authorization") String authHeader) {
 
@@ -169,11 +168,12 @@ public class AuthController {
     @Operation(summary = "Refresh Token REST API", description = "Obtener nuevo token de acceso")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("oauth/refreshToken")
-    public ResponseEntity<TokenResponse> refreshToken(@RequestBody Map<String, String> request) {
+    public ResponseEntity<TokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
 
         log.info("INI - refreshToken");
         try {
-            String refreshToken = request.get("refresh_token");
+            //String refreshToken = request.get("refresh_token");
+            String refreshToken = request.getRefresh_token();
             if(refreshToken ==null){
                 return new ResponseEntity<TokenResponse>(HttpStatus.FORBIDDEN);
             }
@@ -215,8 +215,9 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "Captcha REST API", description = "obtener captcha de acceso")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@Operation(summary = "Captcha REST API", description = "obtener captcha de acceso")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @Hidden
     @GetMapping("oauth/captcha")
     public ResponseEntity<CaptchaResponse> getCaptcha(HttpSession session) {
 
@@ -245,13 +246,13 @@ public class AuthController {
     }
 
 
-
+    @Hidden
     @PutMapping("oauth/regenerate-otp")
     public ResponseEntity<Boolean> regenerateOtp(@RequestParam String email) {
         return new ResponseEntity<>(usuariosService.regenerateOtp(email), HttpStatus.OK);
     }
 
-
+    @Hidden
     @PostMapping(value = "oauth/verify-otp")
     public ResponseEntity<?> verifyOtp(@RequestBody @Valid OtpVerificationDTO  dto) {
         log.info("INI - verifyOtp | requestURL=verify-otp");

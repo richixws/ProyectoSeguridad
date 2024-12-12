@@ -68,10 +68,15 @@ public class RolController {
             response.setMessage("El Rol fue guardado de manera exitosa");
             // response.setBody(entidadDTO);
 
+        }catch (IllegalArgumentException e) {
+            log.error("ERROR - saveRol|requestURL=rol{}", e.getMessage());
+            response.setStatus(0);
+            response.setMessage("Error al guardar "+ e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }catch (Exception e){
             log.error("ERROR - saveRol | requestURL=rol{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al guardar el Rol "+ e.getMessage());
+            response.setMessage("Error al guardar "+ e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
@@ -90,6 +95,11 @@ public class RolController {
             response.setStatus(1);
             response.setMessage("El Rol fue actualizado exitosamente");
 
+        }catch (IllegalArgumentException e) {
+            log.error("ERROR -  updateRol|requestURL=rol{}", e.getMessage());
+            response.setStatus(0);
+            response.setMessage("Error al Actualizar "+ e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }catch ( ResourceNotFoundException e) {
             log.error("ERROR - update Rol No encontrado {}", e.getMessage());
             response.setStatus(0);
@@ -102,7 +112,7 @@ public class RolController {
             response.setMessage("Error al actualizar el  "+e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        return new ResponseEntity<>(response,HttpStatus.CREATED);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
 
