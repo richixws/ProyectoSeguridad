@@ -377,6 +377,34 @@ public class UsuarioServiceImpl implements IUsuarioService {
         return estado;
     }
 
+    @Override
+    @CacheEvict(value = "usuarios", allEntries = true)
+    public boolean AddProfileToUsuario(Integer idUsuario, Integer idPerfil) {
+        log.info("INI - Asignar perfiles a Usuario()");
+        boolean estado = false;
+        try {
+
+            Usuario usuario=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            if(usuario != null){
+                Optional<Perfil> perfil = perfilRepository.findById(idPerfil);
+                if(perfil.isPresent()) {
+                    PerfilUsuario obj = new PerfilUsuario();
+                    obj.setPerfil(perfil.get());
+                    obj.setUsuario(usuario);
+
+                    perfilUsuarioRepository.save(obj);
+                    estado=true;
+                } else {
+                    throw new ResourceNotFoundException("Perfil no encontrado");
+                }
+            }
+        }catch (ResourceNotFoundException e){
+            log.error("ERROR - AddProfileToUsuario() "+e.getMessage());
+            e.printStackTrace();
+        }
+        return estado;
+    }
+
 
 
     @Override

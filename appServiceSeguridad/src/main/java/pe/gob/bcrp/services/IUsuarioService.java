@@ -47,4 +47,5 @@ public interface IUsuarioService {
   public Boolean  validateOTP(String username, String otp);
 
   boolean AddProfilesToUsuario(Integer idUsuario, Integer idRol);
+  boolean AddProfileToUsuario(Integer idUsuario, Integer idPerfil);
 }
