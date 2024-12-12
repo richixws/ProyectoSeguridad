@@ -240,6 +240,40 @@ public class UsuarioController {
         }
     }
 
+    @Operation(summary = "Asigne Perfil a usuario", description = "Asigna perfil al usuario")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @PostMapping("/usuario/{idUsuario}/{idPerfil}")
+    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> AsignarPerfilToUsuario(@PathVariable("idUsuario") Integer idusuario,
+                                                                               @PathVariable("idPerfil") Integer idPerfil) {
+        log.info("INI - Asigne perfil a usuario | requestURL=IdUsuario,IdPerfil");
+        ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
+        try {
+            boolean result = usuarioService.AddProfileToUsuario(idusuario, idPerfil);
+            if(!result){
+                throw new ResourceNotFoundException("Ocurrió un error al asignar perfil a usuario");
+            }
+            response.setStatus(1);
+            response.setMessage("Se asigno el perfil al usuario");
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        } catch (ResourceNotFoundException e){
+            log.error("ERROR - AsignarPerfilToUsuario {}", e.getMessage());
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+
+        } catch (DataAccessException e){
+            log.error("ERROR - AsignarPerfilToUsuario() "+e.getMessage());
+            response.setStatus(0);
+            response.setMessage("No se puede volver a asignar el mismo perfil al usuario");
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+
+        } catch (Exception e){
+            log.error(" ERROR - AsignarPerfilToUsuario | requestURL=IdUsuario ");
+            response.setStatus(0);
+            response.setMessage("Error al asignar perfil a usuario "+e.getMessage() );
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }
 
     // validar archivo sustento
     private void validarArchivoSustento(MultipartFile sustento) {
