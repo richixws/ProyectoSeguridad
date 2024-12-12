@@ -221,6 +221,7 @@ public class AuthController {
     @GetMapping("oauth/captcha")
     public ResponseEntity<CaptchaResponse> getCaptcha(HttpSession session) {
 
+        log.error("INI - getCaptcha");
         Captcha captcha = CaptchaServiceGenerate.createCaptcha(240, 70);
         String encodedCaptcha = CaptchaServiceGenerate.encodeCaptcha(captcha);
 
