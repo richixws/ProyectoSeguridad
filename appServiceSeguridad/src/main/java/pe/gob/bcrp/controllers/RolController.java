@@ -39,8 +39,8 @@ public class RolController {
             @RequestParam(name = "pageSize", defaultValue = "10",   required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = "idRol", required = false) String sortBy,
             @RequestParam(name = "sortOrder", defaultValue = "desc", required = false) String sortOrder,
-            @RequestParam(name = "idSistema", required = false) Integer idSistema,
-            @RequestParam(name = "idRol", required = false) Integer idRol ){
+            @RequestParam(name = "systemId", required = false) Integer idSistema,
+            @RequestParam(name = "roleId", required = false) Integer idRol ){
 
         log.info("INI - getAllRoles | requestURL=roles");
         try {
@@ -85,9 +85,9 @@ public class RolController {
     @Operation(summary = "Actualizar Rol", description = "Actualiza el Rol por el IdRol en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/rol/{idRol}")
+    @PutMapping("/rol/{roleId}")
     public ResponseEntity<ResponseDTO<RolFormDTO>> updateRol(@Valid @RequestBody  RolFormDTO rolDTO,
-                                                             @PathVariable("idRol") Integer idRol){
+                                                             @PathVariable("roleId") Integer idRol){
         log.info("INI - updateRol | requestURL=rol");
         ResponseDTO<RolFormDTO> response=new ResponseDTO<>();
         try {
@@ -119,8 +119,8 @@ public class RolController {
     @Operation(summary = "Eliminar Rol", description = "Elimina el rol por el IdRol de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/rol/{idRol}")
-    public ResponseEntity<ResponseDTO<RolDTO>> deleteRol(@PathVariable("idRol") Integer idRol){
+    @DeleteMapping("/rol/{roleId}")
+    public ResponseEntity<ResponseDTO<RolDTO>> deleteRol(@PathVariable("roleId") Integer idRol){
         ResponseDTO<RolDTO> response=new ResponseDTO<>();
         log.info("INI - deleteRol | requestURL=rol");
         try {

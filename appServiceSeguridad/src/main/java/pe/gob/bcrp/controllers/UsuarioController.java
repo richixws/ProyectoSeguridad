@@ -53,11 +53,11 @@ public class UsuarioController {
             @RequestParam(name = "pageSize",    defaultValue = "50", required = false) Integer pageSize,
             @RequestParam(name = "sortBy",      defaultValue = "idUsuario", required = false) String sortBy,
             @RequestParam(name = "sortOrder",   defaultValue = "desc", required = false) String sortOrder,
-            @RequestParam(name = "tipoDocumento",   required = false)   Integer tipoDocumento,
-            @RequestParam(name = "numeroDocumento", required = false)   String  numeroDocumento,
-            @RequestParam(name = "nombres",         required = false)   String  nombres,
-            @RequestParam(name = "ambito",          required = false)   String  ambito,
-            @RequestParam(name = "idSistema",       required = false)   Integer idSistema
+            @RequestParam(name = "documentType",   required = false)   Integer tipoDocumento,
+            @RequestParam(name = "documentNumber", required = false)   String  numeroDocumento,
+            @RequestParam(name = "names",         required = false)   String  nombres,
+            @RequestParam(name = "scope",          required = false)   String  ambito,
+            @RequestParam(name = "systemId",       required = false)   Integer idSistema
     ){
         log.info("INI - getAllUsuario | requestURL=usuarios");
         try {
@@ -147,8 +147,8 @@ public class UsuarioController {
     @Operation(summary = "Actualizar Usuario", description = "Actualiza el usuario en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/usuario/{idUsuario}")
-    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> updateUsuario(@PathVariable("idUsuario") Integer idUsuario,  @RequestBody RegistroUsuarioDTO registroUsuarioDTO) {
+    @PutMapping("/usuario/{userId}")
+    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> updateUsuario(@PathVariable("userId") Integer idUsuario,  @RequestBody RegistroUsuarioDTO registroUsuarioDTO) {
         log.info("INI - Editar Usuario | requestURL=usuario");
         ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
         try {
@@ -178,8 +178,8 @@ public class UsuarioController {
 
     @Operation(summary = "Inhabilitar Usuario", description = "Inhabilita el usuario en particular de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
-    @PutMapping("/usuario/{idUsuario}/inhabilitar")
-    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> InhabilitarUsuario(@PathVariable("idUsuario") Integer idusuario) {
+    @PutMapping("/usuario/{userId}/inhabilitar")
+    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> InhabilitarUsuario(@PathVariable("userId") Integer idusuario) {
           log.info("INI - Eliminar Usuario | requestURL=IdUsuario");
           ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
           try {
@@ -207,9 +207,9 @@ public class UsuarioController {
 
     @Operation(summary = "Asigne Rol a usuario", description = "Asigna rol con todos los perfiles al usuario")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
-    @PostMapping("/usuario/{idUsuario}/{idRol}")
-    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> AsignarRolToUsuario(@PathVariable("idUsuario") Integer idusuario,
-                                                                               @PathVariable("idRol") Integer idRol) {
+    @PostMapping("/usuario/{userId}/{releId}")
+    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> AsignarRolToUsuario(@PathVariable("userId") Integer idusuario,
+                                                                               @PathVariable("roleId") Integer idRol) {
         log.info("INI - Asigne Rol a usuario | requestURL=IdUsuario,IdRol");
         ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
         try {
@@ -242,9 +242,9 @@ public class UsuarioController {
 
     @Operation(summary = "Asigne Perfil a usuario", description = "Asigna perfil al usuario")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
-    @PostMapping("/usuario/{idUsuario}/{idPerfil}")
-    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> AsignarPerfilToUsuario(@PathVariable("idUsuario") Integer idusuario,
-                                                                               @PathVariable("idPerfil") Integer idPerfil) {
+    @PostMapping("/usuario/{userId}/{profileId}")
+    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> AsignarPerfilToUsuario(@PathVariable("userId") Integer idusuario,
+                                                                               @PathVariable("profileId") Integer idPerfil) {
         log.info("INI - Asigne perfil a usuario | requestURL=IdUsuario,IdPerfil");
         ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
         try {

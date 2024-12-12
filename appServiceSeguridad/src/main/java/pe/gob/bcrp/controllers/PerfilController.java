@@ -37,8 +37,8 @@ public class PerfilController {
             @RequestParam(name = "pageSize", defaultValue = "10",   required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = "idPerfil", required = false) String sortBy,
             @RequestParam(name = "sortOrder", defaultValue = "desc", required = false) String sortOrder,
-            @RequestParam(name = "idSistema", required = false) Integer idSistema,
-            @RequestParam(name = "idPerfil", required = false) Integer idPerfil ){
+            @RequestParam(name = "systemId", required = false) Integer idSistema,
+            @RequestParam(name = "profileId", required = false) Integer idPerfil ){
 
         log.info("INI - getAllPerfiles | requestURL=perfiles");
         try {
@@ -87,9 +87,9 @@ public class PerfilController {
     @Operation(summary = "Actualizar Perfil", description = "Actualiza el Perfil en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/perfil/{idPerfil}")
+    @PutMapping("/perfil/{profileId}")
     public ResponseEntity<ResponseDTO<PerfilDTO>> updatePerfil(@Valid @RequestBody  PerfilDTO perfilDTO,
-                                                               @PathVariable("idPerfil") Integer idPerfil){
+                                                               @PathVariable("profileId") Integer idPerfil){
         log.info("INI - upodatePerfil | requestURL=perfil");
         ResponseDTO<PerfilDTO> response=new ResponseDTO<>();
         try {
@@ -122,8 +122,8 @@ public class PerfilController {
     @Operation(summary = "Elimina Perfil", description = "Elimina el perfil por el IdPerfil de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/perfil/{idPerfil}")
-    public ResponseEntity<ResponseDTO<PerfilDTO>> deletePerfil(@PathVariable("idPerfil") Integer idPerfil){
+    @DeleteMapping("/perfil/{profileId}")
+    public ResponseEntity<ResponseDTO<PerfilDTO>> deletePerfil(@PathVariable("profileId") Integer idPerfil){
         ResponseDTO<PerfilDTO> response=new ResponseDTO<>();
         log.info("INI - eliminarPerfil | requestURL=perfil");
         try {

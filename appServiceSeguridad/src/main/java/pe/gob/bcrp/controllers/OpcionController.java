@@ -49,8 +49,8 @@ public class OpcionController {
             @RequestParam(name = "pageSize",    defaultValue = "10",    required = false) Integer pageSize,
             @RequestParam(name = "sortBy",      defaultValue = "idOpcion", required = false) String sortBy,
             @RequestParam(name = "sortOrder",   defaultValue = "desc", required = false) String sortOrder,
-            @RequestParam(name = "idSistema",   required = false) Integer idSistema,
-            @RequestParam(name = "idModulo",    required = false) Integer idModulo ){
+            @RequestParam(name = "systemId",   required = false) Integer idSistema,
+            @RequestParam(name = "moduleId",    required = false) Integer idModulo ){
 
         log.info("INI - getAllOpciones | requestURL=opciones");
         try {
@@ -101,9 +101,9 @@ public class OpcionController {
     @Operation(summary = "Actualizar Opcion", description = "Actualiza la Opcion en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/opcion/{idOpcion}")
+    @PutMapping("/opcion/{optionId}")
     public ResponseEntity<ResponseDTO<OpcionDTO>> updateOpcion(@Valid @RequestBody  OpcionDTO opcionDTO,
-                                                                @PathVariable("idOpcion") Integer idOpcion){
+                                                                @PathVariable("optionId") Integer idOpcion){
         log.info("INI - upodateOpcion | requestURL=opcion");
         ResponseDTO<OpcionDTO> response=new ResponseDTO<>();
         try {
@@ -134,8 +134,8 @@ public class OpcionController {
     @Operation(summary = "Eliminar Opcion", description = "Elimina la Opcion por el IdOpcion de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/opcion/{idOpcion}")
-    public ResponseEntity<ResponseDTO<OpcionDTO>> deleteOpcion(@PathVariable("idOpcion") Integer idOpcion){
+    @DeleteMapping("/opcion/{optionId}")
+    public ResponseEntity<ResponseDTO<OpcionDTO>> deleteOpcion(@PathVariable("optionId") Integer idOpcion){
         ResponseDTO<OpcionDTO> response=new ResponseDTO<>();
         log.info("INI - eliminarOpcion | requestURL=opcion");
         try {

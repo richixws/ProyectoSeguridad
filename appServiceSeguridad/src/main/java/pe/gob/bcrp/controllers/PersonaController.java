@@ -37,7 +37,7 @@ public class PersonaController {
             @RequestParam(name = "pageSize",    defaultValue = "50",      required = false) Integer pageSize,
             @RequestParam(name = "sortBy",      defaultValue = "idPersona", required = false) String sortBy,
             @RequestParam(name = "sortOrder",   defaultValue = "desc",     required = false) String sortOrder,
-            @RequestParam(name = "nombre", required = false) String nombre){
+            @RequestParam(name = "name", required = false) String nombre){
        log.info(" INI - getAllPersonas | requestUrl=personas");
        try {
            PersonaResponse entidadPersonas=personaService.getAllPersonas(pageNumber,pageSize,sortBy,sortOrder,nombre);
@@ -80,7 +80,7 @@ public class PersonaController {
     @Operation(summary = "Actualizar Persona", description = "Actualiza la Persona en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/persona/{idPersona}")
+    @PutMapping("/persona/{personId}")
     public ResponseEntity<ResponseDTO<PersonaDTO>> updatePersona(@PathVariable Integer idPersona,
                                                                 @Valid @RequestBody PersonaDTO personaDTO) {
         log.info(" INI - updatePersona | requestUrl=persona/idpersona");
@@ -110,11 +110,12 @@ public class PersonaController {
 
     @Operation(summary = "Eliminar Persona", description = "Elimina la persona por el IdPersona de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
-    @DeleteMapping("/persona/{idPersona}")
+    @DeleteMapping("/persona/{personId}")
     public ResponseEntity<ResponseDTO<PersonaDTO>> deletePersona(@PathVariable Integer idPersona) {
         ResponseDTO<PersonaDTO> response=new ResponseDTO<>();
         log.info(" INI - deletePersona | requestUrl=persona/idpersona");
         try {
+
 
             boolean eliminado=personaService.deletePersona(idPersona);
             if(!eliminado){

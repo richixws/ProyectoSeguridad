@@ -39,7 +39,7 @@ public class ModuloController {
             @RequestParam(name = "pageSize",    defaultValue = "10",   required = false) Integer pageSize,
             @RequestParam(name = "sortBy",      defaultValue = "idModulo", required = false) String sortBy,
             @RequestParam(name = "sortOrder",   defaultValue = "desc", required = false) String sortOrder,
-            @RequestParam(name = "idSistema", required = false) Integer idSistema
+            @RequestParam(name = "systemId", required = false) Integer idSistema
     ){
 
         log.info("INI - getAllModulos | requestURL=modulos");
@@ -113,8 +113,8 @@ public class ModuloController {
     @Operation(summary = "Eliminar Modulo", description = "Elimina el Modulo por el IdModulo de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/modulo/{idModulo}")
-    public ResponseEntity<ResponseDTO<ModuloDTO>> deleteModulo(@PathVariable("idModulo") Integer idModulo){
+    @DeleteMapping("/modulo/{moduleId}")
+    public ResponseEntity<ResponseDTO<ModuloDTO>> deleteModulo(@PathVariable("moduleId") Integer idModulo){
         ResponseDTO<ModuloDTO> response=new ResponseDTO<>();
         log.info("INI - eliminarModulo | requestURL=moduloDto");
         try {
