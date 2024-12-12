@@ -15,12 +15,10 @@ import pe.gob.bcrp.dto.Views;
 @AllArgsConstructor
 public class EntidadDTO {
 
-    @JsonProperty("entityId")
-    private Integer idEntidad;
-    @JsonProperty("documentId")
-
+   // @JsonProperty("entityId")
+   // private Integer idEntidad;
     //private Integer idEntidad;
-
+    @JsonProperty("documentId")
     @NotNull(message = "documento no puede ser vacio")
     private  Integer  idDocumento;
     @JsonProperty("documentNumber")

@@ -83,7 +83,8 @@ public class EntidadServiceImpl implements IEntidadService {
             Page<Entidad> pageEntidades=null;
 
             if(nombre!=null || tipoDocumento !=null || numeroDocumento!=null  ){
-                pageEntidades=entidadRepository.findByFilters(Objects.requireNonNull(nombre).toLowerCase(),tipoDocumento,numeroDocumento,pageDetails);
+                String nombreLowerCase = nombre != null ? nombre.toLowerCase() : null;
+                pageEntidades=entidadRepository.findByFilters(nombreLowerCase,tipoDocumento,numeroDocumento,pageDetails);
             }else{
                 pageEntidades = entidadRepository.findAll(pageDetails);
             }

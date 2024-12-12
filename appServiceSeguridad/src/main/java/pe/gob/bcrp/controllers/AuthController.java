@@ -96,7 +96,7 @@ public class AuthController {
             /**boolean estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());
             if(estadoOtp){
                 log.info("se envio en codigo verificador");
-            }**7
+            }**/
 
             // Validar el token
            /**if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
@@ -190,7 +190,7 @@ public class AuthController {
     @Operation(summary = "Cerrar Sesion REST API", description = "cerrar la sesion de acceso")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("oauth/logout")
-    public ResponseEntity<?> cerrarSesion(@RequestParam("refreshToken") String refreshToken) {
+    public ResponseEntity<?> cerrarSesion(@RequestParam("refreshToken") String refreshToken ) {
 
         log.error("INI - logout");
         try {

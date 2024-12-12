@@ -8,7 +8,9 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -16,6 +18,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import pe.gob.bcrp.dto.JwtDTO;
 
+import java.io.DataInput;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +54,9 @@ public class KeycloakRestService {
       private String scope;
     @Autowired
     private RedisTokenService redisTokenService;
+    @Qualifier("redisTemplate")
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     public String login(String username, String password) throws JsonProcessingException {
 
@@ -86,14 +93,20 @@ public class KeycloakRestService {
 
             MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
             map.add("client_id", clientId);
+           // map.add("client_secret","KRmfiGVtMgJ0xhKy7qucyzBSGIjWH2aJkZrmz4Mfo_Q");
             map.add("refresh_token", refreshToken);
 
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
             ResponseEntity<String> response = restTemplate.postForEntity(keycloakLogout, request, String.class);
 
+            //String response = this.restTemplate.postForObject(this.keycloakLogout, request, String.class);
+           // JwtDTO jwt = new ObjectMapper().readValue((DataInput) response, JwtDTO.class);
+
             Map<String, String> responseMsg = new HashMap<>();
             if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+
+             //   invalidateToken(accessToken);
 
                 responseMsg.put("message", "Logout exitoso");
                 return ResponseEntity.ok(responseMsg);
@@ -105,6 +118,14 @@ public class KeycloakRestService {
             return ResponseEntity.badRequest().body("Error durante el logout: " + e.getMessage());
         }
     }
+
+    public void  invalidateToken(String accessToken) throws Exception {
+        String tokenKey = "latest_token:" + extractNameFromToken(accessToken);
+        redisTemplate.delete(tokenKey);
+
+        redisTemplate.opsForValue().set("blacklist_token:" + accessToken, "invalid", Duration.ofMinutes(30));
+    }
+
 
     /**
      * Decodificar el nombre del usuario del payload del token JWT.
