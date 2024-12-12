@@ -38,4 +38,46 @@ public class RedisTokenService {
         storeLatestToken(username, newToken);
     }
 
+    /**
+     *  refrestoken Método para almacenar y gestionar el refresh token
+      */
+
+    public void storeRefreshToken(String username, String accessToken, String refreshToken) {
+        // Almacenar el nuevo access token
+        redisTemplate.opsForValue().set(
+                "latest_token:" + username,
+                accessToken,
+                Duration.ofMinutes(30)
+        );
+
+        // Almacenar el refresh token
+        redisTemplate.opsForValue().set(
+                "refresh_token:" + username,
+                refreshToken,
+                Duration.ofMinutes(60) // Tiempo de vida del refresh token
+        );
+    }
+
+    public void invalidatePreviousTokensRefresh(String username) {
+        // Eliminar tokens anteriores
+        redisTemplate.delete("latest_token:" + username);
+        redisTemplate.delete("refresh_token:" + username);
+    }
+
+
+
+
+
+
+    //logout método para invalidar el token actual del usuario
+    public void invalidateCurrentToken(String username) {
+        // Elimina el token más reciente para este usuario
+        redisTemplate.delete("latest_token:" + username);
+    }
+
+    // Método opcional para verificar si el token está activo
+    public boolean isTokenActive(String username) {
+        return redisTemplate.hasKey("latest_token:" + username);
+    }
+
 }

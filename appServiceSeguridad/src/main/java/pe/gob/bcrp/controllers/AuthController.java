@@ -168,16 +168,16 @@ public class AuthController {
     @Operation(summary = "Refresh Token REST API", description = "Obtener nuevo token de acceso")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("oauth/refreshToken")
-    public ResponseEntity<TokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<TokenResponse> refreshToken(@RequestParam("refresh_token") RefreshTokenRequest refresh_token,@RequestParam("username") String username) {
 
         log.info("INI - refreshToken");
         try {
             //String refreshToken = request.get("refresh_token");
-            String refreshToken = request.getRefresh_token();
+            String refreshToken = refresh_token.getRefresh_token();
             if(refreshToken ==null){
                 return new ResponseEntity<TokenResponse>(HttpStatus.FORBIDDEN);
             }
-            TokenResponse newTokens = jwtValidationService.refreshAccessToken(refreshToken);
+            TokenResponse newTokens = jwtValidationService.refreshAccessToken(refreshToken,username);
             return ResponseEntity.ok(newTokens);
         } catch (Exception e) {
             log.error("Error en el refreshToken", e.getMessage());
@@ -190,7 +190,7 @@ public class AuthController {
     @Operation(summary = "Cerrar Sesion REST API", description = "cerrar la sesion de acceso")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("oauth/logout")
-    public ResponseEntity<?> cerrarSesion(@RequestParam("refreshToken") String refreshToken ) {
+    public ResponseEntity<?> cerrarSesion(@RequestParam("refresh_token") String refreshToken,@RequestParam("username") String username) {
 
         log.error("INI - logout");
         try {
@@ -200,7 +200,7 @@ public class AuthController {
 
             try {
                 // Llamar a Keycloak para revocar el refresh token
-                ResponseEntity<?> estado = keycloakRestService.logout(refreshToken);
+                ResponseEntity<?> estado = keycloakRestService.logout(refreshToken,username);
                 return estado;
 
             } catch (Exception e) {

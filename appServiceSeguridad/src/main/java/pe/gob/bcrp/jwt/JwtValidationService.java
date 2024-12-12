@@ -3,6 +3,7 @@ package pe.gob.bcrp.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.nimbusds.jose.jwk.JWK;
@@ -10,6 +11,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -46,6 +48,9 @@ public class JwtValidationService {
     private RSAPublicKey publicKey;
 
     private RSAPrivateKey privateKey;
+
+    @Autowired
+    private RedisTokenService redisTokenService;
 
 
     //private static final String TOKEN_ENDPOINT = "/protocol/openid-connect/token";
@@ -110,26 +115,43 @@ public class JwtValidationService {
     }
 
 
-    public TokenResponse refreshAccessToken(String refreshToken) {
+    public TokenResponse refreshAccessToken(String refreshToken, String username) {
 
-        RestTemplate restTemplate = new RestTemplate();
+        try {
+            RestTemplate restTemplate = new RestTemplate();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("grant_type", "refresh_token");
-        body.add("refresh_token", refreshToken);
-        body.add("client_id", clientId);
-        //body.add("client_secret", clientSecret);
+            MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+            body.add("grant_type", "refresh_token");
+            body.add("refresh_token", refreshToken);
+            body.add("client_id", clientId);
+            //body.add("client_secret", clientSecret);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
-        //String url = keycloakServerUrl + "/realms/" + realm + TOKEN_ENDPOINT;
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
+            //String url = keycloakServerUrl + "/realms/" + realm + TOKEN_ENDPOINT;
 
-        ResponseEntity<TokenResponse> response = restTemplate.postForEntity(urlToken, request, TokenResponse.class);
-        return response.getBody();
+            ResponseEntity<TokenResponse> response = restTemplate.postForEntity(urlToken, request, TokenResponse.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                TokenResponse newTokens = response.getBody();
+
+                redisTokenService.invalidatePreviousTokensRefresh(username);
+
+                // Almacenar nuevos tokens en Redis
+                redisTokenService.storeRefreshToken(
+                        username,
+                        newTokens.getAccess_token(),
+                        newTokens.getRefresh_token()
+                );
+                return newTokens;
+            } else {
+                throw new RuntimeException("Failed to refresh token");
+            }
+        } catch (JWTDecodeException e) {
+            throw new RuntimeException("Invalid refresh token", e);
+        }
+
     }
-
-
 
 }

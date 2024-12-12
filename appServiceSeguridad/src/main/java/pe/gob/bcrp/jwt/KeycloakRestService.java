@@ -1,5 +1,7 @@
 package pe.gob.bcrp.jwt;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +56,7 @@ public class KeycloakRestService {
       private String scope;
     @Autowired
     private RedisTokenService redisTokenService;
+
     @Qualifier("redisTemplate")
     @Autowired
     private RedisTemplate redisTemplate;
@@ -83,9 +86,17 @@ public class KeycloakRestService {
     }
 
 
-    public ResponseEntity<?> logout(String refreshToken) {
+    public ResponseEntity<?> logout(String refreshToken,String username) {
 
         try {
+            Map<String, String> responseMsg = new HashMap<>();
+
+            boolean token=redisTokenService.isTokenActive(username);
+            if(!redisTokenService.isTokenActive(username)){
+                responseMsg.put("message", "Token no esta activo");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseMsg);
+            }
+
             RestTemplate restTemplate = new RestTemplate();
 
             HttpHeaders headers = new HttpHeaders();
@@ -93,20 +104,16 @@ public class KeycloakRestService {
 
             MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
             map.add("client_id", clientId);
-           // map.add("client_secret","KRmfiGVtMgJ0xhKy7qucyzBSGIjWH2aJkZrmz4Mfo_Q");
             map.add("refresh_token", refreshToken);
 
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
             ResponseEntity<String> response = restTemplate.postForEntity(keycloakLogout, request, String.class);
 
-            //String response = this.restTemplate.postForObject(this.keycloakLogout, request, String.class);
-           // JwtDTO jwt = new ObjectMapper().readValue((DataInput) response, JwtDTO.class);
 
-            Map<String, String> responseMsg = new HashMap<>();
             if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
 
-             //   invalidateToken(accessToken);
+                redisTokenService.invalidateCurrentToken(username);
 
                 responseMsg.put("message", "Logout exitoso");
                 return ResponseEntity.ok(responseMsg);
@@ -119,12 +126,12 @@ public class KeycloakRestService {
         }
     }
 
-    public void  invalidateToken(String accessToken) throws Exception {
+   /** public void  invalidateToken(String accessToken) throws Exception {
         String tokenKey = "latest_token:" + extractNameFromToken(accessToken);
         redisTemplate.delete(tokenKey);
 
         redisTemplate.opsForValue().set("blacklist_token:" + accessToken, "invalid", Duration.ofMinutes(30));
-    }
+    }**/
 
 
     /**
