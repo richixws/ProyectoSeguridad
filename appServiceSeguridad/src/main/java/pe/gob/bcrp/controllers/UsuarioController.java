@@ -290,7 +290,7 @@ public class UsuarioController {
         // Validar el tipo de archivo (por ejemplo, aceptar solo PDF o imágenes)
         String contentType = sustento.getContentType();
         if (!"application/pdf".equals(contentType)) {
-            throw new IllegalArgumentException("El archivo de sustento debe ser en formato PDF");
+            throw new IllegalArgumentException("El archivo de sustento debe ser en formato PDF.");
         }
     }
 

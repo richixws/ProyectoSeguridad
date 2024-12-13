@@ -23,6 +23,8 @@ import pe.gob.bcrp.excepciones.SeguridadAPIException;
 import java.net.URL;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -115,10 +117,19 @@ public class JwtValidationService {
     }
 
 
-    public TokenResponse refreshAccessToken(String refreshToken, String username) {
+    public ResponseEntity<?> refreshAccessToken(String refreshToken, String username) {
 
         try {
+            Map<String, String> responseMsg = new HashMap<>();
             RestTemplate restTemplate = new RestTemplate();
+
+
+            // Verificar si el usuario tiene un token activo y si el refreshToken coincide
+            if (!redisTokenService.isTokenActive(username)) {
+                responseMsg.put("message", "No hay tokens activos para este usuario.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseMsg);
+            }
+
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -144,7 +155,7 @@ public class JwtValidationService {
                         newTokens.getAccess_token(),
                         newTokens.getRefresh_token()
                 );
-                return newTokens;
+                return ResponseEntity.status(HttpStatus.OK).body(newTokens);
             } else {
                 throw new RuntimeException("Failed to refresh token");
             }

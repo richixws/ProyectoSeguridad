@@ -16,7 +16,11 @@ public class RedisTokenService {
         this.redisTemplate = redisTemplate;
     }
 
-
+    /**
+     * Metodos Login
+     * @param username
+     * @param token
+     */
     // Almacenar el último token válido para un usuario
     public void storeLatestToken(String username, String token) {
         // Almacenar el token con una clave única por usuario
@@ -39,6 +43,7 @@ public class RedisTokenService {
     }
 
     /**
+     * Metodos RefreshToken
      *  refrestoken Método para almacenar y gestionar el refresh token
       */
 
@@ -54,7 +59,7 @@ public class RedisTokenService {
         redisTemplate.opsForValue().set(
                 "refresh_token:" + username,
                 refreshToken,
-                Duration.ofMinutes(60) // Tiempo de vida del refresh token
+                Duration.ofMinutes(60)
         );
     }
 
@@ -66,9 +71,10 @@ public class RedisTokenService {
 
 
 
-
-
-
+    /**
+     * Metodos Logout
+     * @param username
+     */
     //logout método para invalidar el token actual del usuario
     public void invalidateCurrentToken(String username) {
         // Elimina el token más reciente para este usuario
