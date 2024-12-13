@@ -20,12 +20,14 @@ public interface IPerfilRepository  extends JpaRepository<Perfil, Integer> {
     boolean existsByNombreIgnoreCaseAndAndIdPerfilNot(String nombre,Integer idRol);
 
     @Query("SELECT s FROM Perfil s WHERE " +
+            "(:nombre IS NULL OR LOWER(s.nombre) LIKE %:nombre%) AND " +
             "(:idSistema IS NULL OR s.rol.sistema.idSistema  = :idSistema) AND " +
             "(:idPerfil IS NULL OR  s.idPerfil = :idPerfil) ")
             //"AND s.isDeleted = false")
     Page<Perfil> findByFilters(
                                 @Param("idSistema") Integer idSistema,
                                 @Param("idPerfil")  Integer idPerfil,
+                                @Param("nombre") String nombre,
                                 Pageable pageable);
     @Query("SELECT p FROM Perfil p WHERE " +
             "p.rol.idRol  = :idRol")

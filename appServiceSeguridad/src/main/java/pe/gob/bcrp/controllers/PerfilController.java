@@ -38,12 +38,14 @@ public class PerfilController {
             @RequestParam(name = "sortBy", defaultValue = "idPerfil", required = false) String sortBy,
             @RequestParam(name = "sortOrder", defaultValue = "desc", required = false) String sortOrder,
             @RequestParam(name = "systemId", required = false) Integer idSistema,
-            @RequestParam(name = "profileId", required = false) Integer idPerfil ){
+            @RequestParam(name = "profileId", required = false) Integer idPerfil,
+            @RequestParam(name = "name",     required = false) String name){
 
         log.info("INI - getAllPerfiles | requestURL=perfiles");
         try {
 
-            PerfilResponse perfilResponse=perfilService.getAllPerfiles(pageNumber, pageSize, sortBy, sortOrder,idSistema,idPerfil);//,nombre
+            PerfilResponse perfilResponse=perfilService.getAllPerfiles(pageNumber, pageSize, sortBy, sortOrder,
+                    idSistema,idPerfil, name);
             return new ResponseEntity<>(perfilResponse, HttpStatus.OK);
 
         }catch (Exception e){

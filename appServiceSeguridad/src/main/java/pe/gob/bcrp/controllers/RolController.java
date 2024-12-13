@@ -40,12 +40,13 @@ public class RolController {
             @RequestParam(name = "sortBy", defaultValue = "idRol", required = false) String sortBy,
             @RequestParam(name = "sortOrder", defaultValue = "desc", required = false) String sortOrder,
             @RequestParam(name = "systemId", required = false) Integer idSistema,
-            @RequestParam(name = "roleId", required = false) Integer idRol ){
+            @RequestParam(name = "roleId", required = false) Integer idRol,
+            @RequestParam(name = "name",     required = false) String name){
 
         log.info("INI - getAllRoles | requestURL=roles");
         try {
 
-            RolResponse rolResponse=rolService.getAllRoles(pageNumber, pageSize, sortBy, sortOrder,idSistema,idRol);
+            RolResponse rolResponse=rolService.getAllRoles(pageNumber, pageSize, sortBy, sortOrder,idSistema,idRol, name);
             return new ResponseEntity<>(rolResponse, HttpStatus.OK);
 
         }catch (Exception e){

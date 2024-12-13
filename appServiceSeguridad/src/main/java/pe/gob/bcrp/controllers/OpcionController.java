@@ -50,12 +50,14 @@ public class OpcionController {
             @RequestParam(name = "sortBy",      defaultValue = "idOpcion", required = false) String sortBy,
             @RequestParam(name = "sortOrder",   defaultValue = "desc", required = false) String sortOrder,
             @RequestParam(name = "systemId",   required = false) Integer idSistema,
-            @RequestParam(name = "moduleId",    required = false) Integer idModulo ){
+            @RequestParam(name = "moduleId",    required = false) Integer idModulo,
+            @RequestParam(name = "name",     required = false) String name){
 
         log.info("INI - getAllOpciones | requestURL=opciones");
         try {
 
-            OpcionResponse opcionResponse=opcionService.getAllOpciones(pageNumber, pageSize, sortBy, sortOrder,idSistema,idModulo);
+            OpcionResponse opcionResponse=opcionService.getAllOpciones(pageNumber, pageSize, sortBy, sortOrder,
+                    idSistema,idModulo,name);
             return new ResponseEntity<>(opcionResponse, HttpStatus.OK);
 
         }catch (Exception e){

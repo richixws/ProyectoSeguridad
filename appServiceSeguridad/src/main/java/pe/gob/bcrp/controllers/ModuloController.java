@@ -39,13 +39,14 @@ public class ModuloController {
             @RequestParam(name = "pageSize",    defaultValue = "10",   required = false) Integer pageSize,
             @RequestParam(name = "sortBy",      defaultValue = "idModulo", required = false) String sortBy,
             @RequestParam(name = "sortOrder",   defaultValue = "desc", required = false) String sortOrder,
-            @RequestParam(name = "systemId", required = false) Integer idSistema
+            @RequestParam(name = "systemId", required = false) Integer idSistema,
+            @RequestParam(name = "name",     required = false) String name
     ){
 
         log.info("INI - getAllModulos | requestURL=modulos");
         try {
 
-            ModuloResponse moduloResponse=moduloService.getAllModulos(pageNumber, pageSize, sortBy, sortOrder,idSistema);//,nombre
+            ModuloResponse moduloResponse=moduloService.getAllModulos(pageNumber, pageSize, sortBy, sortOrder,idSistema, name);//,nombre
             return new ResponseEntity<>(moduloResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - getAllModulos | requestURL=modulos"+e.getMessage());

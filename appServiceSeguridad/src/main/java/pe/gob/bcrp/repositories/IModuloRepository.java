@@ -20,9 +20,10 @@ public interface IModuloRepository extends JpaRepository<Modulo, Integer> {
     boolean existsByNombreModuloIgnoreCaseAndAndIdModuloNot(String nombre,Integer idSistema);
 
     @Query("SELECT s FROM Modulo s WHERE " +
+            "(:nombre IS NULL OR LOWER(s.nombreModulo) LIKE %:nombre%) AND " +
             "(:idSistema IS NULL OR s.sistema.idSistema = :idSistema)  ")
             //"AND s.isDeleted = false")
-    Page<Modulo> findByFilters(@Param("idSistema") Integer idSistema,Pageable pageable);
+    Page<Modulo> findByFilters(@Param("idSistema") Integer idSistema, @Param("nombre") String nombre, Pageable pageable);
 
 
 

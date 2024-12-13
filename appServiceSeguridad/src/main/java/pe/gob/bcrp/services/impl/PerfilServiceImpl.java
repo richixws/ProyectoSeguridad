@@ -44,8 +44,9 @@ public class PerfilServiceImpl implements IPerfilService {
 
 
     @Override
-    @Cacheable(value = "perfiles", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema,#idPerfil}")
-    public PerfilResponse getAllPerfiles(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, Integer idSistema, Integer idPerfil) {
+    @Cacheable(value = "perfiles", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema,#idPerfil, #name}")
+    public PerfilResponse getAllPerfiles(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,
+                                         Integer idSistema, Integer idPerfil, String name) {
 
         log.info(" INI - Service  getAllPerfiles");
         try {
@@ -56,8 +57,9 @@ public class PerfilServiceImpl implements IPerfilService {
 
             Page<Perfil> pagePerfiles=null;
 
-            if(idSistema!=null || idPerfil!=null) {
-                pagePerfiles=perfilRepository.findByFilters(idSistema,idPerfil,pageDetails);
+            if(idSistema!=null || idPerfil!=null || name != null) {
+                String nombreLowerCase = name != null ? name.toLowerCase() : null;
+                pagePerfiles=perfilRepository.findByFilters(idSistema,idPerfil, nombreLowerCase, pageDetails);
             }else{
                 pagePerfiles = perfilRepository.findAll(pageDetails);
             }

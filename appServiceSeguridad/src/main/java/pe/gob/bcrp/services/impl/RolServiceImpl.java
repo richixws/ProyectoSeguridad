@@ -40,8 +40,9 @@ public class RolServiceImpl implements IRolService {
     private ISistemaRepository sistemaRepository;
 
      @Override
-     @Cacheable(value = "roles", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema, #idRol}")
-     public RolResponse getAllRoles(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, Integer idSistema, Integer idRol) {
+     @Cacheable(value = "roles", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema, #idRol, #name}")
+     public RolResponse getAllRoles(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,
+                                    Integer idSistema, Integer idRol, String name) {
 
         log.info(" INI - Service  getAllRoles");
         try {
@@ -52,8 +53,9 @@ public class RolServiceImpl implements IRolService {
 
             Page<Rol> pageRol=null;
 
-            if(idSistema!=null ) {
-                pageRol=rolRepository.findByFilters(idSistema,idRol,pageDetails);
+            if(idSistema!=null || name != null) {
+                String nombreLowerCase = name != null ? name.toLowerCase() : null;
+                pageRol=rolRepository.findByFilters(idSistema,idRol, nombreLowerCase, pageDetails);
             }else{
                 pageRol = rolRepository.findAll(pageDetails);
             }

@@ -41,8 +41,9 @@ public class ModuloServiceImpl implements IModuloService {
 
 
     @Override
-    @Cacheable(value = "modulos", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema}")
-    public ModuloResponse getAllModulos(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, Integer idSistema) { //, String nombre
+    @Cacheable(value = "modulos", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema, #name}")
+    public ModuloResponse getAllModulos(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,
+                                        Integer idSistema, String name) {
 
         log.info(" INI - Service  getAllModulos");
         try {
@@ -53,8 +54,9 @@ public class ModuloServiceImpl implements IModuloService {
 
             Page<Modulo> pageModulos=null;
 
-             if(idSistema!=null){
-                 pageModulos=imoduloRepository.findByFilters(idSistema,pageDetails);
+             if(idSistema!=null || name != null){
+                 String nombreLowerCase = name != null ? name.toLowerCase() : null;
+                 pageModulos=imoduloRepository.findByFilters(idSistema, nombreLowerCase, pageDetails);
              }else{
                  pageModulos = imoduloRepository.findAll(pageDetails);
             }

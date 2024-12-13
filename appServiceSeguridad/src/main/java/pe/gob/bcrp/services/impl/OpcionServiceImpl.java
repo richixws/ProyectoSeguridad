@@ -44,8 +44,9 @@ public class OpcionServiceImpl  implements IOpcionService {
 
 
     @Override
-    @Cacheable(value = "opciones", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema,#idModulo}")
-    public OpcionResponse getAllOpciones(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, Integer idSistema,Integer idModulo) {
+    @Cacheable(value = "opciones", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #idSistema,#idModulo, #name}")
+    public OpcionResponse getAllOpciones(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,
+                                         Integer idSistema,Integer idModulo, String name) {
         log.info(" INI - Service  getAllOpciones");
         try {
 
@@ -55,8 +56,9 @@ public class OpcionServiceImpl  implements IOpcionService {
 
             Page<Opcion> pageOpciones=null;
 
-            if(idSistema!=null || idModulo!=null) {
-                pageOpciones=opcionRepository.findByFilters(idSistema,idModulo,pageDetails);
+            if(idSistema!=null || idModulo!=null || name != null) {
+                String nombreLowerCase = name != null ? name.toLowerCase() : null;
+                pageOpciones=opcionRepository.findByFilters(idSistema,idModulo, nombreLowerCase, pageDetails);
             }else{
                 pageOpciones = opcionRepository.findAll(pageDetails);
             }

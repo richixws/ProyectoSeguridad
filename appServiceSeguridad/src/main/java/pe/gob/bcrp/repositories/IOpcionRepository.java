@@ -16,12 +16,14 @@ public interface IOpcionRepository extends JpaRepository<Opcion, Integer> {
     boolean existsByNombreOpcionIgnoreCaseAndAndIdOpcionNot(String nombre,Integer idOpcion);
 
     @Query("SELECT s FROM Opcion s WHERE " +
+            "(:nombre IS NULL OR LOWER(s.nombreOpcion) LIKE %:nombre%) AND " +
             "(:idSistema IS NULL OR s.modulo.sistema.idSistema  = :idSistema) AND " +
             "(:idModulo IS NULL OR  s.modulo.idModulo = :idModulo) ")
             //"AND s.isDeleted = false")
     Page<Opcion> findByFilters(
                                 @Param("idSistema") Integer idSistema,
                                 @Param("idModulo") Integer idModulo,
+                                @Param("nombre") String nombre,
                                 Pageable pageable);
 
 
