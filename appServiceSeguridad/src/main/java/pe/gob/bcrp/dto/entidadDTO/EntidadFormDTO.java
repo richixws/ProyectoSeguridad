@@ -21,6 +21,6 @@ public class EntidadFormDTO {
     private String  codExterno;
     @JsonProperty("state")
     private Integer  estado;
-    @JsonProperty("delete")
+    //@JsonProperty("delete")
     private boolean isDeleted;
 }
