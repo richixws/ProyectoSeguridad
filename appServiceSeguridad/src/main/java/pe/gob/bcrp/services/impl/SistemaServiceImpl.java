@@ -243,7 +243,7 @@ public class SistemaServiceImpl implements ISistemaService {
                                          Integer estado) throws IOException {
         log.info("INI - guardarSistema() ");
         try {
-            Optional<Sistema> sistemaExistente = sistemaRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(nombre);
+            Optional<Sistema> sistemaExistente = sistemaRepository.findFirstByNombreContainingIgnoreCase(nombre);
             if (sistemaExistente.isPresent()){
                 throw new IllegalArgumentException("El nombre del sistema se encuentra en uso, por favor ingrese un nuevo sistema.");
             }

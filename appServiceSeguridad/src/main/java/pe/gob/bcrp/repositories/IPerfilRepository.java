@@ -15,7 +15,7 @@ public interface IPerfilRepository  extends JpaRepository<Perfil, Integer> {
     public Page<Perfil> findByIsDeletedFalse(Pageable pageable);
 
 
-   Optional<Perfil> findByNombreContainingIgnoreCaseAndIsDeletedFalse(String nombre);
+   Optional<Perfil> findFirstByNombreContainingIgnoreCase(String nombre);
 
     boolean existsByNombreIgnoreCaseAndAndIdPerfilNot(String nombre,Integer idRol);
 

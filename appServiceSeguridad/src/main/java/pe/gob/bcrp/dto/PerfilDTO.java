@@ -27,7 +27,7 @@ public class PerfilDTO {
     @NotNull(message = "Rol no debe ser vacio")
     private Integer idRol;
 
-    @JsonProperty("identityId")
+    @JsonProperty("entityId")
     @NotNull(message = "Entidad no debe ser vacio")
     private Integer idEntidad;
 

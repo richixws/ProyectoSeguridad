@@ -96,7 +96,7 @@ public class RolServiceImpl implements IRolService {
         try {
             Usuario usuario = util.getUsuario();
 
-            Optional<Rol> moduloExistente = rolRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(rolDTO.getNombreRol());
+            Optional<Rol> moduloExistente = rolRepository.findFirstByNombreContainingIgnoreCase(rolDTO.getNombreRol());
             if (moduloExistente.isPresent()){
                 throw new IllegalArgumentException("El nombre del rol se encuentra en uso, por favor ingrese un nuevo rol.");
             }

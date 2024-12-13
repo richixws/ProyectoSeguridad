@@ -94,7 +94,7 @@ public class OpcionServiceImpl  implements IOpcionService {
        log.info(" INI - Service  saveOpcion");
        try {
 
-           Optional<Opcion> exist = opcionRepository.findByNombreOpcionContainingIgnoreCaseAndIsDeletedFalse(
+           Optional<Opcion> exist = opcionRepository.findFirstByNombreOpcionContainingIgnoreCase(
                    opcionDto.getNombreOpcion());
            if(exist.isPresent()) {
                throw new ResourceNotFoundException("El nombre de la opción se encuentra en uso, por favor ingrese una nueva opción.");

@@ -88,7 +88,7 @@ public class ModuloServiceImpl implements IModuloService {
             log.info("INI - saveModulo()");
             Usuario usuario = util.getUsuario();
 
-            Optional<Modulo> moduloExistente = imoduloRepository.findByNombreModuloContainingIgnoreCaseAndIsDeletedFalse(moduloDto.getNombreModulo());
+            Optional<Modulo> moduloExistente = imoduloRepository.findFirstByNombreModuloContainingIgnoreCase(moduloDto.getNombreModulo());
             if (moduloExistente.isPresent()){
                 throw new IllegalArgumentException("El nombre del modulo se encuentra en uso, por favor ingrese un nuevo modulo.");
             }

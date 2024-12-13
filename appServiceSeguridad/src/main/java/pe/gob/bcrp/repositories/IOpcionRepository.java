@@ -10,10 +10,8 @@ import pe.gob.bcrp.entities.Opcion;
 import java.util.Optional;
 
 public interface IOpcionRepository extends JpaRepository<Opcion, Integer> {
-
-    public Page<Opcion> findByIsDeletedFalse(Pageable pageable);
-
-    Optional<Opcion> findByNombreOpcionContainingIgnoreCaseAndIsDeletedFalse(String nombreOpcion);
+    
+    Optional<Opcion> findFirstByNombreOpcionContainingIgnoreCase(String nombreOpcion);
 
     boolean existsByNombreOpcionIgnoreCaseAndAndIdOpcionNot(String nombre,Integer idOpcion);
 

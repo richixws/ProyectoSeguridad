@@ -20,7 +20,7 @@ public interface ISistemaRepository extends JpaRepository<Sistema, Integer> {
 
     boolean existsByNombreIgnoreCaseAndIdSistemaNot(String nombre,Integer idSistema);
 
-    Optional<Sistema> findByNombreContainingIgnoreCaseAndIsDeletedFalse(String nombre);
+    Optional<Sistema> findFirstByNombreContainingIgnoreCase(String nombre);
 
     // Consulta personalizada para buscar por código, nombre y versión
       @Query("SELECT s FROM Sistema s WHERE " +

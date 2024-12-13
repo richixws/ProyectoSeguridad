@@ -98,7 +98,7 @@ public class PerfilServiceImpl implements IPerfilService {
         log.info(" INI - Service  savePerfil");
         try {
 
-            Optional<Perfil> perfilExistente = perfilRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(perfilDTO.getNombrePerfil());
+            Optional<Perfil> perfilExistente = perfilRepository.findFirstByNombreContainingIgnoreCase(perfilDTO.getNombrePerfil());
             if (perfilExistente.isPresent()){
                 throw new IllegalArgumentException("El nombre del perfil se encuentra en uso, por favor ingrese un nuevo perfil.");
             }

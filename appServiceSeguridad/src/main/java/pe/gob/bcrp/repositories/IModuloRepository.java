@@ -15,7 +15,7 @@ public interface IModuloRepository extends JpaRepository<Modulo, Integer> {
 
     //public Page<Modulo> findByIsDeletedFalse(Pageable pageable);
 
-    Optional<Modulo> findByNombreModuloContainingIgnoreCaseAndIsDeletedFalse(String nombre);
+    Optional<Modulo> findFirstByNombreModuloContainingIgnoreCase(String nombre);
 
     boolean existsByNombreModuloIgnoreCaseAndAndIdModuloNot(String nombre,Integer idSistema);
 

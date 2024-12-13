@@ -16,7 +16,7 @@ public class RegistroPerfilDTO {
     @JsonProperty("roleId")
     private Integer idRol;
 
-    @JsonProperty("identityId")
+    @JsonProperty("entityId")
     private Integer idEntidad;
 
     @JsonProperty("profileName")
