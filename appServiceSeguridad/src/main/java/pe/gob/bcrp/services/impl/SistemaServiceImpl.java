@@ -136,8 +136,9 @@ public class SistemaServiceImpl implements ISistemaService {
             Page<Sistema> pageEntidades = null;
 
             if( nombre!=null ||  version!=null ){
-
-                pageEntidades = sistemaRepository.findByFilters( nombre, version, pageDetails);
+                String nombreLowerCase = nombre != null ? nombre.toLowerCase() : null;
+                String versionLowerCase = version != null ? version.toLowerCase() : null;
+                pageEntidades = sistemaRepository.findByFilters( nombreLowerCase, versionLowerCase, pageDetails);
             }else{
 
                pageEntidades = sistemaRepository.findAll(pageDetails);
@@ -259,7 +260,10 @@ public class SistemaServiceImpl implements ISistemaService {
             sistema.setUrl(url);
 
             if (!usuarioAutenticado.getIdUsuario().equals(idUsuarioResponsable)) {
-                throw new IllegalArgumentException("El ID del usuario responsable no coincide con el usuario autenticado.");
+                throw new IllegalArgumentException("El id del usuario responsable no existe.");
+            }
+            if (!usuarioAutenticado.getIdUsuario().equals(idUsuarioResponsableAlt)) {
+                throw new IllegalArgumentException("El id del usuario responsable alterno no existe.");
             }
 
             sistema.setIdUsuarioResponsable(idUsuarioResponsable);
@@ -272,6 +276,10 @@ public class SistemaServiceImpl implements ISistemaService {
             sistema.setUrlExterno(urlExterno);
             sistema.setEstadoCritico(String.valueOf(idestadoCritico));
             sistema.setUnidadOrganizacional(unidOrganizacional);
+
+            if(estado==null){
+                estado=1;
+            }
             sistema.setEstado(estado);
 
             if(multiLogoMain != null){
@@ -325,13 +333,13 @@ public class SistemaServiceImpl implements ISistemaService {
         try {
             Usuario usuarioAutenticado=util.getUsuario();//obtener usuario del sistema
 
+            Sistema sistemaExistente = sistemaRepository.findById(idSistema).orElseThrow(() -> new ResourceNotFoundException("El Id del sistema no existe"));
             // Optional<Sistema> sistemaExistente = sistemaRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(nombre);
             boolean existeNombredeSistema=sistemaRepository.existsByNombreIgnoreCaseAndIdSistemaNot(nombre,idSistema);
             if (existeNombredeSistema) {
-                throw new IllegalArgumentException("El Nombre del sistema ya está registrado en otro Sistema.");
+                throw new IllegalArgumentException("El Nombre del sistema ya está registrado en otro sistema.");
             }
 
-            Sistema sistemaExistente = sistemaRepository.findById(idSistema).orElseThrow(() -> new ResourceNotFoundException("Sistema no encontrado con el id: " + idSistema));
 
             if(sistemaExistente!=null) {
 
@@ -341,7 +349,10 @@ public class SistemaServiceImpl implements ISistemaService {
                 sistemaExistente.setUrl(url);
 
                 if (!usuarioAutenticado.getIdUsuario().equals(idUsuarioResponsable)) {
-                    throw new IllegalArgumentException("El ID del usuario responsable no coincide con el usuario autenticado.");
+                    throw new IllegalArgumentException("El id del usuario responsable no existe.");
+                }
+                if (!usuarioAutenticado.getIdUsuario().equals(idUsuarioResponsableAlt)) {
+                    throw new IllegalArgumentException("El id del usuario responsable alterno no existe.");
                 }
 
                 sistemaExistente.setIdUsuarioResponsable(idUsuarioResponsable);

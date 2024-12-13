@@ -177,8 +177,8 @@ public class AuthController {
             if(refreshToken ==null){
                 return new ResponseEntity<TokenResponse>(HttpStatus.FORBIDDEN);
             }
-            TokenResponse newTokens = jwtValidationService.refreshAccessToken(refreshToken,username);
-            return ResponseEntity.ok(newTokens);
+            ResponseEntity newTokens = jwtValidationService.refreshAccessToken(refreshToken,username);
+            return newTokens;
         } catch (Exception e) {
             log.error("Error en el refreshToken", e.getMessage());
             throw new RuntimeException(e);

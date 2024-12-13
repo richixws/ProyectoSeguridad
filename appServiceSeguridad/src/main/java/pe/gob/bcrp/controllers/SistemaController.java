@@ -1,4 +1,5 @@
 package pe.gob.bcrp.controllers;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +19,7 @@ import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.response.SistemaResponse;
 import pe.gob.bcrp.dto.sistemaDTO.RegistroSistemaDTO;
 import pe.gob.bcrp.dto.sistemaDTO.SistemaFormDTO;
+import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.ISistemaService;
 import pe.gob.bcrp.services.IUploadFileService;
@@ -185,19 +187,18 @@ public class SistemaController {
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO<SistemaFormDTO>> saveSistema(@Valid @ModelAttribute RegistroSistemaDTO registroSistemaDTO,
-                                                                   @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
-                                                                   @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead
+    public ResponseEntity<ResponseDTO<SistemaFormDTO>> saveSistema(@Validated(ValidationGroups.OnCreate.class) @ModelAttribute  RegistroSistemaDTO registroSistemaDTO,
+                                                                   @RequestParam(value = "imageLogoMain", required = false) MultipartFile[] multiLogoMain,
+                                                                   @RequestParam(value = "imageLogoHead", required = false) MultipartFile[] multiLogoHead
                                                                      ) throws InvalidCredentialsException {
         log.info("INFO - Guardar Sistema ");
         ResponseDTO<SistemaFormDTO> response=new ResponseDTO();
         try {
 
-
             validarLogo(multiLogoMain);
             validarLogo(multiLogoHead);
             SistemaFormDTO sistemaDto=sistemaService.guardarSistema(registroSistemaDTO.getNombre(),registroSistemaDTO.getVersion(),
-                    multiLogoMain,multiLogoHead,registroSistemaDTO.getUrl()
+                    multiLogoMain[0],multiLogoHead[0],registroSistemaDTO.getUrl()
                     ,registroSistemaDTO.getIdUsuarioResponsable(),registroSistemaDTO.getIdUsuarioResponsableAlt(),registroSistemaDTO.getUrlExterno(),
                     registroSistemaDTO.getIdEstadoCritico(),registroSistemaDTO.getUnidOrganizacional(),registroSistemaDTO.getEstado());
             response.setStatus(1);
@@ -273,11 +274,11 @@ public class SistemaController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Validated
-    public ResponseEntity<ResponseDTO<SistemaFormDTO>> updateSistema(
-                                                                       @Valid @ModelAttribute RegistroSistemaDTO registroSistemaDTO,
-                                                                      // @RequestParam @NotNull Integer idSistema,
-                                                                       @RequestParam(value = "imageLogoMain", required = false) MultipartFile multiLogoMain,
-                                                                       @RequestParam(value = "imageLogoHead", required = false) MultipartFile multiLogoHead
+    @JsonView(Views.Update.class)
+    public ResponseEntity<ResponseDTO<SistemaFormDTO>> updateSistema(  @Validated(ValidationGroups.OnUpdate.class) @ModelAttribute  RegistroSistemaDTO registroSistemaDTO,
+                                                                       // @RequestParam @NotNull Integer idSistema,
+                                                                       @RequestParam(value = "imageLogoMain", required = false) MultipartFile[] multiLogoMain,
+                                                                       @RequestParam(value = "imageLogoHead", required = false) MultipartFile[] multiLogoHead
                                                                        ) {
         log.info("INFO - Actualizar Sistema");
         ResponseDTO<SistemaFormDTO> response = new ResponseDTO<>();
@@ -285,8 +286,10 @@ public class SistemaController {
 
             validarLogo(multiLogoMain);
             validarLogo(multiLogoHead);
+
+
             SistemaFormDTO sistemaDto = sistemaService.actualizarSistema(registroSistemaDTO.getIdSistema(), registroSistemaDTO.getNombre(),
-                    registroSistemaDTO.getVersion(), multiLogoMain, multiLogoHead, registroSistemaDTO.getUrl(),
+                    registroSistemaDTO.getVersion(), multiLogoMain[0], multiLogoHead[0], registroSistemaDTO.getUrl(),
                     registroSistemaDTO.getIdUsuarioResponsable(),registroSistemaDTO.getIdUsuarioResponsableAlt(),
                     registroSistemaDTO.getUrlExterno(),registroSistemaDTO.getIdEstadoCritico(),registroSistemaDTO.getUnidOrganizacional(),registroSistemaDTO.getEstado());
 
@@ -303,7 +306,7 @@ public class SistemaController {
         catch (ResourceNotFoundException e) {
             log.error("ERROR - El sistema no existe: ", e);
             response.setStatus(0);
-            response.setMessage("El sistema con  no existe.");
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         } catch (Exception e) {
@@ -318,9 +321,19 @@ public class SistemaController {
 
 
     // validar archivo logo
-    private void validarLogo(MultipartFile logo) {
+    private void validarLogo(MultipartFile[] logos) {
 
-        if (logo == null || logo.isEmpty()) {
+        if (logos == null || logos.length == 0) {
+            throw new IllegalArgumentException("El logo es obligatorio.");
+        }
+
+        if (logos.length > 1) {
+            throw new IllegalArgumentException("Sólo se permite un archivo de logo.");
+        }
+
+        MultipartFile logo=logos[0];
+
+        if (logo.isEmpty()) {
             throw new IllegalArgumentException("El logo es obligatorio.");
         }
 

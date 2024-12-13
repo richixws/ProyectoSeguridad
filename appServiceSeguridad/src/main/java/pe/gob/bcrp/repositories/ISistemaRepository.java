@@ -24,8 +24,8 @@ public interface ISistemaRepository extends JpaRepository<Sistema, Integer> {
 
     // Consulta personalizada para buscar por código, nombre y versión
       @Query("SELECT s FROM Sistema s WHERE " +
-           "(:nombre IS NULL OR LOWER(s.nombre) = LOWER(:nombre)) AND " +
-           "(:version IS NULL OR LOWER(s.version) = LOWER(:version)) ")
+           "(:nombre IS NULL OR LOWER(s.nombre) LIKE %:nombre%) AND " +
+           "(:version IS NULL OR LOWER(s.version) LIKE %:version%)")
            //"AND s.isDeleted = false")
    Page<Sistema> findByFilters(
                                @Param("nombre") String nombre,
