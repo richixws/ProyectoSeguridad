@@ -81,7 +81,7 @@ public class PersonaController {
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/persona/{personId}")
-    public ResponseEntity<ResponseDTO<PersonaDTO>> updatePersona(@PathVariable Integer idPersona,
+    public ResponseEntity<ResponseDTO<PersonaDTO>> updatePersona(@PathVariable("personId") Integer idPersona,
                                                                 @Valid @RequestBody PersonaDTO personaDTO) {
         log.info(" INI - updatePersona | requestUrl=persona/idpersona");
         ResponseDTO<PersonaDTO> response=new ResponseDTO<>();
@@ -111,7 +111,7 @@ public class PersonaController {
     @Operation(summary = "Eliminar Persona", description = "Elimina la persona por el IdPersona de la base de datos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/persona/{personId}")
-    public ResponseEntity<ResponseDTO<PersonaDTO>> deletePersona(@PathVariable Integer idPersona) {
+    public ResponseEntity<ResponseDTO<PersonaDTO>> deletePersona(@PathVariable("personId") Integer idPersona) {
         ResponseDTO<PersonaDTO> response=new ResponseDTO<>();
         log.info(" INI - deletePersona | requestUrl=persona/idpersona");
         try {
