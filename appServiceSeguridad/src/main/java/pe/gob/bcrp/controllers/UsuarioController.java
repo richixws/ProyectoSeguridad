@@ -66,7 +66,7 @@ public class UsuarioController {
             return new ResponseEntity<>(usurioResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - listar Usuarios | requestURL=usuarios");
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -98,7 +98,7 @@ public class UsuarioController {
             log.error(" ERROR - uploadUsuarios | requestURL=usuarios ");
             response.setStatus(0);
             response.setMessage(e.getMessage() );
-            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
 
     }
@@ -108,7 +108,7 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/usuario",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDTO<RegistroCreateUsuarioDTO>> saveUsuario(@Valid @ModelAttribute RegistroCreateUsuarioDTO registroUsuarioDTO,
-                                                                             @RequestParam(value = "sustento", required = false) MultipartFile sustento) throws InvalidCredentialsException {
+                                                                             @RequestParam(value = "sustenance", required = false) MultipartFile sustento) throws InvalidCredentialsException {
 
 
         log.info("INI - guardarUsuario | requestURL=usuarios");
@@ -117,17 +117,16 @@ public class UsuarioController {
         try {
 
             validarArchivoSustento(sustento);
-            RegistroCreateUsuarioDTO newUsuarioFormDTO=usuarioService.guardarUsuario(registroUsuarioDTO.getTipoDocumento(),
-                                                                                     registroUsuarioDTO.getNumeroDocumento(),
-                                                                                     registroUsuarioDTO.getNombres(),
-                                                                                     registroUsuarioDTO.getApePaterno(),
-                                                                                     registroUsuarioDTO.getApeMaterno(),
-                                                                                     registroUsuarioDTO.getCorreoElectronico(),
-                                                                                     registroUsuarioDTO.getAmbito(), sustento);
+            RegistroCreateUsuarioDTO newUsuarioFormDTO=usuarioService.guardarUsuario(registroUsuarioDTO.getDocumentType(),
+                                                                                     registroUsuarioDTO.getDocumentNumber(),
+                                                                                     registroUsuarioDTO.getNames(),
+                                                                                     registroUsuarioDTO.getFatherSurname(),
+                                                                                     registroUsuarioDTO.getMotherSurname(),
+                                                                                     registroUsuarioDTO.getEmail(),
+                                                                                     registroUsuarioDTO.getScope(), sustento);
 
             response.setStatus(1);
             response.setMessage("El Usuario fue guardado de manera existosa");
-
         } catch (IllegalArgumentException e) {
             response.setStatus(0);
             response.setMessage(e.getMessage());
@@ -137,7 +136,7 @@ public class UsuarioController {
             log.error(" ERROR - add Usuario | requestURL=usuarios ");
             response.setStatus(0);
             response.setMessage("Error al guardar el Usuario "+e.getMessage() );
-            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -169,7 +168,7 @@ public class UsuarioController {
             log.error(" ERROR - Editar Usuario | requestURL=usuario ");
             response.setStatus(0);
             response.setMessage("Error al actualizar el Usuario "+e.getMessage() );
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(response,HttpStatus.OK);
@@ -201,7 +200,7 @@ public class UsuarioController {
               log.error(" ERROR - delete Usuario | requestURL=IdUsuario ");
               response.setStatus(0);
               response.setMessage("Error al Inhabilitar el Usuario "+e.getMessage() );
-              return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+              return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
           }
     }
 
@@ -236,7 +235,7 @@ public class UsuarioController {
             log.error(" ERROR - AsignarRolToUsuario | requestURL=IdUsuario ");
             response.setStatus(0);
             response.setMessage("Error al asignar rol a usuario "+e.getMessage() );
-            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
     }
 
@@ -271,7 +270,7 @@ public class UsuarioController {
             log.error(" ERROR - AsignarPerfilToUsuario | requestURL=IdUsuario ");
             response.setStatus(0);
             response.setMessage("Error al asignar perfil a usuario "+e.getMessage() );
-            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
     }
 

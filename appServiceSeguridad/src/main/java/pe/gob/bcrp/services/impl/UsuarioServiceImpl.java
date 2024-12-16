@@ -202,17 +202,15 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
             Usuario usuario=new Usuario();
             Persona persona=new Persona();
-           // usuarioNew.set
             persona.setTipoDocumento(doc);
             persona.setNumeroDocumento(numeroDocumento);
             persona.setNombres(nombres);
             persona.setApellidoPaterno(apePaterno);
             persona.setApellidoMaterno(apeMaterno);
             persona.setCorreo(correoElectronico);
-
+            persona.setEstado(1);
             persona.setUsuarioCreacion(usuarioSistema.getUsuario());
             persona.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
-
 
             //if(ambito.equalsIgnoreCase("interno")){
             usuario.setAmbito(ambito);
@@ -223,10 +221,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
             }
 
             usuario.setFechaCreacion(new Date());
-            usuario.setEstado("ACTIVO");
-
             usuario.setUsuarioCreacion(usuarioSistema.getUsuario());
             usuario.setHoraCreacion(usuario.getHoraCreacion());
+            usuario.setEstado(1);
            // }
 
 
@@ -258,39 +255,39 @@ public class UsuarioServiceImpl implements IUsuarioService {
         try {
             // Verificar si el número de documento ya existe
             Usuario u=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-            if (personaRepository.existsByNumeroDocumentoAndIdPersonaNot(registroUsuarioDTO.getNumeroDocumento(), u.getPersona().getIdPersona())) {
+            if (personaRepository.existsByNumeroDocumentoAndIdPersonaNot(registroUsuarioDTO.getDocumentNumber(), u.getPersona().getIdPersona())) {
                 throw new IllegalArgumentException("El número de documento ya existe.");
             }
 
             // Verificar si el correo electrónico ya existe
-            if (personaRepository.existsByCorreoAndIdPersonaNot(registroUsuarioDTO.getCorreoElectronico(),u.getPersona().getIdPersona())) {
+            if (personaRepository.existsByCorreoAndIdPersonaNot(registroUsuarioDTO.getEmail(),u.getPersona().getIdPersona())) {
                 throw new IllegalArgumentException("El correo electrónico ya existe.");
             }
-
 
             Usuario usuarioReg = util.getUsuario();
 
             Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
             Persona persona = personaRepository.findById(usuario.getPersona().getIdPersona()).orElseThrow(() -> new RuntimeException("Persona no encontrado"));
-            DocumentoIdentidad docuIde = documentoIdentidadRepository.findById(registroUsuarioDTO.getTipoDocumento()).orElseThrow(() -> new ResourceNotFoundException("documento no encontrado"));
+            DocumentoIdentidad docuIde = documentoIdentidadRepository.findById(registroUsuarioDTO.getDocumentType()).orElseThrow(() -> new ResourceNotFoundException("documento no encontrado"));
 
             persona.setTipoDocumento(docuIde);
-            persona.setNumeroDocumento(registroUsuarioDTO.getNumeroDocumento());
-            persona.setNombres(registroUsuarioDTO.getNombres());
-            persona.setApellidoPaterno(registroUsuarioDTO.getApePaterno());
-            persona.setApellidoMaterno(registroUsuarioDTO.getApeMaterno());
-            persona.setCorreo(registroUsuarioDTO.getCorreoElectronico());
+            persona.setNumeroDocumento(registroUsuarioDTO.getDocumentNumber());
+            persona.setNombres(registroUsuarioDTO.getNames());
+            persona.setApellidoPaterno(registroUsuarioDTO.getFatherSurname());
+            persona.setApellidoMaterno(registroUsuarioDTO.getMotherSurname());
+            persona.setCorreo(registroUsuarioDTO.getEmail());
 
             persona.setUsuarioActualizacion(usuarioReg.getUsuario());
             persona.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
 
 
             // usuarioUpdate.setCorreoInstitucional(registroUsuarioDTO.getCorreo());
-            usuario.setAmbito(registroUsuarioDTO.getAmbito());
+            usuario.setAmbito(registroUsuarioDTO.getScope());
 
             usuario.setHoraActualizacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             usuario.setUsuarioActualizacion(usuario.getUsuario());
             usuario.setDocSustento(usuario.getDocSustento());
+            usuario.setEstado(registroUsuarioDTO.getState());
             //   usuarioUpdate.setPersona(usuarioDTO.getIdPersona());**/
 
             Persona personaUpd=personaRepository.save(persona);
@@ -323,14 +320,15 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
             Usuario usuario=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
             if(usuario!=null){
-                //entidadRepository.deleteById(id);
-                //usuario.setDeleted(true);
-                if(usuario.getEstado().equalsIgnoreCase("Inactivo")){
+                /*if(usuario.getEstado().equalsIgnoreCase("Inactivo")){
                     throw  new ResourceNotFoundException("Usuario ya ha sido inhabilitado");
+                }*/
+                if(usuario.isDeleted()){
+                    throw new ResourceNotFoundException("El usuario no existe, ya se encuentra eliminado");
                 }
                 usuario.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 usuario.setUsuarioEliminacion(usuarioReg.getUsuario());
-                usuario.setEstado("Inactivo");
+                usuario.setDeleted(true);
 
                 usuarioRepository.save(usuario);
                 estado=true;

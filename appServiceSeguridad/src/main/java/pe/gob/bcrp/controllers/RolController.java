@@ -51,7 +51,7 @@ public class RolController {
 
         }catch (Exception e){
             log.error("ERROR - getAllRoles | requestURL=roles{}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -77,8 +77,8 @@ public class RolController {
         }catch (Exception e){
             log.error("ERROR - saveRol | requestURL=rol{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al guardar "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            response.setMessage("Error al guardar, "+ e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -111,7 +111,7 @@ public class RolController {
             log.equals("ERROR - updateRol | requestURL=rol"+e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al actualizar el  "+e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
@@ -143,7 +143,7 @@ public class RolController {
             log.error("ERROR - deleteRol() {}", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al eliminar Rol: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
     }
 }
