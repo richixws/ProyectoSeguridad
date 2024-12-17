@@ -44,7 +44,7 @@ public class PersonaController {
            return new ResponseEntity<>(entidadPersonas, HttpStatus.OK);
        }catch (Exception e){
            log.error(" ERROR - getAllPersonas | requestUrl=personas");
-           return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+           return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
        }
     }
 
@@ -72,7 +72,7 @@ public class PersonaController {
             log.error(" ERROR - addPersona | requestUrl=persona");
             response.setStatus(0);
             response.setMessage("Error al guardar la Persona "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -103,7 +103,7 @@ public class PersonaController {
             log.error(" ERROR - updatePersona | requestUrl=persona/idpersona");
             response.setStatus(0);
             response.setMessage("Error al actualizar la Persona "+ e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
@@ -134,7 +134,7 @@ public class PersonaController {
             log.error(" ERROR - deletePersona | requestUrl=persona/idpersona");
             response.setStatus(0);
             response.setMessage("Error al eliminar la Persona "+ e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
     }
 }

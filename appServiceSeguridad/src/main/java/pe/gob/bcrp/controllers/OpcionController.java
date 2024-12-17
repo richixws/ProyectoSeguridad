@@ -62,7 +62,7 @@ public class OpcionController {
 
         }catch (Exception e){
             log.error("ERROR - getAllOpciones | requestURL=opciones{}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -95,7 +95,7 @@ public class OpcionController {
             log.error("ERROR - guardarEntidad | requestURL=entidadDto");
             response.setStatus(0);
             response.setMessage("Error al guardar la Opcion "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -123,7 +123,7 @@ public class OpcionController {
             log.equals("ERROR - update Opcion | requestURL=opcion"+e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al actualizar opcion "+e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -159,7 +159,7 @@ public class OpcionController {
             log.error("ERROR - eliminarOpcion() "+e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al eliminar Opcion: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
     }
 }
