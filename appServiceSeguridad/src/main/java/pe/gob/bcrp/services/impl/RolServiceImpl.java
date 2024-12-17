@@ -69,8 +69,8 @@ public class RolServiceImpl implements IRolService {
             List<RolDTO> opcionDTOS = roles.stream().map(rol -> {
                 RolDTO rolDTO = modelMapper.map(rol, RolDTO.class);
                 if (rol.getSistema() != null) { // Asignar tipoDocumento a partir de DocumentoIdentidad
-                    rolDTO.setIdSistema(rol.getSistema().getIdSistema());
-                    rolDTO.setNombreSistema(rol.getSistema().getNombre());
+                    rolDTO.setIdSistema(rol.getSistema().getIdSystem());
+                    rolDTO.setNombreSistema(rol.getSistema().getName());
 
                 }
                 return rolDTO;

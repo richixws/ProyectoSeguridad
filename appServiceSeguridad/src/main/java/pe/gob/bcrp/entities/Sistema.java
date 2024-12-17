@@ -25,13 +25,13 @@ public class Sistema implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sistema_seq")
     @SequenceGenerator(name = "sistema_seq", sequenceName = "seq_sw_sistema", allocationSize = 1, initialValue = 1)
     @Column(name = "id_sistema", nullable = false)
-    private Integer idSistema;
+    private Integer idSystem;
 
     @Column(name = "codigo",nullable = false, length = 50)
     private String codigo;
 
     @Column(name = "nombre",nullable = false, length = 100)
-    private String nombre;
+    private String name;
 
     @Column(name = "version", nullable = false, length = 50)
     public String version;
@@ -47,6 +47,31 @@ public class Sistema implements Serializable {
 
     @Column(name = "is_deleted")
     private boolean isDeleted=false;
+
+    @Column(name = "user_responsable")
+    private String userResponsible;
+
+    @Column(name = "id_user_responsable")
+    private Integer idUserResponsible;
+
+    @Column(name = "user_responsable_alterno")
+    private String userResponsibleAlternate;
+
+    @Column(name = "id_user_responsable_alterno")
+    private Integer idUserResponsibleAlternate;
+
+    @Column(name = "url_externo")
+    private String urlExternal;
+
+    @Column(name = "estado_critico")
+    private String stateCritical;
+
+    @Column(name = "unidad_organizacional")
+    private String unitOrganizational;
+
+    @Column(name = "estado", length = 1)
+    private Integer estate;
+
 
     //agregacion campos auditoria
     @Column(name = "hora_creacion")
@@ -66,29 +91,5 @@ public class Sistema implements Serializable {
 
     @Column(name = "usuario_actualizacion")
     private String usuarioActualizacion;
-
-    @Column(name = "user_responsable")
-    private String usuarioResponsable;
-
-    @Column(name = "id_user_responsable")
-    private Integer idUsuarioResponsable;
-
-    @Column(name = "user_responsable_alterno")
-    private String usuarioResponsableAlterno;
-
-    @Column(name = "id_user_responsable_alterno")
-    private Integer idUsuarioResponsableAlterno;
-
-    @Column(name = "url_externo")
-    private String urlExterno;
-
-    @Column(name = "estado_critico")
-    private String estadoCritico;
-
-    @Column(name = "unidad_organizacional")
-    private String unidadOrganizacional;
-
-    @Column(name = "estado", length = 1)
-    private Integer estado;
 
 }

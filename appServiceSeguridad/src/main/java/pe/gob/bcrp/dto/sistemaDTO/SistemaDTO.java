@@ -1,6 +1,7 @@
 package pe.gob.bcrp.dto.sistemaDTO;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,46 +11,53 @@ import lombok.NoArgsConstructor;
 public class SistemaDTO {
 
 
-   // @NotNull( message = "id sistema no puede ser nulo")
+
+    @JsonProperty("idSystem")
     private Integer idSistema;
 
    // @NotEmpty(message = "codigo no puede ser vacio")
    // private String codigo;
 
-    //@NotEmpty(message = "nombre no puede ser vacio")
+    @JsonProperty("name")
     private String nombre;
 
-   // @NotEmpty(message = "versus no puede ser vacio")
+    @JsonProperty("version")
     public String version;
 
-  //  @NotEmpty(message = "loginMain no puede ser vacio")
+    @JsonProperty("logoMain")
     private String logoMain;
 
-  //  @NotEmpty(message = "logoHead no puede ser vacio")
+    @JsonProperty("logoHead")
     private String logoHead;
 
-  //  @NotEmpty(message = "url no puede ser vacio")
+    @JsonProperty("url")
     private String url;
 
+    @JsonProperty("userResponsible")
     private String usuarioResponsable;
 
+    @JsonProperty("idUserResponsible")
     private Integer idUsuarioResponsable;
 
+    @JsonProperty("userResponsibleAlternate")
     private String usuarioResponsableAlterno;
 
+    @JsonProperty("idUserResponsibleAlternate")
     private Integer idUsuarioResponsableAlterno;
 
-    //@NotEmpty(message = "url externo no puede ser vacio")
+    @JsonProperty("urlExternal")
     private String urlExterno;
 
-    //@NotEmpty(message = "estado critico no puede ser vacio")
+    @JsonProperty("idStateCritical")
     private String idEstadoCritico;
 
-    //@NotEmpty(message = "unidad organizacional no puede ser vacio")
+    @JsonProperty("unitOrganizational")
     private String unidadOrganizacional;
 
+    @JsonProperty("estate")
     private Integer  estado;
 
+    @JsonProperty("delete")
     private boolean isDeleted;
 
 }

@@ -37,8 +37,8 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer> {
            "JOIN PerfilUsuario pu ON u.idUsuario = pu.usuario.idUsuario " +
            "JOIN Perfil p ON pu.perfil.idPerfil = p.idPerfil " +
            "JOIN Rol r ON p.rol.idRol = r.idRol " +
-           "JOIN Sistema s ON r.sistema.idSistema = s.idSistema " +
-           "WHERE s.idSistema = :idSistema")
+           "JOIN Sistema s ON r.sistema.idSystem = s.idSystem " +
+           "WHERE s.idSystem = :idSistema")
    Page<Usuario> findBySistemaId(@Param("idSistema") Integer idSistema, Pageable pageable);
 
 

@@ -18,13 +18,13 @@ public interface ISistemaRepository extends JpaRepository<Sistema, Integer> {
 
     public Page<Sistema> findByIsDeletedFalse(Pageable pageable);
 
-    boolean existsByNombreIgnoreCaseAndIdSistemaNot(String nombre,Integer idSistema);
+    boolean existsByNameIgnoreCaseAndIdSystemNot(String nombre,Integer idSistema);
 
-    Optional<Sistema> findFirstByNombreContainingIgnoreCase(String nombre);
+    Optional<Sistema> findFirstByNameContainingIgnoreCase(String nombre);
 
     // Consulta personalizada para buscar por código, nombre y versión
       @Query("SELECT s FROM Sistema s WHERE " +
-           "(:nombre IS NULL OR LOWER(s.nombre) LIKE %:nombre%) AND " +
+           "(:nombre IS NULL OR LOWER(s.name) LIKE %:nombre%) AND " +
            "(:version IS NULL OR LOWER(s.version) LIKE %:version%)")
            //"AND s.isDeleted = false")
    Page<Sistema> findByFilters(

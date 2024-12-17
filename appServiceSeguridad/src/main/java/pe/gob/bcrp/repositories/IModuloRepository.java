@@ -15,13 +15,13 @@ public interface IModuloRepository extends JpaRepository<Modulo, Integer> {
 
     //public Page<Modulo> findByIsDeletedFalse(Pageable pageable);
 
-    Optional<Modulo> findFirstByNombreModuloContainingIgnoreCase(String nombre);
+    Optional<Modulo> findByNombreModuloContainingIgnoreCase(String nombre);
 
     boolean existsByNombreModuloIgnoreCaseAndAndIdModuloNot(String nombre,Integer idSistema);
 
     @Query("SELECT s FROM Modulo s WHERE " +
             "(:nombre IS NULL OR LOWER(s.nombreModulo) LIKE %:nombre%) AND " +
-            "(:idSistema IS NULL OR s.sistema.idSistema = :idSistema)  ")
+            "(:idSistema IS NULL OR s.sistema.idSystem = :idSistema)  ")
             //"AND s.isDeleted = false")
     Page<Modulo> findByFilters(@Param("idSistema") Integer idSistema, @Param("nombre") String nombre, Pageable pageable);
 

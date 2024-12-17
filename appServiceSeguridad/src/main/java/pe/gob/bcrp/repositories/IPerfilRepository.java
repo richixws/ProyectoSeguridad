@@ -21,7 +21,7 @@ public interface IPerfilRepository  extends JpaRepository<Perfil, Integer> {
 
     @Query("SELECT s FROM Perfil s WHERE " +
             "(:nombre IS NULL OR LOWER(s.nombre) LIKE %:nombre%) AND " +
-            "(:idSistema IS NULL OR s.rol.sistema.idSistema  = :idSistema) AND " +
+            "(:idSistema IS NULL OR s.rol.sistema.idSystem  = :idSistema) AND " +
             "(:idPerfil IS NULL OR  s.idPerfil = :idPerfil) ")
             //"AND s.isDeleted = false")
     Page<Perfil> findByFilters(

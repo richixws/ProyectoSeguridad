@@ -31,6 +31,7 @@ public class PersonaFormDTO {
     @JsonProperty("state")
     private Integer estado;
 
+    @JsonProperty("delete")
     private boolean isDeleted;
 
 }

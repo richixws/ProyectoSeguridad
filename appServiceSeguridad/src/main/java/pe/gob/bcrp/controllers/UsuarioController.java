@@ -85,7 +85,7 @@ public class UsuarioController {
             List<UsuarioFormDTO> list=usuarioService.uploadUserCsv(file);
             response.setStatus(1);
             response.setMessage("Se cargo exitosamente las lista de usuarios de archivo csv.");
-            response.setBody(list);
+           // response.setBody(list);
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         }

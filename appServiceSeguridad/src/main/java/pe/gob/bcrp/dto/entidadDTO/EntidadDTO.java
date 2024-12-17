@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import pe.gob.bcrp.dto.Views;
+import pe.gob.bcrp.dto.validacion.ValidationGroups;
 
 @Data
 @Builder
@@ -19,25 +20,25 @@ public class EntidadDTO {
    // private Integer idEntidad;
     //private Integer idEntidad;
     @JsonProperty("documentId")
-    @NotNull(message = "documento no puede ser vacio.")
+    @NotNull(message = "documento no puede ser vacio.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
     private  Integer  idDocumento;
 
     @JsonProperty("documentNumber")
-    @NotEmpty(message = "numero de documento no puede ser vacio.")
-    @Pattern(regexp = "^[0-9]+(\\\\.[0-9]+)?$", message = "numero de documento sólo admite números.")
-    @Size(min = 11, max = 20, message = "numero de documento debe tener entre 11 y 20 caracteres.")
+    @NotEmpty(message = "numero de documento no puede ser vacio.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
+    @Pattern(regexp = "^[0-9]+(\\\\.[0-9]+)?$", message = "numero de documento sólo admite números.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
+    @Size(min = 11, max = 20, message = "numero de documento debe tener entre 11 y 20 caracteres.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
     private String numeroDocumento;
 
     @JsonProperty("name")
-    @NotEmpty(message = "nombre no puede ser vacio.")
-    @Size(max = 100, message = "nombre no puede tener más de 100 caracteres.")
-    @Pattern(regexp = "^[a-zñA-ZÑ](\\s?[a-zñA-ZÑ])*$",message = "nombre solo debe contener letras.")
+    @NotEmpty(message = "nombre no puede ser vacio.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
+    @Size(max = 100, message = "nombre no puede tener más de 100 caracteres.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
+    @Pattern(regexp = "^[a-zñA-ZÑ](\\s?[a-zñA-ZÑ])*$",message = "nombre solo debe contener letras.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
     private String nombre;
 
     @JsonProperty("initials")
-    @NotEmpty(message = "sigla no puede ser vacio.")
-    @Size(max = 100, message = "sigla no puede tener más de 50 caracteres.")
-    @Pattern(regexp = "^[a-zñA-ZÑ0-9_](\\s?[a-zñA-ZÑ0-9_])*$", message = "sigla contiene caracteres no permitidos.")
+    @NotEmpty(message = "sigla no puede ser vacio.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
+    @Size(max = 100, message = "sigla no puede tener más de 50 caracteres.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
+    @Pattern(regexp = "^[a-zñA-ZÑ0-9_](\\s?[a-zñA-ZÑ0-9_])*$", message = "sigla contiene caracteres no permitidos.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
     private String sigla;
 
     //@NotEmpty(message = "codigo externo no puede ser vacio")
@@ -46,8 +47,9 @@ public class EntidadDTO {
     private String codExterno;
 
     @JsonProperty("state")
-    @Min(value = 0, message = "estado sólo admite el número 0 o 1.")
-    @Max(value = 1, message = "estado sólo admite el número 0 o 1.")
-    @Builder.Default
-    private Integer estado = 1;
+    @Min(value = 0, message = "estado sólo admite el número 0 o 1.",groups = ValidationGroups.OnUpdate.class)
+    @Max(value = 1, message = "estado sólo admite el número 0 o 1.",groups = ValidationGroups.OnUpdate.class)
+    @NotNull(message = "estado de la entidad es obligatorio.",groups = ValidationGroups.OnUpdate.class)
+    @JsonView({Views.Update.class})
+    private Integer estado;
 }

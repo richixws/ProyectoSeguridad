@@ -137,6 +137,10 @@ public class EntidadServiceImpl implements IEntidadService {
                 throw new IllegalArgumentException("El número de documento ya existe en el sistema.");
             }
 
+            if(entidadDto.getEstado()==null){
+                entidadDto.setEstado(1);
+            }
+
             Entidad entidad=modelMapper.map(entidadDto,Entidad.class);
             entidad.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             entidad.setUsuarioCreacion(usuario.getUsuario());

@@ -111,7 +111,7 @@ public class SistemaServiceImpl implements ISistemaService {
                         SistemaDTO sistemaDTO=new SistemaDTO();
                       //  sistemaDTO.setIdSistema(sistema.getIdSistema());
                         //sistemaDTO.setLogoMain(sistema.getLogoMain());
-                        sistemaDTO.setNombre(sistema.getNombre());
+                        sistemaDTO.setNombre(sistema.getName());
                         return sistemaDTO;
                     })
                     .collect(Collectors.toList());
@@ -149,23 +149,23 @@ public class SistemaServiceImpl implements ISistemaService {
             var sistemaDtos = sistemas.stream()
                     .map( s-> {
                         SistemaDTO sistemaDTO=new SistemaDTO();
-                        sistemaDTO.setIdSistema(s.getIdSistema());
-                        sistemaDTO.setNombre(s.getNombre());
+                        sistemaDTO.setIdSistema(s.getIdSystem());
+                        sistemaDTO.setNombre(s.getName());
                         sistemaDTO.setVersion(s.getVersion());
                         sistemaDTO.setLogoMain(s.getLogoMain());
                         sistemaDTO.setLogoHead(s.getLogoHead());
                         sistemaDTO.setUrl(s.getUrl());
 
-                        sistemaDTO.setUsuarioResponsable(s.getUsuarioResponsable());
-                        sistemaDTO.setUsuarioResponsableAlterno(s.getUsuarioResponsableAlterno());
+                        sistemaDTO.setUsuarioResponsable(s.getUserResponsible());
+                        sistemaDTO.setUsuarioResponsableAlterno(s.getUserResponsibleAlternate());
 
-                        sistemaDTO.setIdUsuarioResponsable(s.getIdUsuarioResponsable());
-                        sistemaDTO.setIdUsuarioResponsableAlterno(s.getIdUsuarioResponsableAlterno());
+                        sistemaDTO.setIdUsuarioResponsable(s.getIdUserResponsible());
+                        sistemaDTO.setIdUsuarioResponsableAlterno(s.getIdUserResponsibleAlternate());
 
-                        sistemaDTO.setUrlExterno(s.getUrlExterno());
-                        sistemaDTO.setIdEstadoCritico(s.getEstadoCritico());
-                        sistemaDTO.setUnidadOrganizacional(s.getUnidadOrganizacional());
-                        sistemaDTO.setEstado(s.getEstado());
+                        sistemaDTO.setUrlExterno(s.getUrlExternal());
+                        sistemaDTO.setIdEstadoCritico(s.getStateCritical());
+                        sistemaDTO.setUnidadOrganizacional(s.getUnitOrganizational());
+                        sistemaDTO.setEstado(s.getEstate());
                         sistemaDTO.setDeleted(s.isDeleted());
                         return sistemaDTO;
                     }).toList();
@@ -244,7 +244,7 @@ public class SistemaServiceImpl implements ISistemaService {
                                          Integer estado) throws IOException {
         log.info("INI - guardarSistema() ");
         try {
-            Optional<Sistema> sistemaExistente = sistemaRepository.findFirstByNombreContainingIgnoreCase(nombre);
+            Optional<Sistema> sistemaExistente = sistemaRepository.findFirstByNameContainingIgnoreCase(nombre);
             if (sistemaExistente.isPresent()){
                 throw new IllegalArgumentException("El nombre del sistema se encuentra en uso, por favor ingrese un nuevo sistema.");
             }
@@ -255,7 +255,7 @@ public class SistemaServiceImpl implements ISistemaService {
             Sistema sistema=new Sistema();
            // sistema.setCodigo(codigo);
             sistema.setCodigo(codigoUuid.toString());
-            sistema.setNombre(nombre);
+            sistema.setName(nombre);
             sistema.setVersion(version);
             sistema.setUrl(url);
 
@@ -266,21 +266,21 @@ public class SistemaServiceImpl implements ISistemaService {
                 throw new IllegalArgumentException("El id del usuario responsable alterno no existe.");
             }
 
-            sistema.setIdUsuarioResponsable(idUsuarioResponsable);
-            sistema.setUsuarioResponsable(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
+            sistema.setIdUserResponsible(idUsuarioResponsable);
+            sistema.setUserResponsible(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
 
-            sistema.setIdUsuarioResponsableAlterno(idUsuarioResponsableAlt);
-            sistema.setUsuarioResponsableAlterno(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
+            sistema.setIdUserResponsibleAlternate(idUsuarioResponsableAlt);
+            sistema.setUserResponsibleAlternate(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
 
 
-            sistema.setUrlExterno(urlExterno);
-            sistema.setEstadoCritico(String.valueOf(idestadoCritico));
-            sistema.setUnidadOrganizacional(unidOrganizacional);
+            sistema.setUrlExternal(urlExterno);
+            sistema.setStateCritical(String.valueOf(idestadoCritico));
+            sistema.setUnitOrganizational(unidOrganizacional);
 
             if(estado==null){
                 estado=1;
             }
-            sistema.setEstado(estado);
+            sistema.setEstate(estado);
 
             if(multiLogoMain != null){
                 //sistema.setLogoMain(multiLogoMain.getOriginalFilename());
@@ -298,8 +298,8 @@ public class SistemaServiceImpl implements ISistemaService {
             Sistema sistemaNew=sistemaRepository.save(sistema);
 
             //almacenarDatosDeArchivo;
-            uploadFileService.almacenarDatosFile(multiLogoHead,sistemaNew.getIdSistema(),"Modulo Sistema");
-            uploadFileService.almacenarDatosFile(multiLogoMain,sistemaNew.getIdSistema(),"Modulo Sistema");
+            uploadFileService.almacenarDatosFile(multiLogoHead,sistemaNew.getIdSystem(),"Modulo Sistema");
+            uploadFileService.almacenarDatosFile(multiLogoMain,sistemaNew.getIdSystem(),"Modulo Sistema");
 
             SistemaFormDTO SistemaFormDTO=modelMapper.map(sistemaNew,SistemaFormDTO.class);
 
@@ -335,7 +335,7 @@ public class SistemaServiceImpl implements ISistemaService {
 
             Sistema sistemaExistente = sistemaRepository.findById(idSistema).orElseThrow(() -> new ResourceNotFoundException("El Id del sistema no existe"));
             // Optional<Sistema> sistemaExistente = sistemaRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(nombre);
-            boolean existeNombredeSistema=sistemaRepository.existsByNombreIgnoreCaseAndIdSistemaNot(nombre,idSistema);
+            boolean existeNombredeSistema=sistemaRepository.existsByNameIgnoreCaseAndIdSystemNot(nombre,idSistema);
             if (existeNombredeSistema) {
                 throw new IllegalArgumentException("El Nombre del sistema ya está registrado en otro sistema.");
             }
@@ -344,7 +344,7 @@ public class SistemaServiceImpl implements ISistemaService {
             if(sistemaExistente!=null) {
 
                 // 2. Actualizar campos del sistema
-                sistemaExistente.setNombre(nombre);
+                sistemaExistente.setName(nombre);
                 sistemaExistente.setVersion(version);
                 sistemaExistente.setUrl(url);
 
@@ -355,19 +355,19 @@ public class SistemaServiceImpl implements ISistemaService {
                     throw new IllegalArgumentException("El id del usuario responsable alterno no existe.");
                 }
 
-                sistemaExistente.setIdUsuarioResponsable(idUsuarioResponsable);
-                sistemaExistente.setUsuarioResponsable(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
+                sistemaExistente.setIdUserResponsible(idUsuarioResponsable);
+                sistemaExistente.setUserResponsible(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
 
-                sistemaExistente.setIdUsuarioResponsableAlterno(idUsuarioResponsableAlt);
-                sistemaExistente.setUsuarioResponsableAlterno(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
+                sistemaExistente.setIdUserResponsibleAlternate(idUsuarioResponsableAlt);
+                sistemaExistente.setUserResponsibleAlternate(usuarioAutenticado.getPersona().getNombres()+ " " +usuarioAutenticado.getPersona().getApellidoPaterno());
 
-                sistemaExistente.setIdUsuarioResponsable(idUsuarioResponsable);
-                sistemaExistente.setIdUsuarioResponsableAlterno(idUsuarioResponsableAlt);
+                sistemaExistente.setIdUserResponsible(idUsuarioResponsable);
+                sistemaExistente.setIdUserResponsibleAlternate(idUsuarioResponsableAlt);
 
-                sistemaExistente.setUrlExterno(urlExterno);
-                sistemaExistente.setEstadoCritico(String.valueOf(idestadoCritico));
-                sistemaExistente.setUnidadOrganizacional(unidOrganizacional);
-                sistemaExistente.setEstado(estado);
+                sistemaExistente.setUrlExternal(urlExterno);
+                sistemaExistente.setStateCritical(String.valueOf(idestadoCritico));
+                sistemaExistente.setUnitOrganizational(unidOrganizacional);
+                sistemaExistente.setEstate(estado);
 
 
 

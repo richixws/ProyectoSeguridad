@@ -1,5 +1,6 @@
 package pe.gob.bcrp.controllers;
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,8 +46,9 @@ public class SistemaController {
     /**
      * Metodo Listar usuarios responsables del los Sistemas
      * **/
-    @Operation(summary = "Listar Usuarios Sistema", description = "Obtener la lista de los usuarios responsables del sistema de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@Operation(summary = "Listar Usuarios Sistema", description = "Obtener la lista de los usuarios responsables del sistema de la base de datos")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @Hidden
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistema/usuarios")
     public ResponseEntity<List<UsuarioResponsableDTO>> findAllUsuariosResponsables(){
@@ -65,8 +67,9 @@ public class SistemaController {
     /**
      * Metodo Listar estados del los Sistemas
      * **/
-    @Operation(summary = "Listar Estado Sistema", description = "Obtener la lista de los estados del sistema de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@Operation(summary = "Listar Estado Sistema", description = "Obtener la lista de los estados del sistema de la base de datos")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @Hidden
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistema/estados")
     public ResponseEntity<List<EstadoCriticoDto>> findAllEstadosCriticos(){
@@ -92,9 +95,9 @@ public class SistemaController {
     public ResponseEntity<SistemaResponse> getAllSistemas(
             @RequestParam(name = "pageNumber", defaultValue = "0",    required = false)      Integer pageNumber,
             @RequestParam(name = "pageSize",   defaultValue = "50",   required = false)      Integer pageSize,
-            @RequestParam(name = "sortBy",     defaultValue = "idSistema", required = false) String sortBy,
+            @RequestParam(name = "sortBy",     defaultValue = "idSystem", required = false) String sortBy,
             @RequestParam(name = "sortOrder",  defaultValue = "desc", required = false)      String sortOrder,
-            @RequestParam(name = "nombre", required = false) String nombre,
+            @RequestParam(name = "name", required = false) String nombre,
             @RequestParam(name = "version", required = false) String version
             ){
         log.info("INI - getAllSistemas | requestURL=entidades");
@@ -187,9 +190,10 @@ public class SistemaController {
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @JsonView(Views.Create.class)
     public ResponseEntity<ResponseDTO<SistemaFormDTO>> saveSistema(@Validated(ValidationGroups.OnCreate.class) @ModelAttribute  RegistroSistemaDTO registroSistemaDTO,
-                                                                   @RequestParam(value = "imageLogoMain", required = false) MultipartFile[] multiLogoMain,
-                                                                   @RequestParam(value = "imageLogoHead", required = false) MultipartFile[] multiLogoHead
+                                                                   @RequestParam(value = "logoMain", required = false) MultipartFile[] multiLogoMain,
+                                                                   @RequestParam(value = "logoHead", required = false) MultipartFile[] multiLogoHead
                                                                      ) throws InvalidCredentialsException {
         log.info("INFO - Guardar Sistema ");
         ResponseDTO<SistemaFormDTO> response=new ResponseDTO();
@@ -197,10 +201,10 @@ public class SistemaController {
 
             validarLogo(multiLogoMain);
             validarLogo(multiLogoHead);
-            SistemaFormDTO sistemaDto=sistemaService.guardarSistema(registroSistemaDTO.getNombre(),registroSistemaDTO.getVersion(),
+            SistemaFormDTO sistemaDto=sistemaService.guardarSistema(registroSistemaDTO.getName(),registroSistemaDTO.getVersion(),
                     multiLogoMain[0],multiLogoHead[0],registroSistemaDTO.getUrl()
-                    ,registroSistemaDTO.getIdUsuarioResponsable(),registroSistemaDTO.getIdUsuarioResponsableAlt(),registroSistemaDTO.getUrlExterno(),
-                    registroSistemaDTO.getIdEstadoCritico(),registroSistemaDTO.getUnidOrganizacional(),registroSistemaDTO.getEstado());
+                    ,registroSistemaDTO.getIdUserResponsible(),registroSistemaDTO.getIdUserResponsibleAlternate(),registroSistemaDTO.getUrlExternal(),
+                    registroSistemaDTO.getIdStateCritical(),registroSistemaDTO.getUnitOrganizational(),registroSistemaDTO.getEstate());
             response.setStatus(1);
             response.setMessage("El Sistema fue guardado de manera exitosa");
             //response.setBody(sistemaDto);
@@ -277,8 +281,8 @@ public class SistemaController {
     @JsonView(Views.Update.class)
     public ResponseEntity<ResponseDTO<SistemaFormDTO>> updateSistema(  @Validated(ValidationGroups.OnUpdate.class) @ModelAttribute  RegistroSistemaDTO registroSistemaDTO,
                                                                        // @RequestParam @NotNull Integer idSistema,
-                                                                       @RequestParam(value = "imageLogoMain", required = false) MultipartFile[] multiLogoMain,
-                                                                       @RequestParam(value = "imageLogoHead", required = false) MultipartFile[] multiLogoHead
+                                                                       @RequestParam(value = "logoMain", required = false) MultipartFile[] multiLogoMain,
+                                                                       @RequestParam(value = "logoHead", required = false) MultipartFile[] multiLogoHead
                                                                        ) {
         log.info("INFO - Actualizar Sistema");
         ResponseDTO<SistemaFormDTO> response = new ResponseDTO<>();
@@ -288,10 +292,10 @@ public class SistemaController {
             validarLogo(multiLogoHead);
 
 
-            SistemaFormDTO sistemaDto = sistemaService.actualizarSistema(registroSistemaDTO.getIdSistema(), registroSistemaDTO.getNombre(),
+            SistemaFormDTO sistemaDto = sistemaService.actualizarSistema(registroSistemaDTO.getIdSystem(), registroSistemaDTO.getName(),
                     registroSistemaDTO.getVersion(), multiLogoMain[0], multiLogoHead[0], registroSistemaDTO.getUrl(),
-                    registroSistemaDTO.getIdUsuarioResponsable(),registroSistemaDTO.getIdUsuarioResponsableAlt(),
-                    registroSistemaDTO.getUrlExterno(),registroSistemaDTO.getIdEstadoCritico(),registroSistemaDTO.getUnidOrganizacional(),registroSistemaDTO.getEstado());
+                    registroSistemaDTO.getIdUserResponsible(),registroSistemaDTO.getIdUserResponsibleAlternate(),
+                    registroSistemaDTO.getUrlExternal(),registroSistemaDTO.getIdStateCritical(),registroSistemaDTO.getUnitOrganizational(),registroSistemaDTO.getEstate());
 
             response.setStatus(1);
             response.setMessage("El Sistema fue actualizado de manera exitosa");

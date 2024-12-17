@@ -1,5 +1,6 @@
 package pe.gob.bcrp.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,10 +9,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import pe.gob.bcrp.dto.Views;
 import pe.gob.bcrp.dto.personaDTO.PersonaDTO;
 import pe.gob.bcrp.dto.response.PersonaResponse;
 import pe.gob.bcrp.dto.ResponseDTO;
+import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IPersonaService;
 
@@ -37,7 +41,7 @@ public class PersonaController {
             @RequestParam(name = "pageSize",    defaultValue = "50",      required = false) Integer pageSize,
             @RequestParam(name = "sortBy",      defaultValue = "idPersona", required = false) String sortBy,
             @RequestParam(name = "sortOrder",   defaultValue = "desc",     required = false) String sortOrder,
-            @RequestParam(name = "name", required = false) String nombre){
+            @RequestParam(name = "names", required = false) String nombre){
        log.info(" INI - getAllPersonas | requestUrl=personas");
        try {
            PersonaResponse entidadPersonas=personaService.getAllPersonas(pageNumber,pageSize,sortBy,sortOrder,nombre);
@@ -52,7 +56,8 @@ public class PersonaController {
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/persona")
-    public ResponseEntity<ResponseDTO<PersonaDTO>> savePersona(@Valid @RequestBody PersonaDTO personaDTO) {
+    @JsonView(Views.Create.class)
+    public ResponseEntity<ResponseDTO<PersonaDTO>> savePersona(@Validated(ValidationGroups.OnCreate.class) @RequestBody PersonaDTO personaDTO) {
          log.info(" INI - addPersona | requestUrl=persona");
          ResponseDTO<PersonaDTO> response=new ResponseDTO<>();
         try {
@@ -81,8 +86,9 @@ public class PersonaController {
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/persona/{personId}")
+    @JsonView(Views.Update.class)
     public ResponseEntity<ResponseDTO<PersonaDTO>> updatePersona(@PathVariable("personId") Integer idPersona,
-                                                                @Valid @RequestBody PersonaDTO personaDTO) {
+                                                                @Validated(ValidationGroups.OnUpdate.class) @RequestBody PersonaDTO personaDTO) {
         log.info(" INI - updatePersona | requestUrl=persona/idpersona");
         ResponseDTO<PersonaDTO> response=new ResponseDTO<>();
         try {
@@ -102,7 +108,7 @@ public class PersonaController {
        }catch (Exception e){
             log.error(" ERROR - updatePersona | requestUrl=persona/idpersona");
             response.setStatus(0);
-            response.setMessage("Error al actualizar la Persona "+ e.getMessage());
+            response.setMessage("Error al actualizar "+ e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);

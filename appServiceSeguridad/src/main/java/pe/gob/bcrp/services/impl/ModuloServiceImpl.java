@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import pe.gob.bcrp.dto.moduloDTO.ModuloDTO;
 import pe.gob.bcrp.dto.moduloDTO.ModuloFormDTO;
@@ -27,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Log4j2
@@ -48,8 +51,17 @@ public class ModuloServiceImpl implements IModuloService {
         log.info(" INI - Service  getAllModulos");
         try {
 
-            Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending()
-                                                                                : Sort.by(sortBy).descending();
+            Map<String, String> sortByMapping = Map.of(
+                    "moduleName", "nombreModulo",
+                    "moduleId",   "idModulo",
+                    "systemId",   "sistema.idSistema",
+                    "state",      "estado"
+            );
+
+            String entitySortBy = sortByMapping.getOrDefault(sortBy, sortBy);
+
+            Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(entitySortBy).ascending()
+                                                                                : Sort.by(entitySortBy).descending();
             Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
 
             Page<Modulo> pageModulos=null;
@@ -90,12 +102,19 @@ public class ModuloServiceImpl implements IModuloService {
             log.info("INI - saveModulo()");
             Usuario usuario = util.getUsuario();
 
-            Optional<Modulo> moduloExistente = imoduloRepository.findFirstByNombreModuloContainingIgnoreCase(moduloDto.getNombreModulo());
+            Sistema sistema=isistemaRepository.findById(moduloDto.getIdSistema()).orElseThrow(()->new ResourceNotFoundException("El sistema del modulo no existe."));
+
+          /** Optional<Modulo> moduloExistente = imoduloRepository.findByNombreModuloContainingIgnoreCase(moduloDto.getNombreModulo());
             if (moduloExistente.isPresent()){
                 throw new IllegalArgumentException("El nombre del modulo se encuentra en uso, por favor ingrese un nuevo modulo.");
+            }**/
+
+            if(moduloDto.getEstado()==null){
+                moduloDto.setEstado(1);
             }
 
             Modulo modulo = modelMapper.map(moduloDto, Modulo.class);
+            modulo.setSistema(sistema);
             modulo.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             modulo.setUsuarioCreacion(usuario.getUsuario());
 
@@ -106,13 +125,15 @@ public class ModuloServiceImpl implements IModuloService {
             ModuloDTO moduloDtoNew = modelMapper.map(moduloNew, ModuloDTO.class);
             return moduloDtoNew;
 
+        }catch (ResourceNotFoundException e){
+            log.error("ERROR  Service saveModulo() {}", e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
         } catch (IllegalArgumentException e) {
             log.error("ERROR - Service saveModulo() {}", e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
-
         } catch (Exception e){
             log.error("ERROR -Service saveModulo() {}", e.getMessage());
-            throw new RuntimeException("Error al guardar el modulo" + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -126,14 +147,14 @@ public class ModuloServiceImpl implements IModuloService {
 
             Usuario usuario=util.getUsuario();
 
-            Modulo modulo=imoduloRepository.findById(idModulo).orElseThrow(() -> new ResourceNotFoundException("Modulo a actualizar no encontrado: " + idModulo));
+            Modulo modulo=imoduloRepository.findById(idModulo).orElseThrow(() -> new ResourceNotFoundException("Modulo a actualizar no existe."));
 
-            boolean existeNombredeModulo=imoduloRepository.existsByNombreModuloIgnoreCaseAndAndIdModuloNot(moduloDto.getNombreModulo(),idModulo);
+            /**boolean existeNombredeModulo=imoduloRepository.existsByNombreModuloIgnoreCaseAndAndIdModuloNot(moduloDto.getNombreModulo(),idModulo);
             if (existeNombredeModulo) {
                 throw new IllegalArgumentException("El Nombre del Modulo ya está registrado en otro Sistema.");
-            }
+            }**/
 
-            Sistema sistema=isistemaRepository.findById(moduloDto.getIdSistema()).orElseThrow(()->new ResourceNotFoundException(" Sistema a actualizar no encontrado."));
+            Sistema sistema=isistemaRepository.findById(moduloDto.getIdSistema()).orElseThrow(()->new ResourceNotFoundException("Sistema del modulo a actualizar no existe."));
 
             modulo.setSistema(sistema);
             modulo.setNombreModulo(moduloDto.getNombreModulo());
@@ -148,16 +169,15 @@ public class ModuloServiceImpl implements IModuloService {
         } catch (IllegalArgumentException e) {
             log.error("ERROR - updateModulo() - {}", e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
+
         }catch (ResourceNotFoundException e){
             log.error("ERROR - updateModulo {}", e.getMessage());
-            throw e;
+            throw new ResourceNotFoundException(e.getMessage());
         }
         catch (Exception e){
             log.error("ERROR - updateSistemas(){}", e.getMessage());
             throw new RuntimeException("Error al actualizar el sistema", e);
         }
-
-
 
     }
 
@@ -170,7 +190,7 @@ public class ModuloServiceImpl implements IModuloService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Modulo modulo=imoduloRepository.findById(idModulo).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado"));
+            Modulo modulo=imoduloRepository.findById(idModulo).orElseThrow(() -> new ResourceNotFoundException("Modulo a eliminar no existe."));
             if(modulo!=null){
                 if(modulo.isDeleted()){
                     throw new ResourceNotFoundException("El Modulo no existe, ya se encuentra eliminado");
@@ -187,8 +207,8 @@ public class ModuloServiceImpl implements IModuloService {
 
         }catch (ResourceNotFoundException e){
             log.error("ERROR - delete Modulo() "+e.getMessage());
-            e.printStackTrace();
-            estado=false;
+            throw new ResourceNotFoundException(e.getMessage());
+          //  estado=false;
         }
         return estado;
 

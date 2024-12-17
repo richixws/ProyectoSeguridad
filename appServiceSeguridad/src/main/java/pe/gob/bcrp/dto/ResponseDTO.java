@@ -12,13 +12,13 @@ public class ResponseDTO<T> {
     private int status;
     @JsonView({Views.Create.class, Views.Update.class})
     private String message;
-    @JsonView({Views.Create.class, Views.Update.class})
-    private T body;
+    //@JsonView({Views.Create.class, Views.Update.class})
+    //private T body;
 
     public ResponseDTO(int status, String message, T body) {
         this.status = status;
         this.message = message;
-        this.body=body;
+        //this.body=body;
     }
 
 }

@@ -69,7 +69,7 @@ public class OpcionServiceImpl  implements IOpcionService {
                 opcionFormDTO opcionDTO = modelMapper.map(opc, opcionFormDTO.class);
                  if (opc.getModulo() != null) { // Asignar tipoDocumento a partir de DocumentoIdentidad
                     opcionDTO.setIdModulo(opc.getModulo().getIdModulo());
-                    opcionDTO.setIdSistema(opc.getModulo().getSistema().getIdSistema());
+                    opcionDTO.setIdSistema(opc.getModulo().getSistema().getIdSystem());
 
                  }
                  return opcionDTO;

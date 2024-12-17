@@ -1,5 +1,6 @@
 package pe.gob.bcrp.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,10 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.moduloDTO.ModuloDTO;
 import pe.gob.bcrp.dto.response.ModuloResponse;
+import pe.gob.bcrp.dto.validacion.ValidationGroups;
+import pe.gob.bcrp.entities.Modulo;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IModuloService;
 
@@ -40,7 +44,7 @@ public class ModuloController {
             @RequestParam(name = "sortBy",      defaultValue = "idModulo", required = false) String sortBy,
             @RequestParam(name = "sortOrder",   defaultValue = "desc", required = false) String sortOrder,
             @RequestParam(name = "systemId", required = false) Integer idSistema,
-            @RequestParam(name = "name",     required = false) String name
+            @RequestParam(name = "moduleName",     required = false) String name
     ){
 
         log.info("INI - getAllModulos | requestURL=modulos");
@@ -58,7 +62,8 @@ public class ModuloController {
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/modulo")
-    public  ResponseEntity<ResponseDTO<ModuloDTO>> saveModulo(@Valid @RequestBody  ModuloDTO moduloDTO){
+    @JsonView(Views.Create.class)
+    public  ResponseEntity<ResponseDTO<ModuloDTO>> saveModulo( @Validated(ValidationGroups.OnCreate.class) @RequestBody  ModuloDTO moduloDTO){
 
         log.info("INI - guardarEntidad | requestURL=entidadDto");
         ResponseDTO<ModuloDTO> response=new ResponseDTO<>();
@@ -68,6 +73,10 @@ public class ModuloController {
             response.setMessage("El Modulo fue guardado de manera exitosa");
             // response.setBody(entidadDTO);
 
+        }catch (ResourceNotFoundException e){
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }catch (IllegalArgumentException e) {
             response.setStatus(0);
             response.setMessage(e.getMessage());
@@ -75,7 +84,7 @@ public class ModuloController {
         }catch (Exception e){
             log.error("ERROR - guardarEntidad | requestURL=entidadDto");
             response.setStatus(0);
-            response.setMessage("Error al guardar el Modulo "+ e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
@@ -84,9 +93,10 @@ public class ModuloController {
     @Operation(summary = "Actualizar Modulo", description = "Actualiza el Modulo en la base de datos")
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/modulo/{idModulo}")
-    public  ResponseEntity<ResponseDTO<ModuloDTO>> updateModulo(@Valid @RequestBody  ModuloDTO moduloDTO,
-                                                                 @PathVariable("idModulo") Integer idModulo){
+    @PutMapping("/modulo/{moduleId}")
+    @JsonView(Views.Update.class)
+    public  ResponseEntity<ResponseDTO<ModuloDTO>> updateModulo( @Validated(ValidationGroups.OnUpdate.class) @RequestBody  ModuloDTO moduloDTO,
+                                                                 @PathVariable("moduleId") Integer idModulo){
 
         log.info("INI - updateModulo | requestURL=modulo/idModulo");
         ResponseDTO<ModuloDTO> response=new ResponseDTO<>();
@@ -119,6 +129,7 @@ public class ModuloController {
         ResponseDTO<ModuloDTO> response=new ResponseDTO<>();
         log.info("INI - eliminarModulo | requestURL=moduloDto");
         try {
+
 
             boolean eliminado= moduloService.deleteModulo(idModulo);
             if(!eliminado){

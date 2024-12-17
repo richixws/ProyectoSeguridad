@@ -69,9 +69,9 @@ public class PerfilServiceImpl implements IPerfilService {
             List<RegistroPerfilDTO> perfilDTOS = perfiles.stream().map(p -> {
                 RegistroPerfilDTO perfilDTO = modelMapper.map(p, RegistroPerfilDTO.class);
                 if (p.getRol() != null) {
-                    perfilDTO.setIdSistema(p.getRol().getSistema().getIdSistema());
+                    perfilDTO.setIdSistema(p.getRol().getSistema().getIdSystem());
                     perfilDTO.setNombrePerfil(p.getNombre());
-                    perfilDTO.setNombreSistema(p.getRol().getSistema().getNombre());
+                    perfilDTO.setNombreSistema(p.getRol().getSistema().getName());
 
                 }
                 return perfilDTO;

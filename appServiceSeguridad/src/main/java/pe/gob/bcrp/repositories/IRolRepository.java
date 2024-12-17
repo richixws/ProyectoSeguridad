@@ -19,7 +19,7 @@ public interface IRolRepository  extends JpaRepository<Rol, Integer> {
 
     @Query("SELECT s FROM Rol s WHERE " +
             "(:nombre IS NULL OR LOWER(s.nombre) LIKE %:nombre%) AND " +
-            "(:idSistema IS NULL OR s.sistema.idSistema  = :idSistema) AND " +
+            "(:idSistema IS NULL OR s.sistema.idSystem  = :idSistema) AND " +
             "(:idRol IS NULL OR  s.idRol = :idRol) ")
             //"AND s.isDeleted = false")
     Page<Rol> findByFilters(

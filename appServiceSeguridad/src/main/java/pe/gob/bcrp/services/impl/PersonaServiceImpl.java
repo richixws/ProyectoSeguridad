@@ -31,6 +31,7 @@ import pe.gob.bcrp.util.Util;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,14 +61,19 @@ public class PersonaServiceImpl  implements IPersonaService {
             Page<Persona> pagePersona=null;
 
             if(nombre!=null){
-                 pagePersona=iPersonaRepository.findByFilters(nombre,pageDetails);
+                String nombreLowerCase = nombre != null ? nombre.toLowerCase() : null;
+                 pagePersona=iPersonaRepository.findByFilters(nombreLowerCase,pageDetails);
             }else {
                   pagePersona=iPersonaRepository.findAll(pageDetails);
             }
             var personas=pagePersona.getContent();
-            var lisPersonasDto= personas.stream()
-                                        .map(persona -> modelMapper.map(persona, PersonaFormDTO.class))
-                                        .collect(Collectors.toList());
+            List<PersonaFormDTO> lisPersonasDto= personas.stream() .map(persona -> {
+                        PersonaFormDTO personaDto = modelMapper.map(persona, PersonaFormDTO.class);
+                        if(persona.getTipoDocumento()!=null){
+                            personaDto.setTipoDocumento(persona.getTipoDocumento().getIdDocumentoIdentidad());
+                        }
+                        return personaDto;
+                    }).toList();
 
             PersonaResponse personaResponse = new PersonaResponse();
             personaResponse.setContent(lisPersonasDto);
@@ -91,7 +97,7 @@ public class PersonaServiceImpl  implements IPersonaService {
 
       //  DocumentoIdentidad doc=documentoIdentidadRepository.findById(personaDTO.getTipoDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
         DocumentoIdentidad doc = documentoIdentidadRepository.findByIdDocumentoIdentidadAndGrupoDocumento(personaDTO.getTipoDocumento(), 1)
-                .orElseThrow(() -> new ResourceNotFoundException("Documento de identidad no encontrado "));
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento de identidad no existe"));
 
         Set<ConstraintViolation<PersonaDTO>> violations;
         try(ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
@@ -127,6 +133,10 @@ public class PersonaServiceImpl  implements IPersonaService {
             }
 
             DocumentoIdentidad documentoIdentidad=documentoIdentidadRepository.findById(personaDTO.getTipoDocumento()).orElseThrow(()->new ResourceNotFoundException("Documento no encontrada"));
+            if(personaDTO.getEstado()==null){
+                personaDTO.setEstado(1);
+            }
+
             Persona persona=modelMapper.map(personaDTO,Persona.class);
             persona.setTipoDocumento(documentoIdentidad);
             persona.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
@@ -149,6 +159,8 @@ public class PersonaServiceImpl  implements IPersonaService {
     public PersonaDTO updatePersona(Integer idPersona, PersonaDTO personaDTO) {
 
         log.info("INFO - Service UpdatePersona() ");
+
+            Persona persona=iPersonaRepository.findById(idPersona).orElseThrow( ()-> new ResourceNotFoundException("Error al actualizar, la persona no existe") );
 
             DocumentoIdentidad doc = documentoIdentidadRepository.findByIdDocumentoIdentidadAndGrupoDocumento(personaDTO.getTipoDocumento(), 1)
                     .orElseThrow(() -> new ResourceNotFoundException("Documento de identidad no encontrado "));
@@ -179,7 +191,7 @@ public class PersonaServiceImpl  implements IPersonaService {
             Usuario usuario = util.getUsuario();
             boolean existeDocumentoIdentidad = iPersonaRepository.existsByNumeroDocumentoAndIdPersonaNot(personaDTO.getNumeroDocumento(), idPersona);
             if (existeDocumentoIdentidad) {
-                throw new IllegalArgumentException("El número de documento identidad ya está registrado en otra Persona");
+                throw new IllegalArgumentException("El número de documento identidad ya está registrado en otra persona");
             }
 
             boolean existeCorreo = iPersonaRepository.existsByCorreoAndIdPersonaNot(personaDTO.getCorreo(), idPersona);
@@ -187,7 +199,7 @@ public class PersonaServiceImpl  implements IPersonaService {
                 throw new IllegalArgumentException("El correo electrónico ya existe.");
             }
 
-            Persona persona=iPersonaRepository.findById(idPersona).orElseThrow( ()-> new RuntimeException("Persona no encontrada") );
+
             persona.setApellidoMaterno(personaDTO.getApellidoMaterno());
             persona.setNombres(personaDTO.getNombres());
             persona.setApellidoPaterno(personaDTO.getApellidoPaterno());
@@ -219,10 +231,10 @@ public class PersonaServiceImpl  implements IPersonaService {
         var estado=false;
         try {
             Usuario usuario = util.getUsuario();
-            var persona=iPersonaRepository.findById(idPersona).orElseThrow(()->new  ResourceNotFoundException("Persona no encontrado"));
+            var persona=iPersonaRepository.findById(idPersona).orElseThrow(()->new  ResourceNotFoundException("Error al eliminar, la persona no existe"));
             if(persona!=null){
                 if(persona.isDeleted()){
-                    throw new ResourceNotFoundException("La Persona no existe, ya se encuentra eliminado");
+                    throw new ResourceNotFoundException("La persona no existe, ya se encuentra eliminado");
                 }
                persona.setDeleted(true);
                persona.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
@@ -233,6 +245,8 @@ public class PersonaServiceImpl  implements IPersonaService {
 
         } catch (ResourceNotFoundException e) {
             log.error("ERROR Service - DeletePersona() "+e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
+        }catch (Exception e ){
             throw new RuntimeException(e.getMessage());
         }
         return estado;

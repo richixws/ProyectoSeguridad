@@ -1,6 +1,7 @@
 package pe.gob.bcrp.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.entidadDTO.EntidadDTO;
 import pe.gob.bcrp.dto.response.EntidadResponse;
+import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IEntidadService;
 
@@ -35,6 +37,7 @@ public class EntidadController {
 
     //@Operation(summary = "find All Documento Identidad REST API", description = "Obtener la lista de los documentos de identidad de la base de datos")
     //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @Hidden
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/entidad/documentos")
     public ResponseEntity<List<DocumentoIdentidadDTO>> findAllDocumentoIdentidad(){
@@ -77,7 +80,7 @@ public class EntidadController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/entidad")
     @JsonView(Views.Create.class)
-    public  ResponseEntity<ResponseDTO<EntidadDTO>> saveEntidad(@Valid @RequestBody  EntidadDTO entidadDto){
+    public  ResponseEntity<ResponseDTO<EntidadDTO>> saveEntidad(@Validated(ValidationGroups.OnCreate.class) @RequestBody  EntidadDTO entidadDto){
 
         log.info("INI - guardarEntidad | requestURL=entidadDto");
         ResponseDTO<EntidadDTO> response=new ResponseDTO();
@@ -111,7 +114,7 @@ public class EntidadController {
     @PutMapping("/entidad/{entityId}")
     @JsonView(Views.Update.class)
     public ResponseEntity<ResponseDTO<EntidadDTO>> updateEntidad(@PathVariable("entityId") Integer idEntidad,
-                                                                 @Validated @RequestBody EntidadDTO entidadDTO){
+                                                                 @Validated(ValidationGroups.OnUpdate.class) @RequestBody EntidadDTO entidadDTO){
         log.info("INI - updateEntidad | requestURL=entidad");
         ResponseDTO<EntidadDTO> response=new ResponseDTO();
         try {
