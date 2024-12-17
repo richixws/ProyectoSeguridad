@@ -47,7 +47,7 @@ public class EntidadController {
             return new ResponseEntity<>(listDocumentos, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - listarDocumentoIdentidad | requestURL=entidad/documentos");
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -71,7 +71,7 @@ public class EntidadController {
             return new ResponseEntity<>(entidadResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - getAllEntidades | requestURL=entidades");
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -103,7 +103,7 @@ public class EntidadController {
             log.error("ERROR - guardarEntidad | requestURL=entidadDto");
             response.setStatus(0);
             response.setMessage("Error al guardar la Entidad "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -139,7 +139,7 @@ public class EntidadController {
             log.error("ERROR - updateEntidad | requestURL=entidad");
             response.setStatus(0);
             response.setMessage("Error al Actualizar la Entidad "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
 
@@ -171,7 +171,7 @@ public class EntidadController {
             log.error("ERROR - eliminarEntidad() "+e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al eliminar Entidad: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
     }
     

@@ -81,7 +81,7 @@ public class SistemaController {
 
         } catch (Exception e) {
             log.error("ERROR - listado de estados criticos" +e.getMessage());
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -107,7 +107,7 @@ public class SistemaController {
             return new ResponseEntity<>(sistemaResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - listarEntidades | requestURL=entidades");
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -141,7 +141,7 @@ public class SistemaController {
             log.error("ERROR - eliminarSistema | {}", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al eliminar el sistema");
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
@@ -181,7 +181,7 @@ public class SistemaController {
             log.error("ERROR - guardar Sistema ", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al guardar el Sistema : "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }  **/
@@ -218,7 +218,7 @@ public class SistemaController {
             log.error("ERROR - guardar Sistema ", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al guardar el Sistema : "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -266,7 +266,7 @@ public class SistemaController {
             log.error("ERROR - actualizarSistema | ", e);
             response.setStatus(0);
             response.setMessage("Error al actualizar el Sistema: " + e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -317,7 +317,7 @@ public class SistemaController {
             log.error("ERROR - actualizarSistema | ", e);
             response.setStatus(0);
             response.setMessage("Error al actualizar el Sistema: " + e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);

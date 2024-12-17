@@ -46,8 +46,8 @@ public class Usuario implements Serializable {
     @Column(name = "password", nullable = false, length = 100)
     private String password;
 
-    @Column(name = "estado")
-    private  String estado;
+    @Column(name = "estado", length = 1)
+    private Integer estado;
 
     //mapeo realcionar con entidad persona
     @ManyToOne(fetch = FetchType.EAGER)

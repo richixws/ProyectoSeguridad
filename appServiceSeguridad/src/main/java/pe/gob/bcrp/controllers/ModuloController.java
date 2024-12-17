@@ -54,7 +54,7 @@ public class ModuloController {
             return new ResponseEntity<>(moduloResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - getAllModulos | requestURL=modulos"+e.getMessage());
-            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -116,7 +116,7 @@ public class ModuloController {
             log.error("ERROR -  update Modulo | requestURL=modulo");
             response.setStatus(0);
             response.setMessage("Error al guardar el Modulo "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
@@ -148,7 +148,7 @@ public class ModuloController {
             log.error("ERROR - eliminarModulo() "+e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al eliminar Modulo: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
     }
 

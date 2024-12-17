@@ -108,7 +108,7 @@ public class RolServiceImpl implements IRolService {
             rol.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             rol.setUsuarioCreacion(usuario.getUsuario());
 
-            Sistema sistema=sistemaRepository.findById(rolDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException(" Sistema a guardar no encontrado"));
+            Sistema sistema=sistemaRepository.findById(rolDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("Sistema no encontrado"));
             rol.setSistema(sistema);
 
             Rol rolSave=rolRepository.save(rol);
