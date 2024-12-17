@@ -16,6 +16,7 @@ import pe.gob.bcrp.dto.entidadDTO.EntidadFormDTO;
 import pe.gob.bcrp.dto.response.EntidadResponse;
 import pe.gob.bcrp.entities.DocumentoIdentidad;
 import pe.gob.bcrp.entities.Entidad;
+import pe.gob.bcrp.entities.Sistema;
 import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.repositories.IDocumentoIdentidadRepository;
@@ -25,10 +26,7 @@ import pe.gob.bcrp.util.Util;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -53,16 +51,15 @@ public class EntidadServiceImpl implements IEntidadService {
 
         try {
             log.info("INI - getAllDocumentos");
-            List<DocumentoIdentidad> listDocumentos=documentoIdentidadRepository.findByGrupoDocumento(2);;
-           // List<DocumentoIdentidad> listDocumentos=documentoIdentidadRepository.findAll();
+            List<DocumentoIdentidad> listDocumentos=documentoIdentidadRepository.findByGrupoDocumento(2);
             return listDocumentos.stream()
                     .map(documento -> modelMapper.map(documento, DocumentoIdentidadDTO.class))
                     .collect(Collectors.toList());
 
         }catch (Exception e){
             log.error("ERROR - getAllDocumentos() "+e.getMessage());
+            throw new RuntimeException(e);
         }
-        return null;
 
     }
 
@@ -112,9 +109,8 @@ public class EntidadServiceImpl implements IEntidadService {
             return entidadResponse;
 
         } catch (Exception e) {
-            log.error( "ERROR - getAllEntidades() "+e.getMessage() );
+            log.error("ERROR - getAllEntidades() {}", e.getMessage());
             throw new RuntimeException(e);
-
         }
     }
 
@@ -127,14 +123,19 @@ public class EntidadServiceImpl implements IEntidadService {
         try {
 
             DocumentoIdentidad doc = documentoIdentidadRepository.findByIdDocumentoIdentidadAndGrupoDocumento(entidadDto.getIdDocumento(), 2)
-                    .orElseThrow(() -> new ResourceNotFoundException("Documento de identidad no encontrado"));
+                    .orElseThrow(() -> new ResourceNotFoundException("El documento de identidad no existe."));
 
             Usuario usuario=util.getUsuario();
             String uuidCodExt = UUID.randomUUID().toString();
 
             boolean existeNumeroDocumento = entidadRepository.existsByNumeroDocumento(entidadDto.getNumeroDocumento());
             if (existeNumeroDocumento) {
-                throw new IllegalArgumentException("El número de documento ya existe en el sistema.");
+                throw new IllegalArgumentException("El número de documento ya existe en otra entidad.");
+            }
+
+            Optional<Entidad> entidadExistente = entidadRepository.findByNombreIgnoreCase(entidadDto.getNombre());
+            if (entidadExistente.isPresent()){
+                throw new IllegalArgumentException("El nombre de la entidad se encuentra en uso, por favor ingrese uno nuevo.");
             }
 
             if(entidadDto.getEstado()==null){
@@ -156,13 +157,14 @@ public class EntidadServiceImpl implements IEntidadService {
             return entidadDtoNew;
 
         }catch (ResourceNotFoundException e){
-            log.error("ERROR -Service saveEntidad() {}", e.getMessage());
+            log.error("ERROR Service saveEntidad() {}", e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
         }catch (IllegalArgumentException e){
+            log.error("ERROR Service  saveEntidad() {}", e.getMessage());
            throw  new IllegalArgumentException(e.getMessage());
         }catch (Exception e){
-            log.error("ERROR - saveEntidad() "+e.getMessage());
-            throw new RuntimeException("Error al guardar el sistema " + e.getMessage());
+            log.error("ERROR Service - saveEntidad() {}", e.getMessage());
+            throw new RuntimeException( e.getMessage());
         }
     }
 
@@ -174,15 +176,21 @@ public class EntidadServiceImpl implements IEntidadService {
 
             Usuario usuario=util.getUsuario();
 
-            Entidad entidad=entidadRepository.findById(idEntidad).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado"));
+            Entidad entidad=entidadRepository.findById(idEntidad).orElseThrow(() -> new ResourceNotFoundException("Entidad a actualizar no existe."));
 
             DocumentoIdentidad doc = documentoIdentidadRepository.findByIdDocumentoIdentidadAndGrupoDocumento(entidadDto.getIdDocumento(), 2)
-                    .orElseThrow(() -> new ResourceNotFoundException("Documento de identidad no encontrado "));
+                    .orElseThrow(() -> new ResourceNotFoundException("Documento de identidad no existe."));
 
             boolean existeNumeroDocumento = entidadRepository.existsByNumeroDocumentoAndIdEntidadNot( entidadDto.getNumeroDocumento(), idEntidad);
             if (existeNumeroDocumento) {
                 throw new IllegalArgumentException("El número de documento ya está registrado en otra entidad.");
             }
+
+            boolean existeNombreEntidad=entidadRepository.existsByNombreIgnoreCaseAndIdEntidadNot(entidadDto.getNombre(),idEntidad);
+            if (existeNombreEntidad) {
+                throw new IllegalArgumentException("El nombre de la entidad ya está registrado en otra entidad.");
+            }
+
 
             if(entidadDto.getCodExterno()==null || entidadDto.getCodExterno().isBlank()){
                 throw new IllegalArgumentException("Codigo externo no puede estar vacio.");
@@ -212,15 +220,15 @@ public class EntidadServiceImpl implements IEntidadService {
             return  updateEntidad;
 
         } catch (IllegalArgumentException e) {
-            log.error("ERROR -Service update Entidad() " + e.getMessage());
+            log.error("ERROR -Service update Entidad() {}", e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
-            log.error("ERROR -Service updateEntidad() "+e.getMessage());
-            throw e;
+            log.error("ERROR -Service updateEntidad() {}", e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
         }
         catch (Exception e){
-            log.error("ERROR - updateSistemas()"+e.getMessage());
-            throw new RuntimeException("Error al actualizar el sistema", e);
+            log.error("ERROR - updateSistemas(){}", e.getMessage());
+            throw new RuntimeException( e.getMessage());
         }
 
     }
@@ -234,10 +242,10 @@ public class EntidadServiceImpl implements IEntidadService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Entidad entidad=entidadRepository.findById(idEntidad).orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado"));
+            Entidad entidad=entidadRepository.findById(idEntidad).orElseThrow(() -> new ResourceNotFoundException("Entidad a eliminar no existe."));
             if(entidad!=null){
                 if(entidad.isDeleted()){
-                    throw new ResourceNotFoundException("La entidad no existe, ya se encuentra eliminado");
+                    throw new ResourceNotFoundException("La entidad no existe, ya se encuentra eliminado.");
                 }
                 entidad.setDeleted(true);
                 entidad.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
@@ -247,11 +255,10 @@ public class EntidadServiceImpl implements IEntidadService {
                 estado=true;
             }
 
-
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - deleteEntidad() "+e.getMessage());
-            e.printStackTrace();
-            estado=false;
+            log.error("ERROR - deleteEntidad() {}", e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
+            //estado=false;
         }
         return estado;
     }

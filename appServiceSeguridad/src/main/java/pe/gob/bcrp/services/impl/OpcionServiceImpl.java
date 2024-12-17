@@ -138,13 +138,13 @@ public class OpcionServiceImpl  implements IOpcionService {
 
             boolean existeNombredeModulo=opcionRepository.existsByNombreOpcionIgnoreCaseAndAndIdOpcionNot(opcionDto.getNombreOpcion(),idOpcion);
             if (existeNombredeModulo) {
-                throw new IllegalArgumentException("El Nombre de la opcion ya está registrado en otra Opcion.");
+                throw new IllegalArgumentException("El nombre de la opcion ya está registrado en otra opcion.");
             }
 
             Modulo modulo=moduloRepository.findById(opcionDto.getIdModulo())
-                                          .orElseThrow(()-> new ResourceNotFoundException("no se encontró el módulo a actualizar." + opcionDto.getIdModulo()));
+                                          .orElseThrow(()-> new ResourceNotFoundException("El modulo a actualizar de la opcion no existe."));
 
-            Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no se encontró el sistema a actualizar: "+ opcionDto.getIdSistema()));
+            Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("El sistema a actualizar de la opcion no existe."));
 
             modulo.setSistema(sistema);
             opcion.setModulo(modulo);
@@ -160,14 +160,14 @@ public class OpcionServiceImpl  implements IOpcionService {
             return opcionDtoUpd;
 
         }  catch (IllegalArgumentException e) {
-            log.error("ERROR - update Opcion() - {}", e.getMessage());
+            log.error("ERROR service update Opcion() - {}", e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - update Opcion() "+e.getMessage());
-            throw e;
+            log.error("ERROR - update Opcion() {}", e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
         }catch (Exception e) {
-            log.error( "ERROR - updateOpcion() "+e.getMessage() );
-            throw new RuntimeException("Error al actualizar opcion"+e.getMessage());
+            log.error("ERROR - updateOpcion() {}", e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -180,10 +180,10 @@ public class OpcionServiceImpl  implements IOpcionService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Opcion opcion=opcionRepository.findById(idOpcion).orElseThrow(() -> new ResourceNotFoundException("Opcion no encontrado con "+ idOpcion));
+            Opcion opcion=opcionRepository.findById(idOpcion).orElseThrow(() -> new ResourceNotFoundException("Opcion a eliminar no existe."));
             if(opcion!=null){
                 if(opcion.isDeleted()){
-                    throw new ResourceNotFoundException("La Opción no existe, ya se encuentra eliminado");
+                    throw new ResourceNotFoundException("La opción no existe, ya se encuentra eliminado.");
                 }
                 opcion.setDeleted(true);;
                 opcion.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
@@ -195,9 +195,9 @@ public class OpcionServiceImpl  implements IOpcionService {
 
 
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - deleteOpcion() "+e.getMessage());
-            e.printStackTrace();
-            estado=false;
+            log.error("ERROR - deleteOpcion() {}", e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
+            //estado=false;
         }
         return estado;
     }

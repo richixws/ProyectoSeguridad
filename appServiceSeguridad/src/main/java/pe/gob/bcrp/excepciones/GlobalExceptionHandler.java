@@ -27,6 +27,6 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toList());
 
         response.put("message", errors);
-        return new ResponseEntity<Map<String,Object>>(response,HttpStatus.PRECONDITION_FAILED);
+        return new ResponseEntity<Map<String,Object>>(response,HttpStatus.BAD_REQUEST);
     }
 }

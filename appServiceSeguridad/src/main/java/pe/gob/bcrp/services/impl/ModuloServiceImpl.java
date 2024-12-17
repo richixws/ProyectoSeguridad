@@ -154,7 +154,7 @@ public class ModuloServiceImpl implements IModuloService {
                 throw new IllegalArgumentException("El Nombre del Modulo ya está registrado en otro Sistema.");
             }**/
 
-            Sistema sistema=isistemaRepository.findById(moduloDto.getIdSistema()).orElseThrow(()->new ResourceNotFoundException("Sistema del modulo a actualizar no existe."));
+            Sistema sistema=isistemaRepository.findById(moduloDto.getIdSistema()).orElseThrow(()->new ResourceNotFoundException("El sistema del modulo a actualizar no existe."));
 
             modulo.setSistema(sistema);
             modulo.setNombreModulo(moduloDto.getNombreModulo());
@@ -193,7 +193,7 @@ public class ModuloServiceImpl implements IModuloService {
             Modulo modulo=imoduloRepository.findById(idModulo).orElseThrow(() -> new ResourceNotFoundException("Modulo a eliminar no existe."));
             if(modulo!=null){
                 if(modulo.isDeleted()){
-                    throw new ResourceNotFoundException("El Modulo no existe, ya se encuentra eliminado");
+                    throw new ResourceNotFoundException("El modulo no existe, ya se encuentra eliminado.");
                 }
                 //entidadRepository.deleteById(id);
                 modulo.setDeleted(true);

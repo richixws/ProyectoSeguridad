@@ -104,7 +104,7 @@ public class RolController {
         }catch ( ResourceNotFoundException e) {
             log.error("ERROR - update Rol No encontrado {}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar el rol "+e.getMessage());
+            response.setMessage("Error al actualizar "+e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         }catch (Exception e){

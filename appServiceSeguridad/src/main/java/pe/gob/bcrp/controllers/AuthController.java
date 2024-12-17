@@ -80,7 +80,7 @@ public class AuthController {
            UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
 
             if (usuarioDTO == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Las credenciales ingresadas no son válidas"));
             }
 
 
@@ -119,16 +119,16 @@ public class AuthController {
             // Captura de error 401 o 400 para indicar credenciales inválidas
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("mensaje", "Las credenciales ingresadas no son válidas"));
+                        .body(Map.of("message", "Las credenciales ingresadas no son válidas"));
             } else {
                 log.error("Error en la solicitud de autenticación", e);
                 return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                        .body(Map.of("mensaje", "Ocurrió un error en el sistema"));
+                        .body(Map.of("message", "Ocurrió un error en el sistema"));
             }
         } catch (Exception e) {
             log.error("Error en el login", e);
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .body(Map.of("mensaje", "Ocurrió un error interno en el sistema"));
+                    .body(Map.of("message", "Ocurrió un error interno en el sistema"));
         }
 
     }
@@ -263,10 +263,10 @@ public class AuthController {
 
         boolean isOtpValid = usuariosService.validateOTP(username, otp);
         if (!isOtpValid) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("mensaje","Código inválido o expirado"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message","Código inválido o expirado"));
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("mensaje","Verificacion Correcta"));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message","Verificacion Correcta"));
 
     }
 

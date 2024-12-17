@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +46,7 @@ public class EntidadController {
             return new ResponseEntity<>(listDocumentos, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - listarDocumentoIdentidad | requestURL=entidad/documentos");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -71,7 +70,7 @@ public class EntidadController {
             return new ResponseEntity<>(entidadResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - getAllEntidades | requestURL=entidades");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -88,7 +87,7 @@ public class EntidadController {
             EntidadDTO entidadDTO=entidadService.saveEntidad(entidadDto);
 
             response.setStatus(1);
-            response.setMessage("La Entidad fue guardado de manera exitosa");
+            response.setMessage("La entidad fue guardado de manera exitosa");
            // response.setBody(entidadDTO);
 
         } catch (ResourceNotFoundException e){
@@ -96,14 +95,15 @@ public class EntidadController {
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
+            log.error("ERROR - guardarEntidad  requestURL=entidadDto{}", e.getMessage());
           response.setStatus(0);
           response.setMessage(e.getMessage());
           return ResponseEntity.badRequest().body(response);
        }catch (Exception e){
-            log.error("ERROR - guardarEntidad | requestURL=entidadDto");
+            log.error("ERROR - guardarEntidad | requestURL=entidadDto{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al guardar la Entidad "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -121,25 +121,26 @@ public class EntidadController {
 
             EntidadDTO entidadDto=entidadService.updateEntidad(idEntidad, entidadDTO);
             response.setStatus(1);
-            response.setMessage("la Entidad fue actualizado de manera exitosa");
+            response.setMessage("La entidad fue actualizado de manera exitosa.");
            // response.setBody(entidadDTO);
 
         }catch (IllegalArgumentException e) {
+            log.error("ERROR - updateEntidad {}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return ResponseEntity.badRequest().body(response);
 
         }catch (ResourceNotFoundException e) {
-            log.error("ERROR - updateEntidad No encontrado " + e.getMessage());
+            log.error("ERROR  updateEntidad {}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al Actualizar la Entidad, "+e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         } catch (Exception e){
-            log.error("ERROR - updateEntidad | requestURL=entidad");
+            log.error("ERROR - updateEntidad | requestURL=entidad",e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al Actualizar la Entidad "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
 
@@ -156,10 +157,10 @@ public class EntidadController {
 
            boolean eliminado= entidadService.deleteEntidad(idEntidad);
            if(!eliminado){
-               throw new ResourceNotFoundException("La Entidad no existe, ya se encuentra eliminado");
+               throw new ResourceNotFoundException("La entidad no existe, ya se encuentra eliminado");
            }
             response.setStatus(1);
-            response.setMessage("La Entidad ha sido eliminado con éxito");
+            response.setMessage("La entidad ha sido eliminado con éxito.");
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         }catch (ResourceNotFoundException e){
@@ -170,8 +171,8 @@ public class EntidadController {
         }catch (Exception e){
             log.error("ERROR - eliminarEntidad() "+e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al eliminar Entidad: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
     

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pe.gob.bcrp.entities.Entidad;
+import pe.gob.bcrp.entities.Sistema;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +19,11 @@ public interface IEntidadRepository extends JpaRepository<Entidad, Integer> {
 
     boolean existsByNumeroDocumento(String numeroDocumento);
 
+    Optional<Entidad> findByNombreIgnoreCase(String nombre);
+
     boolean existsByNumeroDocumentoAndIdEntidadNot(String numeroDocumento, Integer idEntidad);
+
+    boolean existsByNombreIgnoreCaseAndIdEntidadNot(String nombre,Integer idSistema);
 
 
    // @Query("SELECT s FROM Entidad s WHERE " + "(:nombre IS NULL OR LOWER(s.nombre) = LOWER(:nombre)) AND " + "s.isDeleted = false")

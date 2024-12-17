@@ -28,7 +28,7 @@ public class ModuloDTO implements Serializable {
     private Integer idModulo;
 
     @JsonProperty("systemId")
-    @NotNull(message = "sistema es obligatorio",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
+    @NotNull(message = "sistema es obligatorio.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
     @JsonView({Views.Update.class, Views.Create.class})
     private Integer idSistema;
 

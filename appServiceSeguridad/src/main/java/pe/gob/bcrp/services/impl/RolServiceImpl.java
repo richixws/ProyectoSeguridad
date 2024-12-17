@@ -98,17 +98,17 @@ public class RolServiceImpl implements IRolService {
         try {
             Usuario usuario = util.getUsuario();
 
+            Sistema sistema=sistemaRepository.findById(rolDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("Sistema del rol no existe."));
+
             Optional<Rol> moduloExistente = rolRepository.findFirstByNombreContainingIgnoreCase(rolDTO.getNombreRol());
             if (moduloExistente.isPresent()){
-                throw new IllegalArgumentException("El nombre del rol se encuentra en uso, por favor ingrese un nuevo rol.");
+                throw new IllegalArgumentException("el nombre del rol se encuentra en uso, por favor ingrese un nuevo rol.");
             }
 
             Rol rol = modelMapper.map(rolDTO, Rol.class);
             rol.setEstado(1);
             rol.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
             rol.setUsuarioCreacion(usuario.getUsuario());
-
-            Sistema sistema=sistemaRepository.findById(rolDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("Sistema no encontrado"));
             rol.setSistema(sistema);
 
             Rol rolSave=rolRepository.save(rol);
@@ -133,14 +133,14 @@ public class RolServiceImpl implements IRolService {
         log.info(" INI - Service  updateRole");
         try {
             Usuario usuario = util.getUsuario();
-            Rol rol = rolRepository.findById(idRol).orElseThrow(() -> new ResourceNotFoundException(" Rol a actualizar no encontrado"));
+            Rol rol = rolRepository.findById(idRol).orElseThrow(() -> new ResourceNotFoundException("rol a actualizar no existe."));
 
             boolean existeNombredeModulo=rolRepository.existsByNombreIgnoreCaseAndAndIdRolNot(rolDto.getNombreRol(),idRol);
             if (existeNombredeModulo) {
-                throw new IllegalArgumentException("El Nombre del rol ya se encuentra registrado en otro rol.");
+                throw new IllegalArgumentException("El nombre del rol ya se encuentra registrado en otro rol.");
             }
 
-            Sistema sistema = sistemaRepository.findById(rolDto.getIdSistema()).orElseThrow(() -> new ResourceNotFoundException(" Sistema a actualizar no encontrado"));
+            Sistema sistema = sistemaRepository.findById(rolDto.getIdSistema()).orElseThrow(() -> new ResourceNotFoundException("Sistema a actualizar no existe"));
             rol.setSistema(sistema);
             rol.setNombre(rolDto.getNombreRol());
             rol.setEstado(rolDto.getEstado());
@@ -158,11 +158,11 @@ public class RolServiceImpl implements IRolService {
             throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
             log.error("ERROR - Service  updateRole() "+e.getMessage());
-            throw e;
+            throw new ResourceNotFoundException(e.getMessage());
         }
         catch (Exception e) {
             log.error( "ERROR - Service updateRole() "+e.getMessage() );
-            throw new RuntimeException("Error al actualizar Role "+e.getMessage());
+            throw new RuntimeException("Error al actualizar"+e.getMessage());
         }
     }
 

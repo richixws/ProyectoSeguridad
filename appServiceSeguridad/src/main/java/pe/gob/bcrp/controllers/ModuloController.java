@@ -54,7 +54,7 @@ public class ModuloController {
             return new ResponseEntity<>(moduloResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - getAllModulos | requestURL=modulos"+e.getMessage());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -70,9 +70,8 @@ public class ModuloController {
         try {
             ModuloDTO moduloDto=moduloService.saveModulo(moduloDTO);
             response.setStatus(1);
-            response.setMessage("El Modulo fue guardado de manera exitosa");
+            response.setMessage("El modulo fue guardado de manera exitosa.");
             // response.setBody(entidadDTO);
-
         }catch (ResourceNotFoundException e){
             response.setStatus(0);
             response.setMessage(e.getMessage());
@@ -103,7 +102,7 @@ public class ModuloController {
         try {
             ModuloDTO moduloDto=moduloService.updateModulo(moduloDTO,idModulo);
             response.setStatus(1);
-            response.setMessage("El Modulo fue actualizado de manera exitosa");
+            response.setMessage("El modulo fue actualizado de manera exitosa");
             // response.setBody(entidadDTO);
 
         }catch ( ResourceNotFoundException e) {
@@ -115,8 +114,8 @@ public class ModuloController {
         }catch (Exception e){
             log.error("ERROR -  update Modulo | requestURL=modulo");
             response.setStatus(0);
-            response.setMessage("Error al guardar el Modulo "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
@@ -133,7 +132,7 @@ public class ModuloController {
 
             boolean eliminado= moduloService.deleteModulo(idModulo);
             if(!eliminado){
-                throw new ResourceNotFoundException("El Modulo no existe, ya se encuentra eliminado");
+                throw new ResourceNotFoundException("El modulo no existe, ya se encuentra eliminado.");
             }
             response.setStatus(1);
             response.setMessage("El Modulo ha sido eliminado con éxito");
@@ -147,8 +146,8 @@ public class ModuloController {
         }catch (Exception e){
             log.error("ERROR - eliminarModulo() "+e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al eliminar Modulo: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
