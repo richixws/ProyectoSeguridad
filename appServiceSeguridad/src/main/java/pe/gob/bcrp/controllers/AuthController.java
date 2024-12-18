@@ -54,11 +54,9 @@ public class AuthController {
 
 
     @Operation(summary = "Login REST API", description = "Permite autenticar un usuario mediante sus credenciales y devuelve un token JWT con información adicional")
-    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
-
     @ApiResponses({ @ApiResponse(responseCode = "200",description = "Autenticación exitosa, devuelve el token JWT."),
                              @ApiResponse(responseCode = "401",description = "Credenciales inválidas o token no válido." ),
-                   @ApiResponse( responseCode = "422",description = "Error interno en el sistema." )
+                    @ApiResponse( responseCode = "422",description = "Error interno en el sistema." )
     })
     @PostMapping(value = "oauth/login")
     public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws Exception {

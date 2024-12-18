@@ -1,6 +1,12 @@
 version: '3.8'
 
 services:
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
   app:
     image: app-service-seguridad:latest
     build:
@@ -15,20 +21,23 @@ services:
       ORACLE_SID: bcrdesa
       BD_USERNAME: bcrp_msauthentica_api
       BD_PASSWORD: bcrp_msauthentica_api
-      KEYCLOAK_ISSUER: http://172.30.107.211:443/realms/demo
-      KEYCLOAK_BASE_URI: http://172.30.107.211:443/auth/realms/
-      KEYCLOAK_AUTH_URI: http://172.30.107.211:443/realms/demo/protocol/openid-connect/auth
-      KEYCLOAK_INFO_URI: http://172.30.107.211:443/realms/demo/protocol/openid-connect/userinfo
-      KEYCLOAK_TOKEN_URI: http://172.30.107.211:443/realms/demo/protocol/openid-connect/token
-      KEYCLOAK_LOGOUT: http://172.30.107.211:443/realms/demo/protocol/openid-connect/logout
-      KEYCLOAK_CERTS: http://172.30.107.211:443/realms/demo/protocol/openid-connect/certs
+
+      KEYCLOAK_HOST: 172.30.107.211
+      KEYCLOAK_PORT: 443
+      KEYCLOAK_REALM: demo
+      ##KEYCLOAK_ISSUER: http://172.30.107.211:443/realms/demo
+      #KEYCLOAK_BASE_URI: http://172.30.107.211:443/auth/realms/
+      #KEYCLOAK_AUTH_URI: http://172.30.107.211:443/realms/demo/protocol/openid-connect/auth
+      #KEYCLOAK_INFO_URI: http://172.30.107.211:443/realms/demo/protocol/openid-connect/userinfo
+      #KEYCLOAK_TOKEN_URI: http://172.30.107.211:443/realms/demo/protocol/openid-connect/token
+      #KEYCLOAK_LOGOUT: http://172.30.107.211:443/realms/demo/protocol/openid-connect/logout
+      #KEYCLOAK_CERTS: http://172.30.107.211:443/realms/demo/protocol/openid-connect/certs
       KEYCLOAK_CLIENT_ID: seguridad-demo
       REDIS_HOST: redis
       REDIS_PORT: 6379
       ALLOWED_CORS_ORIGINS: http://172.30.107.212:4300
-  #  depends_on:
-  #    - oracle
-  #    - redis
+    depends_on:
+      - redis
 
   #oracle:
   #  image: gvenzl/oracle-xe:21-slim
