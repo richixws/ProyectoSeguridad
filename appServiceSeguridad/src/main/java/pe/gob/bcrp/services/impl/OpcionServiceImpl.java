@@ -102,6 +102,10 @@ public class OpcionServiceImpl  implements IOpcionService {
                throw new ResourceNotFoundException("El nombre de la opción se encuentra en uso, por favor ingrese una nueva opción.");
            }
 
+           if(opcionDto.getEstado()==null){
+               opcionDto.setEstado(1);
+           }
+
            Usuario usuario = util.getUsuario();
 
            Opcion opcion = modelMapper.map(opcionDto, Opcion.class);

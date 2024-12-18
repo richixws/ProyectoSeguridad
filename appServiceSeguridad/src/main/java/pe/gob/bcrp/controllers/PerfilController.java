@@ -8,10 +8,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.PerfilDTO;
 import pe.gob.bcrp.dto.ResponseDTO;
 import pe.gob.bcrp.dto.response.PerfilResponse;
+import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IPerfilService;
 
@@ -58,7 +60,7 @@ public class PerfilController {
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/perfil")
-    public  ResponseEntity<ResponseDTO<PerfilDTO>> savePerfil(@Valid @RequestBody  PerfilDTO perfilDTO){
+    public  ResponseEntity<ResponseDTO<PerfilDTO>> savePerfil(@Validated(ValidationGroups.OnCreate.class) @RequestBody  PerfilDTO perfilDTO){
 
         log.info("INI - guardarPerfil | requestURL=perfil");
         ResponseDTO<PerfilDTO> response=new ResponseDTO<>();
@@ -67,21 +69,20 @@ public class PerfilController {
             response.setStatus(1);
             response.setMessage("El Perfil fue guardado de manera exitosa");
             // response.setBody(entidadDTO);
-        }catch (IllegalArgumentException e) {
-            response.setStatus(0);
-            response.setMessage(e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-
-        }catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             log.error("ERROR - Perfil No encontrado " + e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         } catch (Exception e){
             log.error("ERROR - guardarPerfil | requestURL=perfil{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al guardar el Perfil "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -90,7 +91,7 @@ public class PerfilController {
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/perfil/{profileId}")
-    public ResponseEntity<ResponseDTO<PerfilDTO>> updatePerfil(@Valid @RequestBody  PerfilDTO perfilDTO,
+    public ResponseEntity<ResponseDTO<PerfilDTO>> updatePerfil(@Validated(ValidationGroups.OnUpdate.class) @RequestBody  PerfilDTO perfilDTO,
                                                                @PathVariable("profileId") Integer idPerfil){
         log.info("INI - upodatePerfil | requestURL=perfil");
         ResponseDTO<PerfilDTO> response=new ResponseDTO<>();
@@ -101,7 +102,7 @@ public class PerfilController {
 
         }
          catch (IllegalArgumentException e) {
-             log.error("ERROR | update perfil{}", e.getMessage());
+            log.error("ERROR | update perfil{}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return ResponseEntity.badRequest().body(response);
@@ -109,14 +110,14 @@ public class PerfilController {
         }catch (ResourceNotFoundException e) {
             log.error("ERROR - update perfil No encontrado " + e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar el perfil, "+e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         }catch (Exception e){
             log.error("ERROR - update Perfil | requestURL=perfil{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar el perfil "+e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -146,12 +147,10 @@ public class PerfilController {
         }catch (Exception e){
             log.error("ERROR - eliminarPerfil() {}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al eliminar el perfil: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
-
-
 
 
 }

@@ -105,6 +105,10 @@ public class RolServiceImpl implements IRolService {
                 throw new IllegalArgumentException("el nombre del rol se encuentra en uso, por favor ingrese un nuevo rol.");
             }
 
+            if(rolDTO.getEstado()==null){
+                rolDTO.setEstado(1);
+            }
+
             Rol rol = modelMapper.map(rolDTO, Rol.class);
             rol.setEstado(1);
             rol.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));

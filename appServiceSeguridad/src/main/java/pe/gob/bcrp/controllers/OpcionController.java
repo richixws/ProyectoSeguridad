@@ -9,10 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.opcionDTO.OpcionDTO;
 import pe.gob.bcrp.dto.response.OpcionResponse;
+import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IOpcionService;
 
@@ -75,7 +77,7 @@ public class OpcionController {
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/opcion")
-    public  ResponseEntity<ResponseDTO<OpcionDTO>> saveOpcion(@Valid @RequestBody  OpcionDTO opcionDTO){
+    public  ResponseEntity<ResponseDTO<OpcionDTO>> saveOpcion(@Validated(ValidationGroups.OnCreate.class) @RequestBody OpcionDTO opcionDTO){
 
         log.info("INI - guardarOpcion | requestURL=opcion");
         ResponseDTO<OpcionDTO> response=new ResponseDTO<>();
@@ -83,7 +85,6 @@ public class OpcionController {
             OpcionDTO moduloDto=opcionService.saveOpcion(opcionDTO);
             response.setStatus(1);
             response.setMessage("El Modulo fue guardado de manera exitosa");
-            //response.setBody(entidadDTO);
 
         }catch (ResourceNotFoundException e) {
             log.error("ERROR - Opcion No encontrado " + e.getMessage());
@@ -94,8 +95,8 @@ public class OpcionController {
         }catch (Exception e){
             log.error("ERROR - guardarEntidad | requestURL=entidadDto");
             response.setStatus(0);
-            response.setMessage("Error al guardar la Opcion "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -104,7 +105,7 @@ public class OpcionController {
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/opcion/{optionId}")
-    public ResponseEntity<ResponseDTO<OpcionDTO>> updateOpcion(@Valid @RequestBody  OpcionDTO opcionDTO,
+    public ResponseEntity<ResponseDTO<OpcionDTO>> updateOpcion(@Validated(ValidationGroups.OnUpdate.class) @RequestBody  OpcionDTO opcionDTO,
                                                                 @PathVariable("optionId") Integer idOpcion){
         log.info("INI - upodateOpcion | requestURL=opcion");
         ResponseDTO<OpcionDTO> response=new ResponseDTO<>();
@@ -116,14 +117,14 @@ public class OpcionController {
         }catch (ResourceNotFoundException e) {
             log.error("ERROR - update Opcion No encontrado " + e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar opcion, "+e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         }catch (Exception e){
             log.equals("ERROR - update Opcion | requestURL=opcion"+e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar opcion "+e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -158,8 +159,8 @@ public class OpcionController {
         }catch (Exception e){
             log.error("ERROR - eliminarOpcion() "+e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al eliminar Opcion: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 }

@@ -8,11 +8,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.ResponseDTO;
 import pe.gob.bcrp.dto.RolDTO;
 import pe.gob.bcrp.dto.RolFormDTO;
 import pe.gob.bcrp.dto.response.RolResponse;
+import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IRolService;
 
@@ -59,7 +61,7 @@ public class RolController {
     @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/rol")
-    public  ResponseEntity<ResponseDTO<RolFormDTO>> saveRol(@Valid @RequestBody RolFormDTO rolDto){
+    public  ResponseEntity<ResponseDTO<RolFormDTO>> saveRol(@Validated(ValidationGroups.OnCreate.class) @RequestBody RolFormDTO rolDto){
 
         log.info("INI - saveRol | requestURL=rol");
         ResponseDTO<RolFormDTO> response=new ResponseDTO<>();
@@ -67,18 +69,16 @@ public class RolController {
             RolFormDTO moduloDto=rolService.saveRole(rolDto);
             response.setStatus(1);
             response.setMessage("El Rol fue guardado de manera exitosa");
-            // response.setBody(entidadDTO);
-
         }catch (IllegalArgumentException e) {
             log.error("ERROR - saveRol|requestURL=rol{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al guardar "+ e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }catch (Exception e){
             log.error("ERROR - saveRol | requestURL=rol{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al guardar, "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -87,7 +87,7 @@ public class RolController {
     @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/rol/{roleId}")
-    public ResponseEntity<ResponseDTO<RolFormDTO>> updateRol(@Valid @RequestBody  RolFormDTO rolDTO,
+    public ResponseEntity<ResponseDTO<RolFormDTO>> updateRol(@Validated(ValidationGroups.OnUpdate.class) @RequestBody  RolFormDTO rolDTO,
                                                              @PathVariable("roleId") Integer idRol){
         log.info("INI - updateRol | requestURL=rol");
         ResponseDTO<RolFormDTO> response=new ResponseDTO<>();
@@ -99,19 +99,18 @@ public class RolController {
         }catch (IllegalArgumentException e) {
             log.error("ERROR -  updateRol|requestURL=rol{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al Actualizar "+ e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }catch ( ResourceNotFoundException e) {
             log.error("ERROR - update Rol No encontrado {}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar "+e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-
         }catch (Exception e){
-            log.equals("ERROR - updateRol | requestURL=rol"+e.getMessage());
+            log.error("ERROR - updateRol | requestURL=rol"+e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar el  "+e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
@@ -142,8 +141,8 @@ public class RolController {
         }catch (Exception e){
             log.error("ERROR - deleteRol() {}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al eliminar Rol: "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 }
