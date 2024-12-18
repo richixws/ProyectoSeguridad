@@ -200,8 +200,6 @@ public class EntidadServiceImpl implements IEntidadService {
             }
 
 
-           // DocumentoIdentidad doc=documentoIdentidadRepository.findById(entidadDto.getIdDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
-
             DocumentoIdentidad identidad=new DocumentoIdentidad();
             identidad.setIdDocumentoIdentidad(doc.getIdDocumentoIdentidad());
             identidad.setTipoDocumentoIdentidad(doc.getTipoDocumentoIdentidad());

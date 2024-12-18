@@ -82,11 +82,11 @@ public class OpcionController {
         try {
             OpcionDTO moduloDto=opcionService.saveOpcion(opcionDTO);
             response.setStatus(1);
-            response.setMessage("El Modulo fue guardado de manera exitosa");
+            response.setMessage("La opcion fue guardado de manera exitosa.");
             //response.setBody(entidadDTO);
 
         }catch (ResourceNotFoundException e) {
-            log.error("ERROR - Opcion No encontrado " + e.getMessage());
+            log.error("ERROR - Opcion no encontrado {}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -94,7 +94,7 @@ public class OpcionController {
         }catch (Exception e){
             log.error("ERROR - guardarEntidad | requestURL=entidadDto");
             response.setStatus(0);
-            response.setMessage("Error al guardar la Opcion "+ e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
@@ -111,21 +111,21 @@ public class OpcionController {
         try {
             OpcionDTO opcionDto=opcionService.updateOpcion(opcionDTO,idOpcion);
             response.setStatus(1);
-            response.setMessage("La opcion fue actualizado exitosamente");
+            response.setMessage("La opcion fue actualizado exitosamente.");
 
         }catch (ResourceNotFoundException e) {
-            log.error("ERROR - update Opcion No encontrado " + e.getMessage());
+            log.error("ERROR - update Opcion No encontrado" + e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar opcion, "+e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         }catch (Exception e){
             log.equals("ERROR - update Opcion | requestURL=opcion"+e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar opcion "+e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(response,HttpStatus.CREATED);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     /**
@@ -144,10 +144,10 @@ public class OpcionController {
 
             boolean eliminado=opcionService.deleteOpcion(idOpcion);
             if(!eliminado){
-                throw new ResourceNotFoundException("La Opción no existe, ya se encuentra eliminado");
+                throw new ResourceNotFoundException("La opción no existe, ya se encuentra eliminado.");
             }
             response.setStatus(1);
-            response.setMessage("La Opcion ha sido eliminado con éxito");
+            response.setMessage("La opcion ha sido eliminado con éxito.");
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         }catch (ResourceNotFoundException e){
@@ -156,9 +156,9 @@ public class OpcionController {
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }catch (Exception e){
-            log.error("ERROR - eliminarOpcion() "+e.getMessage());
+            log.error("ERROR - eliminarOpcion() {}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al eliminar Opcion: "+e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
     }

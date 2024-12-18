@@ -112,9 +112,9 @@ public class PerfilServiceImpl implements IPerfilService {
             perfil.setUsuarioCreacion(usuario.getUsuario());
 
 
-           Rol rol= rolRepository.findById(perfilDTO.getIdRol()).orElseThrow(()-> new ResourceNotFoundException("Rol a guardar no encontrado"));
-           Sistema sistema=sistemaRepository.findById(perfilDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("Sistema a guardar no encontrado"));
-           Entidad entidad=entidadRepository.findById(perfilDTO.getIdEntidad()).orElseThrow(()-> new ResourceNotFoundException("Entidad a guardar no encontrado"));
+           Rol rol= rolRepository.findById(perfilDTO.getIdRol()).orElseThrow(()-> new ResourceNotFoundException("El rol a guardar del perfil no existe."));
+           Sistema sistema=sistemaRepository.findById(perfilDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("El sistema a guardar del perfil no existe."));
+           Entidad entidad=entidadRepository.findById(perfilDTO.getIdEntidad()).orElseThrow(()-> new ResourceNotFoundException("La entidad a guardar del perfil no existe."));
            rol.setSistema(sistema);
            perfil.setRol(rol);
            perfil.setEntidad(entidad);
@@ -126,14 +126,14 @@ public class PerfilServiceImpl implements IPerfilService {
 
 
         }catch (ResourceNotFoundException e){
-            log.error("ERROR -Service save Perfil() "+e.getMessage());
-            throw e;
+            log.error("ERROR -Service save Perfil() {}", e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
         }catch (IllegalArgumentException e) {
             log.error("ERROR - save Perfil() - {}", e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }catch (Exception e) {
-            log.error( "ERROR -Service savePerfil() "+e.getMessage() );
-            throw  new RuntimeException("Error al guardar perfil"+e.getMessage());
+            log.error("ERROR -Service savePerfil() {}", e.getMessage());
+            throw  new RuntimeException(e.getMessage());
         }
 
 
@@ -146,15 +146,15 @@ public class PerfilServiceImpl implements IPerfilService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(()-> new ResourceNotFoundException("Perfil a actualizar no encontrado"));
+            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(()-> new ResourceNotFoundException("Perfil a actualizar no existe."));
 
             boolean existeNombredePerfil=perfilRepository.existsByNombreIgnoreCaseAndAndIdPerfilNot(perfil.getNombre(),idPerfil);
             if (existeNombredePerfil) {
-                throw new IllegalArgumentException("El Nombre del Modulo ya está registrado en otro Sistema.");
+                throw new IllegalArgumentException("El nombre del perfil ya está registrado en otro perfil.");
             }
-            Rol rol =rolRepository.findById(perfilDTO.getIdRol()).orElseThrow(()-> new ResourceNotFoundException("no encontrado rol: "+perfilDTO.getIdRol()));
-            Sistema sistema=sistemaRepository.findById(perfilDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no se encontró el sistema a actualizar: " + perfilDTO.getIdSistema()));
-            Entidad entidad=entidadRepository.findById(perfilDTO.getIdEntidad()).orElseThrow(()-> new ResourceNotFoundException("no se encontró la entidad"));
+            Rol rol =rolRepository.findById(perfilDTO.getIdRol()).orElseThrow(()-> new ResourceNotFoundException("El rol a actualizar del perfil no existe."));
+            Sistema sistema=sistemaRepository.findById(perfilDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("El sistema a actualizar del perfil no existe."));
+            Entidad entidad=entidadRepository.findById(perfilDTO.getIdEntidad()).orElseThrow(()-> new ResourceNotFoundException("La entidad a actualizar del perfil no existe."));
 
             rol.setSistema(sistema);
             perfil.setRol(rol);
@@ -175,11 +175,11 @@ public class PerfilServiceImpl implements IPerfilService {
             log.error("ERROR - update Perfil() - {}", e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
-            log.error("ERROR -Service update Perfil() "+e.getMessage());
-            throw e;
+            log.error("ERROR -Service update Perfil() {}", e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
         }catch (Exception e) {
-            log.error( "ERROR -Service updatePerfil() "+e.getMessage() );
-            throw new RuntimeException("Error al actualizar perfil"+e.getMessage());
+            log.error("ERROR -Service updatePerfil() {}", e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
 
     }
@@ -193,10 +193,10 @@ public class PerfilServiceImpl implements IPerfilService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(() -> new ResourceNotFoundException("Opcion no encontrado a eliminar"));
+            Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(() -> new ResourceNotFoundException("Perfil a eliminar no existe."));
             if(perfil!=null){
                 if(perfil.isDeleted()){
-                    throw new ResourceNotFoundException("El perfil no existe, ya se encuentra eliminado");
+                    throw new ResourceNotFoundException("El perfil no existe, ya se encuentra eliminado.");
                 }
                 perfil.setDeleted(true);
                 perfil.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
@@ -209,8 +209,8 @@ public class PerfilServiceImpl implements IPerfilService {
 
         }catch (ResourceNotFoundException e){
             log.error("ERROR - Service deletePerfil() "+e.getMessage());
-            e.printStackTrace();
-            estado=false;
+            throw new ResourceNotFoundException(e.getMessage());
+            //estado=false;
         }
         return estado;
     }

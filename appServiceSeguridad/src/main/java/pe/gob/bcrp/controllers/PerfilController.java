@@ -65,22 +65,23 @@ public class PerfilController {
         try {
             PerfilDTO moduloDto=perfilService.savePerfil(perfilDTO);
             response.setStatus(1);
-            response.setMessage("El Perfil fue guardado de manera exitosa");
+            response.setMessage("El perfil fue guardado de manera exitosa.");
             // response.setBody(entidadDTO);
         }catch (IllegalArgumentException e) {
+            log.error("ERROR - Perfil  {}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return ResponseEntity.badRequest().body(response);
 
         }catch (ResourceNotFoundException e) {
-            log.error("ERROR - Perfil No encontrado " + e.getMessage());
+            log.error("ERROR - Perfil No encontrado {}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         } catch (Exception e){
             log.error("ERROR - guardarPerfil | requestURL=perfil{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al guardar el Perfil "+ e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
@@ -97,7 +98,7 @@ public class PerfilController {
         try {
             PerfilDTO perfilDto=perfilService.updatePerfil(perfilDTO,idPerfil);
             response.setStatus(1);
-            response.setMessage("El perfil fue actualizado exitosamente");
+            response.setMessage("El perfil fue actualizado exitosamente.");
 
         }
          catch (IllegalArgumentException e) {
@@ -107,15 +108,15 @@ public class PerfilController {
             return ResponseEntity.badRequest().body(response);
 
         }catch (ResourceNotFoundException e) {
-            log.error("ERROR - update perfil No encontrado " + e.getMessage());
+            log.error("ERROR - update perfil No encontrado {}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar el perfil, "+e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         }catch (Exception e){
             log.error("ERROR - update Perfil | requestURL=perfil{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar el perfil "+e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
@@ -132,10 +133,10 @@ public class PerfilController {
 
             boolean eliminado=perfilService.deletePerfil(idPerfil);
             if(!eliminado){
-                throw new ResourceNotFoundException("El perfil no existe, ya se encuentra eliminado");
+                throw new ResourceNotFoundException("El perfil no existe, ya se encuentra eliminado.");
             }
             response.setStatus(1);
-            response.setMessage("El perfil ha sido eliminado con éxito");
+            response.setMessage("El perfil ha sido eliminado con éxito.");
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         }catch (ResourceNotFoundException e){
@@ -146,7 +147,7 @@ public class PerfilController {
         }catch (Exception e){
             log.error("ERROR - eliminarPerfil() {}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al eliminar el perfil: "+e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
     }

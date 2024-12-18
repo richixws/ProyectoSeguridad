@@ -99,7 +99,7 @@ public class OpcionServiceImpl  implements IOpcionService {
            Optional<Opcion> exist = opcionRepository.findFirstByNombreOpcionContainingIgnoreCase(
                    opcionDto.getNombreOpcion());
            if(exist.isPresent()) {
-               throw new ResourceNotFoundException("El nombre de la opción se encuentra en uso, por favor ingrese una nueva opción.");
+               throw new ResourceNotFoundException("El nombre de la opción ya esta registrado en otra opcion.");
            }
 
            Usuario usuario = util.getUsuario();
@@ -108,8 +108,8 @@ public class OpcionServiceImpl  implements IOpcionService {
            opcion.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
            opcion.setUsuarioCreacion(usuario.getUsuario());
 
-           Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("no se encontro el sistema a guardar"));
-           Modulo modulo = moduloRepository.findById(opcionDto.getIdModulo()).orElseThrow(()-> new ResourceNotFoundException("no se encontro el modulo a guardar"));
+           Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("El sistema a guardar de la opcion no existe."));
+           Modulo modulo = moduloRepository.findById(opcionDto.getIdModulo()).orElseThrow(()-> new ResourceNotFoundException("El modulo a guardar de la opcion no existe."));
 
            modulo.setSistema(sistema);
            opcion.setModulo(modulo);
@@ -120,10 +120,10 @@ public class OpcionServiceImpl  implements IOpcionService {
 
        }catch (ResourceNotFoundException e){
            log.error("ERROR - save Opcion() {}", e.getMessage());
-           throw e;
+           throw new ResourceNotFoundException(e.getMessage());
        }catch (Exception e) {
            log.error("ERROR - saveOpcion() {}", e.getMessage());
-           throw  new RuntimeException("Error al guardar opcion"+e.getMessage());
+           throw  new RuntimeException(e.getMessage());
        }
     }
 
@@ -134,11 +134,11 @@ public class OpcionServiceImpl  implements IOpcionService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Opcion opcion=opcionRepository.findById(idOpcion).orElseThrow(()-> new ResourceNotFoundException("no se encontrado opción a actualizar"));
+            Opcion opcion=opcionRepository.findById(idOpcion).orElseThrow(()-> new ResourceNotFoundException("Opción a actualizar no existe."));
 
             boolean existeNombredeModulo=opcionRepository.existsByNombreOpcionIgnoreCaseAndAndIdOpcionNot(opcionDto.getNombreOpcion(),idOpcion);
             if (existeNombredeModulo) {
-                throw new IllegalArgumentException("El nombre de la opcion ya está registrado en otra opcion.");
+                throw new IllegalArgumentException("El nombre de opcion ya está registrado en otra opcion.");
             }
 
             Modulo modulo=moduloRepository.findById(opcionDto.getIdModulo())

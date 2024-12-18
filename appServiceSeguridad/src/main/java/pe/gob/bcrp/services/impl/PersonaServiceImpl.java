@@ -97,7 +97,7 @@ public class PersonaServiceImpl  implements IPersonaService {
 
       //  DocumentoIdentidad doc=documentoIdentidadRepository.findById(personaDTO.getTipoDocumento()).orElseThrow(()-> new ResourceNotFoundException("Documento de identidad no encontrado"));
         DocumentoIdentidad doc = documentoIdentidadRepository.findByIdDocumentoIdentidadAndGrupoDocumento(personaDTO.getTipoDocumento(), 1)
-                .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento de identidad no existe"));
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento de identidad no existe."));
 
         Set<ConstraintViolation<PersonaDTO>> violations;
         try(ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {

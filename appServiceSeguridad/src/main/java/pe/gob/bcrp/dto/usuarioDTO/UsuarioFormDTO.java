@@ -24,7 +24,6 @@ public class UsuarioFormDTO implements Serializable {
 
     @JsonProperty("scope")
     private String  ambito;
- //   private String  idSistema;
 
     @JsonProperty("documentType")
     private String  tipoDocumento;

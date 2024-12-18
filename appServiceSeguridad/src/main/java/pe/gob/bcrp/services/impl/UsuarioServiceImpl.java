@@ -1,6 +1,10 @@
 package pe.gob.bcrp.services.impl;
 
 import jakarta.mail.MessagingException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
@@ -18,6 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
+import pe.gob.bcrp.dto.personaDTO.PersonaDTO;
+import pe.gob.bcrp.dto.personaDTO.ValidateDni;
+import pe.gob.bcrp.dto.personaDTO.ValidatePasaporte;
 import pe.gob.bcrp.dto.response.UsuarioResponse;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroCreateUsuarioDTO;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroUsuarioDTO;
@@ -40,10 +47,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Log4j2
@@ -128,7 +132,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
             return usuarioResponse;
 
         } catch (Exception e) {
-            log.error( "ERROR - getAllEntidades() "+e.getMessage() );
+            log.error("ERROR - getAllEntidades() {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -139,7 +143,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         try {
 
             if(file.isEmpty()){
-                throw new BadRequestException("Por favor seleccione un archivo para cargar");
+                throw new BadRequestException("Por favor seleccione un archivo para cargar.");
             }
             if(!file.getContentType().equals("text/csv")){
                 throw new BadRequestException("Por favor carge un archivo CSV valido");
@@ -184,21 +188,57 @@ public class UsuarioServiceImpl implements IUsuarioService {
                                                    String correoElectronico,
                                                    String ambito, MultipartFile sustento) {
 
-        try {
+      //  try {
+         DocumentoIdentidad docu = documentoIdentidadRepository.findByIdDocumentoIdentidadAndGrupoDocumento(tipoDocumento, 1)
+                    .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento de identidad no existe"));
+
+        RegistroCreateUsuarioDTO registroDTO = RegistroCreateUsuarioDTO.builder()
+                .documentType(tipoDocumento)
+                .documentNumber(numeroDocumento)
+                .names(nombres)
+                .fatherSurname(apePaterno)
+                .motherSurname(apeMaterno)
+                .email(correoElectronico)
+                .scope(ambito)
+                .build();
+
+        Set<ConstraintViolation<RegistroCreateUsuarioDTO>> violations;
+        try(ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+
+            Validator validator = factory.getValidator();
+            if(docu != null && docu.getGrupoDocumento().equals(1)){
+                if(Objects.equals(docu.getIdDocumentoIdentidad(), 1)) {
+                    violations = validator.validate(registroDTO, ValidateDni.class);
+                } else {
+                    violations = validator.validate(registroDTO, ValidatePasaporte.class);
+                }
+            } else {
+                if(Objects.equals(registroDTO.getDocumentType(), 1)) {
+                    violations = validator.validate(registroDTO, ValidateDni.class);
+                } else {
+                    violations = validator.validate(registroDTO, ValidatePasaporte.class);
+                }
+            }
+
+            if(!violations.isEmpty()) {
+                var obj = violations.stream().findFirst().get();
+                throw new IllegalArgumentException(obj.getMessage());
+            }
+
             // Verificar si el número de documento ya existe
             if (personaRepository.existsByNumeroDocumento(numeroDocumento)) {
-                throw new IllegalArgumentException("El número de documento ya existe.");
+                throw new IllegalArgumentException("El número de documento del usuario se encuentra en uso, por favor ingrese uno nuevo.");
             }
 
             // Verificar si el correo electrónico ya existe
             if (personaRepository.existsByCorreo(correoElectronico)) {
-                throw new IllegalArgumentException("El correo electrónico ya existe.");
+                throw new IllegalArgumentException("El correo electrónico del usuario se encuentra en uso, por favor ingrese un nuevo.");
             }
 
 
             Usuario usuarioSistema=util.getUsuario();
 
-            DocumentoIdentidad doc=documentoIdentidadRepository.findById(tipoDocumento).orElseThrow(()-> new ResourceNotFoundException("documento no encontrado"));
+            DocumentoIdentidad doc=documentoIdentidadRepository.findById(tipoDocumento).orElseThrow(()-> new ResourceNotFoundException("El tipo documento del usuario no existe."));
 
             Usuario usuario=new Usuario();
             Persona persona=new Persona();
@@ -238,12 +278,14 @@ public class UsuarioServiceImpl implements IUsuarioService {
             return regUsuarioNew;
 
         } catch (IllegalArgumentException e) {
-          log.error(e.getMessage());
+            log.error("ERROR - guardarUsuario {}", e.getMessage());
           throw new IllegalArgumentException(e.getMessage());
-        }
-        catch (Exception e) {
-          log.error(e.getMessage());
-          throw new RuntimeException(e);
+        }catch (ResourceNotFoundException e) {
+            log.error("ERROR  guardarUsuario{}", e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
+        }catch (Exception e) {
+            log.error("ERROR guardarUsuario{}", e.getMessage());
+          throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -252,23 +294,49 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public RegistroUsuarioDTO updateUsuario(Integer idUsuario, RegistroUsuarioDTO registroUsuarioDTO) {
 
         log.info("INI Service() - updateUsuario");
-        try {
+      //  try {
+        DocumentoIdentidad doc = documentoIdentidadRepository.findByIdDocumentoIdentidadAndGrupoDocumento(registroUsuarioDTO.getDocumentType(), 1)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento de identidad no existe"));
+
+            Set<ConstraintViolation<RegistroUsuarioDTO>> violations;
+            try(ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+                Validator validator = factory.getValidator();
+                if(doc != null && doc.getGrupoDocumento().equals(1)){
+                    if(Objects.equals(doc.getIdDocumentoIdentidad(), 1)) {
+                        violations = validator.validate(registroUsuarioDTO, ValidateDni.class);
+                    } else {
+                        violations = validator.validate(registroUsuarioDTO, ValidatePasaporte.class);
+                    }
+                } else {
+                    if(Objects.equals(registroUsuarioDTO.getDocumentType(), 1)) {
+                        violations = validator.validate(registroUsuarioDTO, ValidateDni.class);
+                    } else {
+                        violations = validator.validate(registroUsuarioDTO, ValidatePasaporte.class);
+                    }
+                }
+
+                if(!violations.isEmpty()) {
+                    var obj = violations.stream().findFirst().get();
+                    throw new IllegalArgumentException(obj.getMessage());
+                }
+
+
             // Verificar si el número de documento ya existe
-            Usuario u=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            Usuario u=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario a actualizar no existe."));
             if (personaRepository.existsByNumeroDocumentoAndIdPersonaNot(registroUsuarioDTO.getDocumentNumber(), u.getPersona().getIdPersona())) {
-                throw new IllegalArgumentException("El número de documento ya existe.");
+                throw new IllegalArgumentException("El número de documento del usuario ya esta registrado en otro usuario.");
             }
 
             // Verificar si el correo electrónico ya existe
             if (personaRepository.existsByCorreoAndIdPersonaNot(registroUsuarioDTO.getEmail(),u.getPersona().getIdPersona())) {
-                throw new IllegalArgumentException("El correo electrónico ya existe.");
+                throw new IllegalArgumentException("El correo electrónico del usuario ya esta registrado en otro usuario.");
             }
 
             Usuario usuarioReg = util.getUsuario();
 
-            Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-            Persona persona = personaRepository.findById(usuario.getPersona().getIdPersona()).orElseThrow(() -> new RuntimeException("Persona no encontrado"));
-            DocumentoIdentidad docuIde = documentoIdentidadRepository.findById(registroUsuarioDTO.getDocumentType()).orElseThrow(() -> new ResourceNotFoundException("documento no encontrado"));
+            Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuario a actualizar no existe."));
+            Persona persona = personaRepository.findById(usuario.getPersona().getIdPersona()).orElseThrow(() -> new RuntimeException("Persona a actualizar no existe"));
+            DocumentoIdentidad docuIde = documentoIdentidadRepository.findById(registroUsuarioDTO.getDocumentType()).orElseThrow(() -> new ResourceNotFoundException("Documento de identidad a actualizar no existe."));
 
             persona.setTipoDocumento(docuIde);
             persona.setNumeroDocumento(registroUsuarioDTO.getDocumentNumber());
@@ -298,13 +366,13 @@ public class UsuarioServiceImpl implements IUsuarioService {
             return newUsuario;
 
         } catch (IllegalArgumentException e) {
-           log.error(e.getMessage());
+            log.error("ERROR updateUsuario() {}", e.getMessage());
            throw new IllegalArgumentException(e.getMessage());
         }  catch (ResourceNotFoundException e){
-            log.error("ERROR - updateUsuario() "+e.getMessage());
-            throw e;
+            log.error("ERROR - updateUsuario() {}", e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("ERROR - updateUsuario e() {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -318,13 +386,13 @@ public class UsuarioServiceImpl implements IUsuarioService {
         try {
             Usuario usuarioReg=util.getUsuario();
 
-            Usuario usuario=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            Usuario usuario=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario a eliminar no existe."));
             if(usuario!=null){
                 /*if(usuario.getEstado().equalsIgnoreCase("Inactivo")){
                     throw  new ResourceNotFoundException("Usuario ya ha sido inhabilitado");
                 }*/
                 if(usuario.isDeleted()){
-                    throw new ResourceNotFoundException("El usuario no existe, ya se encuentra eliminado");
+                    throw new ResourceNotFoundException("El usuario no existe, ya se encuentra eliminado.");
                 }
                 usuario.setHoraDeEliminacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
                 usuario.setUsuarioEliminacion(usuarioReg.getUsuario());
@@ -337,8 +405,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
         }catch (ResourceNotFoundException e){
             log.error("ERROR - deleteEntidad() "+e.getMessage());
-            e.printStackTrace();
-            estado=false;
+            throw new ResourceNotFoundException(e.getMessage());
+            //estado=false;
         }
         return estado;
     }

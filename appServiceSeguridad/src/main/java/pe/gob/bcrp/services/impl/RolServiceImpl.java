@@ -86,7 +86,7 @@ public class RolServiceImpl implements IRolService {
             return rolResponse;
 
         }catch (Exception e) {
-            log.error( "ERROR - getAllModulos() "+e.getMessage() );
+            log.error("ERROR - getAllModulos() {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -98,11 +98,11 @@ public class RolServiceImpl implements IRolService {
         try {
             Usuario usuario = util.getUsuario();
 
-            Sistema sistema=sistemaRepository.findById(rolDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("Sistema del rol no existe."));
+            Sistema sistema=sistemaRepository.findById(rolDTO.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("El sistema a guardar del rol no existe."));
 
             Optional<Rol> moduloExistente = rolRepository.findFirstByNombreContainingIgnoreCase(rolDTO.getNombreRol());
             if (moduloExistente.isPresent()){
-                throw new IllegalArgumentException("el nombre del rol se encuentra en uso, por favor ingrese un nuevo rol.");
+                throw new IllegalArgumentException("El nombre del rol se encuentra en uso, por favor ingrese un nuevo rol.");
             }
 
             Rol rol = modelMapper.map(rolDTO, Rol.class);
@@ -120,10 +120,10 @@ public class RolServiceImpl implements IRolService {
             throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e) {
             log.error("ERROR - service save Role {}", e.getMessage());
-             throw e;
+            throw new ResourceNotFoundException(e.getMessage());
         }catch (Exception e) {
-            log.error( "ERROR -service saveRole "+e.getMessage() );
-            throw new RuntimeException("Error al guardar rol "+e.getMessage());
+            log.error("ERROR -service saveRole {}", e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -133,14 +133,14 @@ public class RolServiceImpl implements IRolService {
         log.info(" INI - Service  updateRole");
         try {
             Usuario usuario = util.getUsuario();
-            Rol rol = rolRepository.findById(idRol).orElseThrow(() -> new ResourceNotFoundException("rol a actualizar no existe."));
+            Rol rol = rolRepository.findById(idRol).orElseThrow(() -> new ResourceNotFoundException("Rol a actualizar no existe."));
 
             boolean existeNombredeModulo=rolRepository.existsByNombreIgnoreCaseAndAndIdRolNot(rolDto.getNombreRol(),idRol);
             if (existeNombredeModulo) {
-                throw new IllegalArgumentException("El nombre del rol ya se encuentra registrado en otro rol.");
+                throw new IllegalArgumentException("El nombre del rol ya esta registrado en otro rol.");
             }
 
-            Sistema sistema = sistemaRepository.findById(rolDto.getIdSistema()).orElseThrow(() -> new ResourceNotFoundException("Sistema a actualizar no existe"));
+            Sistema sistema = sistemaRepository.findById(rolDto.getIdSistema()).orElseThrow(() -> new ResourceNotFoundException("El sistema a actualizar del rol no existe."));
             rol.setSistema(sistema);
             rol.setNombre(rolDto.getNombreRol());
             rol.setEstado(rolDto.getEstado());
@@ -157,12 +157,11 @@ public class RolServiceImpl implements IRolService {
             log.error("ERROR - service update Role {}", e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - Service  updateRole() "+e.getMessage());
+            log.error("ERROR - Service  updateRole() {}", e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
-        }
-        catch (Exception e) {
-            log.error( "ERROR - Service updateRole() "+e.getMessage() );
-            throw new RuntimeException("Error al actualizar"+e.getMessage());
+        }catch (Exception e) {
+            log.error("ERROR - Service updateRole() {}", e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -174,10 +173,10 @@ public class RolServiceImpl implements IRolService {
         try {
             Usuario usuario=util.getUsuario();
 
-            Rol rol=rolRepository.findById(idRol).orElseThrow(() -> new ResourceNotFoundException(" Rol no encontrado "));
+            Rol rol=rolRepository.findById(idRol).orElseThrow(() -> new ResourceNotFoundException("Rol a eliminar no existe."));
             if(rol!=null){
                 if(rol.isDeleted()){
-                    throw new ResourceNotFoundException("El Rol no existe, ya se encuentra eliminado");
+                    throw new ResourceNotFoundException("El rol no existe, ya se encuentra eliminado.");
                 }
                 rol.setDeleted(true);
                 //rol.setEstado(0);
@@ -189,11 +188,11 @@ public class RolServiceImpl implements IRolService {
             }
         }catch (ResourceNotFoundException e){
             log.error("ERROR - delete Role "+e.getMessage());
-            e.printStackTrace();
-            estado=false;
+            throw new ResourceNotFoundException(e.getMessage());
+            //estado=false;
         }catch (Exception e) {
-            log.error( "ERROR - Service deleteRole() "+e.getMessage() );
-            throw new RuntimeException("Error al Eliminar Role "+e.getMessage());
+            log.error("ERROR - Service deleteRole() {}", e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
         return estado;
     }

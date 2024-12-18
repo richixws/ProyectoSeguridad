@@ -108,7 +108,7 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/usuario",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDTO<RegistroCreateUsuarioDTO>> saveUsuario(@Valid @ModelAttribute RegistroCreateUsuarioDTO registroUsuarioDTO,
-                                                                             @RequestParam(value = "sustenance", required = false) MultipartFile sustento) throws InvalidCredentialsException {
+                                                                             @RequestParam(value = "sustenance", required = false) MultipartFile[] sustento) throws InvalidCredentialsException {
 
 
         log.info("INI - guardarUsuario | requestURL=usuarios");
@@ -123,19 +123,24 @@ public class UsuarioController {
                                                                                      registroUsuarioDTO.getFatherSurname(),
                                                                                      registroUsuarioDTO.getMotherSurname(),
                                                                                      registroUsuarioDTO.getEmail(),
-                                                                                     registroUsuarioDTO.getScope(), sustento);
+                                                                                     registroUsuarioDTO.getScope(), sustento[0]);
 
             response.setStatus(1);
-            response.setMessage("El Usuario fue guardado de manera existosa");
+            response.setMessage("El usuario fue guardado de manera existosa.");
         } catch (IllegalArgumentException e) {
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return ResponseEntity.badRequest().body(response);
+        }catch (ResourceNotFoundException e) {
+            log.error("ERROR - updateUsuario Controller{}", e.getMessage());
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         catch (Exception e){
             log.error(" ERROR - add Usuario | requestURL=usuarios ");
             response.setStatus(0);
-            response.setMessage("Error al guardar el Usuario "+e.getMessage() );
+            response.setMessage(e.getMessage() );
             return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
@@ -153,21 +158,22 @@ public class UsuarioController {
         try {
             RegistroUsuarioDTO updUsuarioFormDTO=usuarioService.updateUsuario(idUsuario,registroUsuarioDTO);
             response.setStatus(1);
-            response.setMessage("El Usuario fue actualizado de manera exitosa");
+            response.setMessage("El usuario fue actualizado de manera exitosa.");
 
         }catch (IllegalArgumentException e) {
+            log.error("ERROR  updateUsuario{}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }catch (ResourceNotFoundException e) {
-            log.error("ERROR - updateUsuario No encontrado " + e.getMessage());
+            log.error("ERROR - updateUsuario No encontrado{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al Actualizar el Usuario "+e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }catch (Exception e){
             log.error(" ERROR - Editar Usuario | requestURL=usuario ");
             response.setStatus(0);
-            response.setMessage("Error al actualizar el Usuario "+e.getMessage() );
+            response.setMessage(e.getMessage() );
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
@@ -184,10 +190,10 @@ public class UsuarioController {
           try {
               boolean eliminado=usuarioService.deleteUsuario(idusuario);
               if(!eliminado){
-                  throw new ResourceNotFoundException("El Usuario a Inhabilitar no existe");
+                  throw new ResourceNotFoundException("El usuario a inhabilitar no existe.");
               }
               response.setStatus(1);
-              response.setMessage("El Usuario fue Inhabilitado de manera exitosa");
+              response.setMessage("El usuario fue inhabilitado de manera exitosa.");
               return new ResponseEntity<>(response,HttpStatus.OK);
 
           }catch (ResourceNotFoundException e){
@@ -199,7 +205,7 @@ public class UsuarioController {
           }catch (Exception e){
               log.error(" ERROR - delete Usuario | requestURL=IdUsuario ");
               response.setStatus(0);
-              response.setMessage("Error al Inhabilitar el Usuario "+e.getMessage() );
+              response.setMessage(e.getMessage());
               return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
           }
     }
@@ -214,10 +220,10 @@ public class UsuarioController {
         try {
             boolean result = usuarioService.AddProfilesToUsuario(idusuario, idRol);
             if(!result){
-                throw new ResourceNotFoundException("Ocurrió un error al asignar rol a usuario");
+                throw new ResourceNotFoundException("Ocurrió un error al asignar rol a usuario.");
             }
             response.setStatus(1);
-            response.setMessage("Se asigno el rol al usuario");
+            response.setMessage("Se asigno el rol al usuario exitosamente.");
             return new ResponseEntity<>(response,HttpStatus.OK);
         } catch (ResourceNotFoundException e){
             log.error("ERROR - AsignarRolToUsuario {}", e.getMessage());
@@ -228,7 +234,7 @@ public class UsuarioController {
         } catch (DataAccessException e){
             log.error("ERROR - AddProfilesToUsuario() "+e.getMessage());
             response.setStatus(0);
-            response.setMessage("No se puede volver a asignar el mismo rol al usuario");
+            response.setMessage("No se puede volver a asignar el mismo rol al usuario.");
             return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
 
         } catch (Exception e){
@@ -249,7 +255,7 @@ public class UsuarioController {
         try {
             boolean result = usuarioService.AddProfileToUsuario(idusuario, idPerfil);
             if(!result){
-                throw new ResourceNotFoundException("Ocurrió un error al asignar perfil a usuario");
+                throw new ResourceNotFoundException("Ocurrió un error al asignar perfil a usuario.");
             }
             response.setStatus(1);
             response.setMessage("Se asigno el perfil al usuario");
@@ -275,9 +281,19 @@ public class UsuarioController {
     }
 
     // validar archivo sustento
-    private void validarArchivoSustento(MultipartFile sustento) {
+    private void validarArchivoSustento(MultipartFile[] sustentos) {
 
-        if (sustento == null || sustento.isEmpty()) {
+        if (sustentos == null || sustentos.length==0) {
+            throw new IllegalArgumentException("El archivo de sustento es obligatorio.");
+        }
+
+        if(sustentos.length>1){
+            throw new IllegalArgumentException("Sólo se permite un archivo de sustento.");
+        }
+
+        MultipartFile sustento = sustentos[0];
+
+        if (sustento.isEmpty()) {
             throw new IllegalArgumentException("El archivo de sustento es obligatorio.");
         }
 

@@ -72,12 +72,12 @@ public class RolController {
         }catch (IllegalArgumentException e) {
             log.error("ERROR - saveRol|requestURL=rol{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al guardar "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }catch (Exception e){
             log.error("ERROR - saveRol | requestURL=rol{}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al guardar, "+ e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
@@ -100,7 +100,7 @@ public class RolController {
             log.error("ERROR -  updateRol|requestURL=rol{}", e.getMessage());
             response.setStatus(0);
             response.setMessage("Error al Actualizar "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }catch ( ResourceNotFoundException e) {
             log.error("ERROR - update Rol No encontrado {}", e.getMessage());
             response.setStatus(0);
