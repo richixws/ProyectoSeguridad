@@ -105,6 +105,10 @@ public class PerfilServiceImpl implements IPerfilService {
                 throw new IllegalArgumentException("El nombre del perfil se encuentra en uso, por favor ingrese un nuevo perfil.");
             }
 
+            if(perfilDTO.getEstado()==null){
+                perfilDTO.setEstado(1);
+            }
+
             Usuario usuario = util.getUsuario();
 
             Perfil perfil = modelMapper.map(perfilDTO, Perfil.class);
