@@ -1,5 +1,5 @@
 package pe.gob.bcrp.services;
-/**
+
 import pe.gob.bcrp.dto.areaDTO.AreaDTO;
 import pe.gob.bcrp.dto.response.AreaResponse;
 
@@ -11,4 +11,4 @@ public interface IAreaService {
     public AreaDTO updateArea(Integer id, AreaDTO areaDto);
     public boolean deleteArea(Integer idArea);
 
-}**/
+}

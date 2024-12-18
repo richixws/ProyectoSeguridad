@@ -1,5 +1,5 @@
 package pe.gob.bcrp.services.impl;
-/**
+
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -62,7 +62,7 @@ public class AreaServiceImpl implements IAreaService {
             List<AreaFormDTO> entidadDTOS = areas.stream().map(enti -> {
                 Sistema sistema =  enti.getSistema();
                 AreaFormDTO area =  modelMapper.map(enti, AreaFormDTO.class);
-                area.setIdSistema(sistema.getIdSistema());
+                area.setIdSistema(sistema.getIdSystem());
                 return area;
             }).toList();
 
@@ -176,4 +176,4 @@ public class AreaServiceImpl implements IAreaService {
         return estado;
     }
 
-}**/
+}

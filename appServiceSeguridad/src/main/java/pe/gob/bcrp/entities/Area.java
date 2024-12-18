@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-/**
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -60,4 +60,4 @@ public class Area implements Serializable {
 
     @Column(name = "estado", length = 1)
     private Integer estado;
-}**/
+}
