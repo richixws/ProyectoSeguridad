@@ -3,7 +3,10 @@ package pe.gob.bcrp.controllers;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.entidadDTO.EntidadDTO;
+import pe.gob.bcrp.dto.entidadDTO.EntidadFormDTO;
 import pe.gob.bcrp.dto.response.EntidadResponse;
 import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
@@ -51,7 +55,10 @@ public class EntidadController {
     }
 
     @Operation(summary = "Listar las Entidades", description = "Obtener la lista de todos las Entidades de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Lista de entidades obtenida exitosamente.",
+                                content = { @Content(schema = @Schema(implementation = EntidadResponse.class), mediaType = "application/json")}),
+                   @ApiResponse(responseCode = "422", description = "No se pudo procesar la solicitud debido a un error interno.",content = @Content)
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/entidades")
     public ResponseEntity<EntidadResponse> getAllEntidades(
@@ -75,7 +82,14 @@ public class EntidadController {
     }
 
     @Operation(summary = "Guardar Entidad", description = "Guarda la Entidad en la base de datos")
-    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    @ApiResponses({@ApiResponse(responseCode = "201",description = "Entidad guardado de manera exitosa.",
+                    content = {@Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+                    @ApiResponse( responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {  @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }),
+                    @ApiResponse(responseCode = "404",description = "Recurso no encontrado.",
+                    content = { @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json"  ) }),
+                    @ApiResponse( responseCode = "422",description = "No se pudo procesar la solicitud debido a un error interno.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json") } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/entidad")
     @JsonView(Views.Create.class)
@@ -109,7 +123,14 @@ public class EntidadController {
     }
 
     @Operation(summary = "Actualizar Entidad", description = "Actualiza la Entidad en la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Entidad actualizado de manera exitosa.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+                   @ApiResponse(responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+                   @ApiResponse( responseCode = "404",description = "Recurso no encontrada con el Id proporcionado.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+                   @ApiResponse( responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/entidad/{entityId}")
     @JsonView(Views.Update.class)
@@ -147,7 +168,12 @@ public class EntidadController {
     }
 
     @Operation(summary = "Eliminar Entidad", description = "Elimina la Entidad por el IdEntidad de la base de datos")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "La entidad ha sido eliminada con éxito.",
+                    content = { @Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" )} ),
+                   @ApiResponse( responseCode = "404",description = "Recurso no existe o ya fue eliminada.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ),
+                   @ApiResponse(responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }) })
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/entidad/{entityId}")
     public ResponseEntity<ResponseDTO<EntidadDTO>> deleteEntidad(@PathVariable("entityId") Integer idEntidad){

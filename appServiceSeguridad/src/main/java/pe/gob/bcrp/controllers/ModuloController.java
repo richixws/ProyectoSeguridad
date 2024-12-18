@@ -2,7 +2,10 @@ package pe.gob.bcrp.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
@@ -14,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.moduloDTO.ModuloDTO;
+import pe.gob.bcrp.dto.response.EntidadResponse;
 import pe.gob.bcrp.dto.response.ModuloResponse;
 import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.entities.Modulo;
@@ -35,7 +39,11 @@ public class ModuloController {
     }
 
     @Operation(summary = "Listar Modulos", description = "Obtener la lista de todos los Modulos de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Lista de modulos obtenida exitosamente.",
+                    content = { @Content(schema = @Schema(implementation = ModuloResponse.class), mediaType = "application/json")}),
+                    @ApiResponse(responseCode = "422", description = "No se pudo procesar la solicitud debido a un error interno.",content = @Content)
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/modulos")
     public ResponseEntity<ModuloResponse> getAllModulos(
@@ -59,7 +67,15 @@ public class ModuloController {
     }
 
     @Operation(summary = "Guardar Modulo", description = "Guarda el Modulo en la base de datos")
-    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    //@ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    @ApiResponses({@ApiResponse(responseCode = "201",description = "Modulo guardado de manera exitosa.",
+            content = {@Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {  @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }),
+            @ApiResponse(responseCode = "404",description = "Recurso no encontrado.",
+                    content = { @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json"  ) }),
+            @ApiResponse( responseCode = "422",description = "No se pudo procesar la solicitud debido a un error interno.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json") } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/modulo")
     @JsonView(Views.Create.class)
@@ -90,7 +106,14 @@ public class ModuloController {
     }
 
     @Operation(summary = "Actualizar Modulo", description = "Actualiza el Modulo en la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Modulo actualizado de manera exitosa.",
+            content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "404",description = "Recurso no encontrada con el Id proporcionado.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse( responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/modulo/{moduleId}")
     @JsonView(Views.Update.class)
@@ -105,6 +128,11 @@ public class ModuloController {
             response.setMessage("El modulo fue actualizado de manera exitosa");
             // response.setBody(entidadDTO);
 
+        } catch (IllegalArgumentException e) {
+            log.error("ERROR - update Modulo" + e.getMessage());
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }catch ( ResourceNotFoundException e) {
                 log.error("ERROR - update Modulo No encontrado " + e.getMessage());
                 response.setStatus(0);
@@ -121,7 +149,13 @@ public class ModuloController {
     }
 
     @Operation(summary = "Eliminar Modulo", description = "Elimina el Modulo por el IdModulo de la base de datos")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Modulo ha sido eliminada con éxito.",
+            content = { @Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" )} ),
+            @ApiResponse( responseCode = "404",description = "Recurso no existe o ya fue eliminada.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }) })
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/modulo/{moduleId}")
     public ResponseEntity<ResponseDTO<ModuloDTO>> deleteModulo(@PathVariable("moduleId") Integer idModulo){
@@ -135,7 +169,7 @@ public class ModuloController {
                 throw new ResourceNotFoundException("El modulo no existe, ya se encuentra eliminado.");
             }
             response.setStatus(1);
-            response.setMessage("El Modulo ha sido eliminado con éxito");
+            response.setMessage("El modulo ha sido eliminado con éxito.");
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         }catch (ResourceNotFoundException e){

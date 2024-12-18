@@ -99,11 +99,14 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
 
             if (nombres != null  || tipoDocumento != null || numeroDocumento != null || ambito!= null) {
-                pageUsuarios = usuarioRepository.findByFilters(nombres, tipoDocumento, numeroDocumento,ambito, pageDetails);//,
+                String nombreLowerCase = nombres != null ? nombres.toLowerCase() : null;
+                String ambitoLowerCase = ambito != null ? ambito.toLowerCase() : null;
+                pageUsuarios = usuarioRepository.findByFilters(nombreLowerCase, tipoDocumento, numeroDocumento,ambitoLowerCase, pageDetails);//,
             }else if(idSistema != null){
                 pageUsuarios = usuarioRepository.findBySistemaId(idSistema, pageDetails);
             }else{
-                 pageUsuarios = usuarioRepository.findByIsDeletedFalse(pageDetails);
+                // pageUsuarios = usuarioRepository.findByIsDeletedFalse(pageDetails);
+                pageUsuarios = usuarioRepository.findAll(pageDetails);
             }
 
             List<Usuario> usuarios = pageUsuarios.getContent();
@@ -118,6 +121,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
                       usuarioDTO.setApellidoPaterno(user.getPersona().getApellidoPaterno());
                       usuarioDTO.setApellidoMaterno(user.getPersona().getApellidoMaterno());
                       usuarioDTO.setCorreoElectronico(user.getPersona().getCorreo());
+
                   }
                 return usuarioDTO;
             }).toList();
@@ -263,8 +267,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
             usuario.setFechaCreacion(new Date());
             usuario.setUsuarioCreacion(usuarioSistema.getUsuario());
             usuario.setHoraCreacion(usuario.getHoraCreacion());
-            usuario.setEstado(1);
-           // }
+            if(usuario.getEstado()==null){
+                usuario.setEstado(1);
+            }
+
+
 
 
             Persona personaNew=personaRepository.save(persona);
@@ -334,9 +341,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
             Usuario usuarioReg = util.getUsuario();
 
-            Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuario a actualizar no existe."));
-            Persona persona = personaRepository.findById(usuario.getPersona().getIdPersona()).orElseThrow(() -> new RuntimeException("Persona a actualizar no existe"));
-            DocumentoIdentidad docuIde = documentoIdentidadRepository.findById(registroUsuarioDTO.getDocumentType()).orElseThrow(() -> new ResourceNotFoundException("Documento de identidad a actualizar no existe."));
+            Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario a actualizar no existe."));
+            Persona persona = personaRepository.findById(usuario.getPersona().getIdPersona()).orElseThrow(() -> new IllegalArgumentException("Persona a actualizar no existe"));
+            DocumentoIdentidad docuIde = documentoIdentidadRepository.findById(registroUsuarioDTO.getDocumentType()).orElseThrow(() -> new IllegalArgumentException("Documento de identidad a actualizar no existe."));
 
             persona.setTipoDocumento(docuIde);
             persona.setNumeroDocumento(registroUsuarioDTO.getDocumentNumber());
@@ -373,7 +380,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
             throw new ResourceNotFoundException(e.getMessage());
         } catch (Exception e) {
             log.error("ERROR - updateUsuario e() {}", e.getMessage());
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -386,7 +393,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         try {
             Usuario usuarioReg=util.getUsuario();
 
-            Usuario usuario=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario a eliminar no existe."));
+            Usuario usuario=usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResourceNotFoundException("Usuario a inhabilitar no existe."));
             if(usuario!=null){
                 /*if(usuario.getEstado().equalsIgnoreCase("Inactivo")){
                     throw  new ResourceNotFoundException("Usuario ya ha sido inhabilitado");
@@ -404,7 +411,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
 
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - deleteEntidad() "+e.getMessage());
+            log.error("ERROR - deleteEntidad() {}", e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
             //estado=false;
         }

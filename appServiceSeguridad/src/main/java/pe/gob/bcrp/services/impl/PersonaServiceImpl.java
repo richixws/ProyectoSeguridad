@@ -132,7 +132,7 @@ public class PersonaServiceImpl  implements IPersonaService {
                 throw new IllegalArgumentException("El correo electrónico ya existe.");
             }
 
-            DocumentoIdentidad documentoIdentidad=documentoIdentidadRepository.findById(personaDTO.getTipoDocumento()).orElseThrow(()->new ResourceNotFoundException("Documento no encontrada"));
+            DocumentoIdentidad documentoIdentidad=documentoIdentidadRepository.findById(personaDTO.getTipoDocumento()).orElseThrow(()->new ResourceNotFoundException("Documento identidad no encontrada"));
             if(personaDTO.getEstado()==null){
                 personaDTO.setEstado(1);
             }

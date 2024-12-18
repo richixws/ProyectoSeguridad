@@ -26,7 +26,7 @@ public class EntidadDTO {
     @JsonProperty("documentNumber")
     @NotEmpty(message = "numero de documento no puede ser vacio.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
     @Pattern(regexp = "^[0-9]+(\\\\.[0-9]+)?$", message = "numero de documento sólo admite números.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
-    @Size(min = 11, max = 20, message = "numero de documento debe tener entre 11 y 20 caracteres.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
+    @Size(min = 11, max = 11, message = "numero de documento  debe tener 11  caracteres.",groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class})
     private String numeroDocumento;
 
     @JsonProperty("name")

@@ -154,7 +154,7 @@ public class ModuloServiceImpl implements IModuloService {
                 throw new IllegalArgumentException("El Nombre del Modulo ya está registrado en otro Sistema.");
             }**/
 
-            Sistema sistema=isistemaRepository.findById(moduloDto.getIdSistema()).orElseThrow(()->new ResourceNotFoundException("El sistema del modulo a actualizar no existe."));
+            Sistema sistema=isistemaRepository.findById(moduloDto.getIdSistema()).orElseThrow(()->new IllegalArgumentException("El sistema del modulo a actualizar no existe."));
 
             modulo.setSistema(sistema);
             modulo.setNombreModulo(moduloDto.getNombreModulo());

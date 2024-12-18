@@ -5,7 +5,10 @@ import cn.apiclub.captcha.Captcha;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -35,25 +38,28 @@ import java.util.*;
 @Tag(name = "Oauth",description = "Operaciones de seguridad de la aplicacion - login, refresh Token, cerrar Sesion, obtener Captcha")
 public class AuthController {
 
-    @Autowired
+
     private IUsuarioService usuariosService;
-
-    @Autowired
     private BCryptPasswordEncoder passwordEncode;
-
-   @Autowired
     private KeycloakRestService keycloakRestService;
-
-
-    @Autowired
     private JwtService jwtService;
-
-    @Autowired
     private JwtValidationService jwtValidationService;
 
+    public AuthController(IUsuarioService usuarioService,BCryptPasswordEncoder passwordEncode, KeycloakRestService keycloakRestService, JwtService jwtService, JwtValidationService jwtValidationService ) {
+        this.usuariosService = usuarioService;
+        this.passwordEncode = passwordEncode;
+        this.keycloakRestService = keycloakRestService;
+        this.jwtService = jwtService;
+    }
 
-    @Operation(summary = "Login REST API", description = "Inicio de seccion del usuario a la aplicacion")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+
+    @Operation(summary = "Login REST API", description = "Permite autenticar un usuario mediante sus credenciales y devuelve un token JWT con información adicional")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+
+    @ApiResponses({ @ApiResponse(responseCode = "200",description = "Autenticación exitosa, devuelve el token JWT."),
+                             @ApiResponse(responseCode = "401",description = "Credenciales inválidas o token no válido." ),
+                   @ApiResponse( responseCode = "422",description = "Error interno en el sistema." )
+    })
     @PostMapping(value = "oauth/login")
     public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
 
@@ -166,7 +172,12 @@ public class AuthController {
     }
 
     @Operation(summary = "Refresh Token REST API", description = "Obtener nuevo token de acceso")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token refrescado correctamente, devuelve el token JWT."),
+            @ApiResponse(responseCode = "403", description = "Forbidden. No se ha proporcionado un refresh_token."),
+            @ApiResponse(responseCode = "422", description = "Ocurrió un error al procesar la solicitud.")
+    })
     @PostMapping("oauth/refreshToken")
     public ResponseEntity<TokenResponse> refreshToken(@RequestParam("refresh_token") RefreshTokenRequest refresh_token,@RequestParam("username") String username) {
 
@@ -174,28 +185,35 @@ public class AuthController {
         try {
             //String refreshToken = request.get("refresh_token");
             String refreshToken = refresh_token.getRefresh_token();
-            if(refreshToken ==null){
+            if(refreshToken ==null || refreshToken.isEmpty()){
+                log.error("El refresh_token no está presente o es inválido.");
                 return new ResponseEntity<TokenResponse>(HttpStatus.FORBIDDEN);
             }
             ResponseEntity newTokens = jwtValidationService.refreshAccessToken(refreshToken,username);
             return newTokens;
         } catch (Exception e) {
-            log.error("Error en el refreshToken", e.getMessage());
-            throw new RuntimeException(e);
+            log.error("Error al intentar refrescar el token: ", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null);
         }
 
     }
 
 
     @Operation(summary = "Cerrar Sesion REST API", description = "cerrar la sesion de acceso")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sesión cerrada correctamente."),
+            @ApiResponse(responseCode = "403", description = "Forbidden. El refresh_token ha expirado o está ausente."),
+            @ApiResponse(responseCode = "422", description = "Ocurrió un error al intentar cerrar sesión.")
+    })
     @PostMapping("oauth/logout")
     public ResponseEntity<?> cerrarSesion(@RequestParam("refresh_token") String refreshToken,@RequestParam("username") String username) {
 
         log.error("INI - logout");
         try {
             if (refreshToken == null || refreshToken.isEmpty()) {
-                return new ResponseEntity<>("Refresh token was expired or missing. Please make a new signin request",HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("\n" +
+                        "El token de actualización expiró o faltaba. Por favor, haz una nueva solicitud de inicio de sesión.",HttpStatus.FORBIDDEN);
             }
 
             try {
@@ -204,11 +222,11 @@ public class AuthController {
                 return estado;
 
             } catch (Exception e) {
-                log.error("Error during logout", e);
-                return new ResponseEntity<>("An error occurred while trying to logout", HttpStatus.UNPROCESSABLE_ENTITY);
+                log.error("Error during logout", e.getMessage());
+                return new ResponseEntity<>("Se produjo un error al intentar cerrar sesión.", HttpStatus.UNPROCESSABLE_ENTITY);
             }
         } catch (Exception e) {
-            log.error("Error during logout", e);
+            log.error("Error during logout", e.getMessage());
             throw new RuntimeException(e);
         }
 

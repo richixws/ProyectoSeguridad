@@ -100,7 +100,7 @@ public class PerfilServiceImpl implements IPerfilService {
         log.info(" INI - Service  savePerfil");
         try {
 
-            Optional<Perfil> perfilExistente = perfilRepository.findFirstByNombreContainingIgnoreCase(perfilDTO.getNombrePerfil());
+            Optional<Perfil> perfilExistente = perfilRepository.findByNombreContainingIgnoreCase(perfilDTO.getNombrePerfil());
             if (perfilExistente.isPresent()){
                 throw new IllegalArgumentException("El nombre del perfil se encuentra en uso, por favor ingrese un nuevo perfil.");
             }
@@ -152,7 +152,7 @@ public class PerfilServiceImpl implements IPerfilService {
 
             Perfil perfil=perfilRepository.findById(idPerfil).orElseThrow(()-> new ResourceNotFoundException("Perfil a actualizar no existe."));
 
-            boolean existeNombredePerfil=perfilRepository.existsByNombreIgnoreCaseAndAndIdPerfilNot(perfil.getNombre(),idPerfil);
+            boolean existeNombredePerfil=perfilRepository.existsByNombreIgnoreCaseAndIdPerfilNot(perfil.getNombre(),idPerfil);
             if (existeNombredePerfil) {
                 throw new IllegalArgumentException("El nombre del perfil ya está registrado en otro perfil.");
             }

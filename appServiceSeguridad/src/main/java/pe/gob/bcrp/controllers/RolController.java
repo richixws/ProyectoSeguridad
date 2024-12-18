@@ -1,7 +1,11 @@
 package pe.gob.bcrp.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
@@ -13,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.ResponseDTO;
 import pe.gob.bcrp.dto.RolDTO;
 import pe.gob.bcrp.dto.RolFormDTO;
+import pe.gob.bcrp.dto.Views;
+import pe.gob.bcrp.dto.response.PersonaResponse;
 import pe.gob.bcrp.dto.response.RolResponse;
 import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
@@ -33,7 +39,11 @@ public class RolController {
     }
 
     @Operation(summary = "Listar Roles", description = "Obtener la lista de todos los Roles de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Lista los roles obtenidos exitosamente.",
+            content = { @Content(schema = @Schema(implementation = RolResponse.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "422", description = "No se pudo procesar la solicitud debido a un error interno.",content = @Content)
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/roles")
     public ResponseEntity<RolResponse> getAllRoles(
@@ -58,9 +68,18 @@ public class RolController {
     }
 
     @Operation(summary = "Guardar Rol", description = "Guarda el Rol en la base de datos")
-    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    //@ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    @ApiResponses({@ApiResponse(responseCode = "201",description = "rol guardado de manera exitosa.",
+            content = {@Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {  @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }),
+            @ApiResponse(responseCode = "404",description = "Recurso no encontrado.",
+                    content = { @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json"  ) }),
+            @ApiResponse( responseCode = "422",description = "No se pudo procesar la solicitud debido a un error interno.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json") } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/rol")
+    @JsonView({Views.Create.class})
     public  ResponseEntity<ResponseDTO<RolFormDTO>> saveRol(@Validated(ValidationGroups.OnCreate.class) @RequestBody RolFormDTO rolDto){
 
         log.info("INI - saveRol | requestURL=rol");
@@ -68,7 +87,13 @@ public class RolController {
         try {
             RolFormDTO moduloDto=rolService.saveRole(rolDto);
             response.setStatus(1);
-            response.setMessage("El Rol fue guardado de manera exitosa");
+            response.setMessage("El rol fue guardado de manera exitosa.");
+
+        }catch ( ResourceNotFoundException e) {
+            log.error("ERROR  saveRol {}", e.getMessage());
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }catch (IllegalArgumentException e) {
             log.error("ERROR - saveRol|requestURL=rol{}", e.getMessage());
             response.setStatus(0);
@@ -84,9 +109,18 @@ public class RolController {
     }
 
     @Operation(summary = "Actualizar Rol", description = "Actualiza el Rol por el IdRol en la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Rol actualizado de manera exitosa.",
+            content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "404",description = "Recurso no encontrada con el Id proporcionado.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse( responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/rol/{roleId}")
+    @JsonView({Views.Update.class})
     public ResponseEntity<ResponseDTO<RolFormDTO>> updateRol(@Validated(ValidationGroups.OnUpdate.class) @RequestBody  RolFormDTO rolDTO,
                                                              @PathVariable("roleId") Integer idRol){
         log.info("INI - updateRol | requestURL=rol");
@@ -94,7 +128,7 @@ public class RolController {
         try {
             RolFormDTO rolDto=rolService.updateRole(rolDTO,idRol);
             response.setStatus(1);
-            response.setMessage("El Rol fue actualizado exitosamente");
+            response.setMessage("El rol fue actualizado exitosamente.");
 
         }catch (IllegalArgumentException e) {
             log.error("ERROR -  updateRol|requestURL=rol{}", e.getMessage());
@@ -107,7 +141,7 @@ public class RolController {
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }catch (Exception e){
-            log.error("ERROR - updateRol | requestURL=rol"+e.getMessage());
+            log.error("ERROR - updateRol | requestURL=rol{}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -117,7 +151,13 @@ public class RolController {
 
 
     @Operation(summary = "Eliminar Rol", description = "Elimina el rol por el IdRol de la base de datos")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Rol ha sido eliminada con éxito.",
+            content = { @Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" )} ),
+            @ApiResponse( responseCode = "404",description = "Recurso no existe o ya fue eliminada.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }) })
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/rol/{roleId}")
     public ResponseEntity<ResponseDTO<RolDTO>> deleteRol(@PathVariable("roleId") Integer idRol){
@@ -127,10 +167,10 @@ public class RolController {
 
             boolean eliminado=rolService.deleteRole(idRol);
             if(!eliminado){
-                throw new ResourceNotFoundException("El rol no existe, ya se encuentra eliminado");
+                throw new ResourceNotFoundException("El rol no existe, ya se encuentra eliminado.");
             }
             response.setStatus(1);
-            response.setMessage("El rol ha sido eliminado con éxito");
+            response.setMessage("El rol ha sido eliminado con éxito.");
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         }catch (ResourceNotFoundException e){

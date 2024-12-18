@@ -333,7 +333,7 @@ public class SistemaServiceImpl implements ISistemaService {
         try {
             Usuario usuarioAutenticado=util.getUsuario();//obtener usuario del sistema
 
-            Sistema sistemaExistente = sistemaRepository.findById(idSistema).orElseThrow(() -> new ResourceNotFoundException("El Id del sistema no existe"));
+            Sistema sistemaExistente = sistemaRepository.findById(idSistema).orElseThrow(() -> new ResourceNotFoundException("El Id del sistema no existe."));
             // Optional<Sistema> sistemaExistente = sistemaRepository.findByNombreContainingIgnoreCaseAndIsDeletedFalse(nombre);
             boolean existeNombredeSistema=sistemaRepository.existsByNameIgnoreCaseAndIdSystemNot(nombre,idSistema);
             if (existeNombredeSistema) {
@@ -349,10 +349,10 @@ public class SistemaServiceImpl implements ISistemaService {
                 sistemaExistente.setUrl(url);
 
                 if (!usuarioAutenticado.getIdUsuario().equals(idUsuarioResponsable)) {
-                    throw new IllegalArgumentException("El id del usuario responsable no existe.");
+                    throw new IllegalArgumentException("Usuario responsable no existe.");
                 }
                 if (!usuarioAutenticado.getIdUsuario().equals(idUsuarioResponsableAlt)) {
-                    throw new IllegalArgumentException("El id del usuario responsable alterno no existe.");
+                    throw new IllegalArgumentException("Usuario responsable alterno no existe.");
                 }
 
                 sistemaExistente.setIdUserResponsible(idUsuarioResponsable);
@@ -407,9 +407,15 @@ public class SistemaServiceImpl implements ISistemaService {
                 return sistemaFormDTO;
             }
 
+        }catch (IllegalArgumentException e){
+            log.error("ERROR - update Sistema(){}", e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - actualizarSistema()"+e.getMessage());
-            throw e;
+            log.error("ERROR - Service  updateRole() {}", e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
+        }catch (Exception e) {
+            log.error("ERROR - Service updateRole() {}", e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
 
         return null;

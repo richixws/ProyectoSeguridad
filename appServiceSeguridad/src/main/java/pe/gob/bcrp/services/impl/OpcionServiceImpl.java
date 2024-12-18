@@ -112,8 +112,8 @@ public class OpcionServiceImpl  implements IOpcionService {
            opcion.setHoraCreacion(LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
            opcion.setUsuarioCreacion(usuario.getUsuario());
 
-           Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("El sistema a guardar de la opcion no existe."));
-           Modulo modulo = moduloRepository.findById(opcionDto.getIdModulo()).orElseThrow(()-> new ResourceNotFoundException("El modulo a guardar de la opcion no existe."));
+           Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new IllegalArgumentException("El sistema a guardar de la opcion no existe."));
+           Modulo modulo = moduloRepository.findById(opcionDto.getIdModulo()).orElseThrow(()-> new IllegalArgumentException("El modulo a guardar de la opcion no existe."));
 
            modulo.setSistema(sistema);
            opcion.setModulo(modulo);
@@ -125,6 +125,9 @@ public class OpcionServiceImpl  implements IOpcionService {
        }catch (ResourceNotFoundException e){
            log.error("ERROR - save Opcion() {}", e.getMessage());
            throw new ResourceNotFoundException(e.getMessage());
+       }  catch (IllegalArgumentException e) {
+           log.error("ERROR save update () - {}", e.getMessage());
+           throw new IllegalArgumentException(e.getMessage());
        }catch (Exception e) {
            log.error("ERROR - saveOpcion() {}", e.getMessage());
            throw  new RuntimeException(e.getMessage());
@@ -142,13 +145,13 @@ public class OpcionServiceImpl  implements IOpcionService {
 
             boolean existeNombredeModulo=opcionRepository.existsByNombreOpcionIgnoreCaseAndAndIdOpcionNot(opcionDto.getNombreOpcion(),idOpcion);
             if (existeNombredeModulo) {
-                throw new IllegalArgumentException("El nombre de opcion ya está registrado en otra opcion.");
+                throw new ResourceNotFoundException("El nombre de opcion ya está registrado en otra opcion.");
             }
 
             Modulo modulo=moduloRepository.findById(opcionDto.getIdModulo())
-                                          .orElseThrow(()-> new ResourceNotFoundException("El modulo a actualizar de la opcion no existe."));
+                                          .orElseThrow(()-> new IllegalArgumentException("El modulo a actualizar de la opcion no existe."));
 
-            Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new ResourceNotFoundException("El sistema a actualizar de la opcion no existe."));
+            Sistema sistema=sistemaRepository.findById(opcionDto.getIdSistema()).orElseThrow(()-> new IllegalArgumentException("El sistema a actualizar de la opcion no existe."));
 
             modulo.setSistema(sistema);
             opcion.setModulo(modulo);

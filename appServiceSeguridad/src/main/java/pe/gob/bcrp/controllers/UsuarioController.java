@@ -1,9 +1,13 @@
 package pe.gob.bcrp.controllers;
 
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
@@ -14,13 +18,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pe.gob.bcrp.dto.Views;
+import pe.gob.bcrp.dto.response.SistemaResponse;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroCreateUsuarioDTO;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroUsuarioDTO;
 import pe.gob.bcrp.dto.ResponseDTO;
 import pe.gob.bcrp.dto.usuarioDTO.UsuarioFormDTO;
 import pe.gob.bcrp.dto.response.UsuarioResponse;
+import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.services.IUsuarioService;
 import pe.gob.bcrp.services.impl.UsuarioServiceImpl;
@@ -45,7 +53,11 @@ public class UsuarioController {
 
 
     @Operation(summary = "Listar Usuarios", description = "Obtener la lista de todos los usuarios de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Lista los usuarios obtenidos exitosamente.",
+            content = { @Content(schema = @Schema(implementation = UsuarioResponse.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "422", description = "No se pudo procesar la solicitud debido a un error interno.",content = @Content)
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/usuarios")
     public ResponseEntity<UsuarioResponse> getAllUsuarios(
@@ -66,7 +78,7 @@ public class UsuarioController {
             return new ResponseEntity<>(usurioResponse, HttpStatus.OK);
         }catch (Exception e){
             log.error("ERROR - listar Usuarios | requestURL=usuarios");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -98,16 +110,25 @@ public class UsuarioController {
             log.error(" ERROR - uploadUsuarios | requestURL=usuarios ");
             response.setStatus(0);
             response.setMessage(e.getMessage() );
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }
 
     @Operation(summary = "Guardar Usuario", description = "Guarda el usuario en la base de datos")
-    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    //@ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    @ApiResponses({@ApiResponse(responseCode = "201",description = "Usuario guardado de manera exitosa.",
+            content = {@Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {  @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }),
+            @ApiResponse(responseCode = "404",description = "Recurso no encontrado.",
+                    content = { @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json"  ) }),
+            @ApiResponse( responseCode = "422",description = "No se pudo procesar la solicitud debido a un error interno.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json") } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/usuario",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO<RegistroCreateUsuarioDTO>> saveUsuario(@Valid @ModelAttribute RegistroCreateUsuarioDTO registroUsuarioDTO,
+    @JsonView(Views.Create.class)
+    public ResponseEntity<ResponseDTO<RegistroCreateUsuarioDTO>> saveUsuario(@Validated(ValidationGroups.OnCreate.class) @ModelAttribute RegistroCreateUsuarioDTO registroUsuarioDTO,
                                                                              @RequestParam(value = "sustenance", required = false) MultipartFile[] sustento) throws InvalidCredentialsException {
 
 
@@ -130,7 +151,7 @@ public class UsuarioController {
         } catch (IllegalArgumentException e) {
             response.setStatus(0);
             response.setMessage(e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }catch (ResourceNotFoundException e) {
             log.error("ERROR - updateUsuario Controller{}", e.getMessage());
             response.setStatus(0);
@@ -141,7 +162,7 @@ public class UsuarioController {
             log.error(" ERROR - add Usuario | requestURL=usuarios ");
             response.setStatus(0);
             response.setMessage(e.getMessage() );
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -149,10 +170,20 @@ public class UsuarioController {
 
 
     @Operation(summary = "Actualizar Usuario", description = "Actualiza el usuario en la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Usuario actualizado de manera exitosa.",
+            content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "404",description = "Recurso no encontrada con el Id proporcionado.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse( responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/usuario/{userId}")
-    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> updateUsuario(@PathVariable("userId") Integer idUsuario,  @RequestBody RegistroUsuarioDTO registroUsuarioDTO) {
+    @JsonView(Views.Update.class)
+    public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> updateUsuario(@PathVariable("userId") Integer idUsuario,
+                                                                         @Validated(ValidationGroups.OnUpdate.class)  @RequestBody RegistroUsuarioDTO registroUsuarioDTO) {
         log.info("INI - Editar Usuario | requestURL=usuario");
         ResponseDTO<RegistroUsuarioDTO> response=new ResponseDTO<>();
         try {
@@ -164,7 +195,7 @@ public class UsuarioController {
             log.error("ERROR  updateUsuario{}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }catch (ResourceNotFoundException e) {
             log.error("ERROR - updateUsuario No encontrado{}", e.getMessage());
             response.setStatus(0);
@@ -174,7 +205,7 @@ public class UsuarioController {
             log.error(" ERROR - Editar Usuario | requestURL=usuario ");
             response.setStatus(0);
             response.setMessage(e.getMessage() );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         return new ResponseEntity<>(response,HttpStatus.OK);
@@ -182,7 +213,13 @@ public class UsuarioController {
 
 
     @Operation(summary = "Inhabilitar Usuario", description = "Inhabilita el usuario en particular de la base de datos")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "usuario fue inhabilitado de manera exitosa..",
+            content = { @Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" )} ),
+            @ApiResponse( responseCode = "404",description = "Recurso no existe o ya fue eliminada.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }) })
     @PutMapping("/usuario/{userId}/inhabilitar")
     public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> InhabilitarUsuario(@PathVariable("userId") Integer idusuario) {
           log.info("INI - Eliminar Usuario | requestURL=IdUsuario");
@@ -206,12 +243,12 @@ public class UsuarioController {
               log.error(" ERROR - delete Usuario | requestURL=IdUsuario ");
               response.setStatus(0);
               response.setMessage(e.getMessage());
-              return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+              return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
           }
     }
-
-    @Operation(summary = "Asigne Rol a usuario", description = "Asigna rol con todos los perfiles al usuario")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @Hidden
+    //@Operation(summary = "Asigne Rol a usuario", description = "Asigna rol con todos los perfiles al usuario")
+    //@ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("/usuario/{userId}/{releId}")
     public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> AsignarRolToUsuario(@PathVariable("userId") Integer idusuario,
                                                                                @PathVariable("roleId") Integer idRol) {
@@ -241,12 +278,12 @@ public class UsuarioController {
             log.error(" ERROR - AsignarRolToUsuario | requestURL=IdUsuario ");
             response.setStatus(0);
             response.setMessage("Error al asignar rol a usuario "+e.getMessage() );
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
-
-    @Operation(summary = "Asigne Perfil a usuario", description = "Asigna perfil al usuario")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @Hidden
+    //@Operation(summary = "Asigne Perfil a usuario", description = "Asigna perfil al usuario")
+    //@ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PostMapping("/usuario/{userId}/{profileId}")
     public ResponseEntity<ResponseDTO<RegistroUsuarioDTO>> AsignarPerfilToUsuario(@PathVariable("userId") Integer idusuario,
                                                                                @PathVariable("profileId") Integer idPerfil) {
@@ -276,7 +313,7 @@ public class UsuarioController {
             log.error(" ERROR - AsignarPerfilToUsuario | requestURL=IdUsuario ");
             response.setStatus(0);
             response.setMessage("Error al asignar perfil a usuario "+e.getMessage() );
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 

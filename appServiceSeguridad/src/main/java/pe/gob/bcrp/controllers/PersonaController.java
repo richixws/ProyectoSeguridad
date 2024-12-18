@@ -2,7 +2,10 @@ package pe.gob.bcrp.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
@@ -13,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.Views;
 import pe.gob.bcrp.dto.personaDTO.PersonaDTO;
+import pe.gob.bcrp.dto.response.PerfilResponse;
 import pe.gob.bcrp.dto.response.PersonaResponse;
 import pe.gob.bcrp.dto.ResponseDTO;
 import pe.gob.bcrp.dto.validacion.ValidationGroups;
@@ -33,7 +37,11 @@ public class PersonaController {
     }
 
     @Operation(summary = "Listar Personas", description = "Obtener la lista de todos las personas de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Lista las personas obtenidos exitosamente.",
+            content = { @Content(schema = @Schema(implementation = PersonaResponse.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "422", description = "No se pudo procesar la solicitud debido a un error interno.",content = @Content)
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/personas")
     public ResponseEntity<PersonaResponse> getAllPersonas(
@@ -48,12 +56,20 @@ public class PersonaController {
            return new ResponseEntity<>(entidadPersonas, HttpStatus.OK);
        }catch (Exception e){
            log.error(" ERROR - getAllPersonas | requestUrl=personas");
-           return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+           return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
        }
     }
 
     @Operation(summary = "Guardar Persona", description = "Guarda la persona en la base de datos")
-    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    //@ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    @ApiResponses({@ApiResponse(responseCode = "201",description = "Perfil guardado de manera exitosa.",
+            content = {@Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {  @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }),
+            @ApiResponse(responseCode = "404",description = "Recurso no encontrado.",
+                    content = { @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json"  ) }),
+            @ApiResponse( responseCode = "422",description = "No se pudo procesar la solicitud debido a un error interno.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json") } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/persona")
     @JsonView(Views.Create.class)
@@ -63,27 +79,37 @@ public class PersonaController {
         try {
             PersonaDTO newPersonaDTO = personaService.addPersona(personaDTO);
             response.setStatus(1);
-            response.setMessage("la Persona fue guardado con exito");
+            response.setMessage("La persona fue guardado de manera exitosa.");
 
         }catch (ResourceNotFoundException e){
+            log.error("ERROR addPersona | requestUrl=persona");
                 response.setStatus(0);
                 response.setMessage(e.getMessage());
                 return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
+            log.error("ERROR - addPersona | requestUrl=persona");
             response.setStatus(0);
             response.setMessage(e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
         }catch (Exception e){
             log.error(" ERROR - addPersona | requestUrl=persona");
             response.setStatus(0);
-            response.setMessage("Error al guardar la Persona "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     @Operation(summary = "Actualizar Persona", description = "Actualiza la Persona en la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "persona actualizado de manera exitosa.",
+            content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "404",description = "Recurso no encontrada con el Id proporcionado.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse( responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/persona/{personId}")
     @JsonView(Views.Update.class)
@@ -95,27 +121,35 @@ public class PersonaController {
 
             PersonaDTO updatePersona=personaService.updatePersona(idPersona,personaDTO);
             response.setStatus(1);
-            response.setMessage("la Persona fue actualizado de manera exitosa");
+            response.setMessage("la persona fue actualizado de manera exitosa.");
 
         }catch (ResourceNotFoundException e){
+            log.error("ERROR - updatePersona");
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
+            log.error(" ERROR - updatePersona | requestUrl=persona/idpersona");
             response.setStatus(0);
             response.setMessage(e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
        }catch (Exception e){
             log.error(" ERROR - updatePersona | requestUrl=persona/idpersona");
             response.setStatus(0);
-            response.setMessage("Error al actualizar "+ e.getMessage());
+            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     @Operation(summary = "Eliminar Persona", description = "Elimina la persona por el IdPersona de la base de datos")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Persona ha sido eliminada con éxito.",
+            content = { @Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" )} ),
+            @ApiResponse( responseCode = "404",description = "Recurso no existe o ya fue eliminada.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }) })
     @DeleteMapping("/persona/{personId}")
     public ResponseEntity<ResponseDTO<PersonaDTO>> deletePersona(@PathVariable("personId") Integer idPersona) {
         ResponseDTO<PersonaDTO> response=new ResponseDTO<>();
@@ -125,10 +159,10 @@ public class PersonaController {
 
             boolean eliminado=personaService.deletePersona(idPersona);
             if(!eliminado){
-                throw new ResourceNotFoundException("La Persona no existe, ya se encuentra eliminado" );
+                throw new ResourceNotFoundException("La persona no existe, ya se encuentra eliminado." );
             }
             response.setStatus(1);
-            response.setMessage("la Persona fue eliminado con exito");
+            response.setMessage("la persona fue eliminado con exito.");
             return new ResponseEntity<>(response,HttpStatus.OK);
 
         }catch (ResourceNotFoundException e){
@@ -139,8 +173,8 @@ public class PersonaController {
         }catch (Exception e){
             log.error(" ERROR - deletePersona | requestUrl=persona/idpersona");
             response.setStatus(0);
-            response.setMessage("Error al eliminar la Persona "+ e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 }

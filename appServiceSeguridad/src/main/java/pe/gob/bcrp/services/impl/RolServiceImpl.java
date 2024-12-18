@@ -62,10 +62,6 @@ public class RolServiceImpl implements IRolService {
 
             List<Rol> roles = pageRol.getContent();
 
-            /** List<OpcionDTO> opcionDTOS = opciones.stream()
-             .map(opc -> modelMapper.map(opc, OpcionDTO.class))
-             .toList();**/
-
             List<RolDTO> opcionDTOS = roles.stream().map(rol -> {
                 RolDTO rolDTO = modelMapper.map(rol, RolDTO.class);
                 if (rol.getSistema() != null) { // Asignar tipoDocumento a partir de DocumentoIdentidad
@@ -144,7 +140,7 @@ public class RolServiceImpl implements IRolService {
                 throw new IllegalArgumentException("El nombre del rol ya esta registrado en otro rol.");
             }
 
-            Sistema sistema = sistemaRepository.findById(rolDto.getIdSistema()).orElseThrow(() -> new ResourceNotFoundException("El sistema a actualizar del rol no existe."));
+            Sistema sistema = sistemaRepository.findById(rolDto.getIdSistema()).orElseThrow(() -> new IllegalArgumentException("El sistema a actualizar del rol no existe."));
             rol.setSistema(sistema);
             rol.setNombre(rolDto.getNombreRol());
             rol.setEstado(rolDto.getEstado());
@@ -191,7 +187,7 @@ public class RolServiceImpl implements IRolService {
                 estado=true;
             }
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - delete Role "+e.getMessage());
+            log.error("ERROR - delete Role {}", e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
             //estado=false;
         }catch (Exception e) {

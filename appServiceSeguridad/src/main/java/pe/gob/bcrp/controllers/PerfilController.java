@@ -1,7 +1,11 @@
 package pe.gob.bcrp.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +16,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.PerfilDTO;
 import pe.gob.bcrp.dto.ResponseDTO;
+import pe.gob.bcrp.dto.Views;
+import pe.gob.bcrp.dto.response.OpcionResponse;
 import pe.gob.bcrp.dto.response.PerfilResponse;
 import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
@@ -31,7 +37,11 @@ public class PerfilController {
     }
 
     @Operation(summary = "Listar Perfiles ", description = "Obtener la lista de todos los Perfiles de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Lista los perfiles obtenidos exitosamente.",
+            content = { @Content(schema = @Schema(implementation = PerfilResponse.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "422", description = "No se pudo procesar la solicitud debido a un error interno.",content = @Content)
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/perfiles")
     public ResponseEntity<PerfilResponse> getAllPerfiles(
@@ -57,9 +67,18 @@ public class PerfilController {
     }
 
     @Operation(summary = "Guardar Perfil", description = "Guarda el Perfil en la base de datos")
-    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    //@ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    @ApiResponses({@ApiResponse(responseCode = "201",description = "Perfil guardado de manera exitosa.",
+            content = {@Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {  @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }),
+            @ApiResponse(responseCode = "404",description = "Recurso no encontrado.",
+                    content = { @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json"  ) }),
+            @ApiResponse( responseCode = "422",description = "No se pudo procesar la solicitud debido a un error interno.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json") } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/perfil")
+    @JsonView(Views.Create.class)
     public  ResponseEntity<ResponseDTO<PerfilDTO>> savePerfil(@Validated(ValidationGroups.OnCreate.class) @RequestBody  PerfilDTO perfilDTO){
 
         log.info("INI - guardarPerfil | requestURL=perfil");
@@ -77,7 +96,7 @@ public class PerfilController {
         } catch (IllegalArgumentException e) {
             response.setStatus(0);
             response.setMessage(e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         } catch (Exception e){
             log.error("ERROR - guardarPerfil | requestURL=perfil{}", e.getMessage());
             response.setStatus(0);
@@ -88,39 +107,55 @@ public class PerfilController {
     }
 
     @Operation(summary = "Actualizar Perfil", description = "Actualiza el Perfil en la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "perfil actualizado de manera exitosa.",
+            content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "404",description = "Recurso no encontrada con el Id proporcionado.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse( responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/perfil/{profileId}")
+    @JsonView(Views.Update.class)
     public ResponseEntity<ResponseDTO<PerfilDTO>> updatePerfil(@Validated(ValidationGroups.OnUpdate.class) @RequestBody  PerfilDTO perfilDTO,
-                                                               @PathVariable("profileId") Integer idPerfil){
+                                                               @PathVariable("profileId") Integer idPerfil) {
         log.info("INI - upodatePerfil | requestURL=perfil");
-        ResponseDTO<PerfilDTO> response=new ResponseDTO<>();
+        ResponseDTO<PerfilDTO> response = new ResponseDTO<>();
         try {
-            PerfilDTO perfilDto=perfilService.updatePerfil(perfilDTO,idPerfil);
+            PerfilDTO perfilDto = perfilService.updatePerfil(perfilDTO, idPerfil);
             response.setStatus(1);
             response.setMessage("El perfil fue actualizado exitosamente.");
 
-        }
-         catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             log.error("ERROR | update perfil{}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 
-        }catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             log.error("ERROR - update perfil No encontrado {}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("ERROR - update Perfil | requestURL=perfil{}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+       return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @Operation(summary = "Elimina Perfil", description = "Elimina el perfil por el IdPerfil de la base de datos")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Perfil ha sido eliminada con éxito.",
+            content = { @Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" )} ),
+            @ApiResponse( responseCode = "404",description = "Recurso no existe o ya fue eliminada.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }) })
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/perfil/{profileId}")
     public ResponseEntity<ResponseDTO<PerfilDTO>> deletePerfil(@PathVariable("profileId") Integer idPerfil){

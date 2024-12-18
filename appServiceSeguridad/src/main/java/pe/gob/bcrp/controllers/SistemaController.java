@@ -2,7 +2,10 @@ package pe.gob.bcrp.controllers;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
+import pe.gob.bcrp.dto.response.RolResponse;
 import pe.gob.bcrp.dto.response.SistemaResponse;
 import pe.gob.bcrp.dto.sistemaDTO.RegistroSistemaDTO;
 import pe.gob.bcrp.dto.sistemaDTO.SistemaFormDTO;
@@ -89,7 +93,11 @@ public class SistemaController {
     * Metodo Listar todos los Sistemas
     * **/
     @Operation(summary = "Listar Sistemas", description = "Obtener la lista de todos los sistemas de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Lista los sistemas obtenidos exitosamente.",
+            content = { @Content(schema = @Schema(implementation = SistemaResponse.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "422", description = "No se pudo procesar la solicitud debido a un error interno.",content = @Content)
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sistemas")
     public ResponseEntity<SistemaResponse> getAllSistemas(
@@ -116,7 +124,13 @@ public class SistemaController {
      * Metodo Eliminar sistema por idSistema
      * **/
     @Operation(summary = "Eliminar Sistema", description = "Elimina el sistema por el Id de la base de datos")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Sistema ha sido eliminada con éxito.",
+            content = { @Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" )} ),
+            @ApiResponse( responseCode = "404",description = "Recurso no existe o ya fue eliminada.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }) })
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/sistema/{idSistema}")
     public ResponseEntity<ResponseDTO<?>> deleteSistema(@PathVariable("idSistema") Integer idSistema) {
@@ -125,10 +139,10 @@ public class SistemaController {
         try {
             boolean eliminado = sistemaService.deleteSistema(idSistema);
             if (!eliminado) {
-                throw new ResourceNotFoundException("El sistema no existe, ya se encuentra eliminado");
+                throw new ResourceNotFoundException("El sistema no existe, ya se encuentra eliminado.");
             }else{
                 response.setStatus(1);
-                response.setMessage("El sistema ha sido eliminado con éxito");
+                response.setMessage("El sistema ha sido eliminado con éxito.");
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
 
@@ -140,8 +154,8 @@ public class SistemaController {
         } catch (Exception e) {
             log.error("ERROR - eliminarSistema | {}", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al eliminar el sistema");
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -187,7 +201,13 @@ public class SistemaController {
     }  **/
 
     @Operation(summary = "Guardar Sistema", description = "Guarda el Sistema en la base de datos")
-    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+   // @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    @ApiResponses({@ApiResponse(responseCode = "201",description = "Sistema guardado de manera exitosa.",
+            content = {@Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {  @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }),
+            @ApiResponse( responseCode = "422",description = "No se pudo procesar la solicitud debido a un error interno.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json") } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @JsonView(Views.Create.class)
@@ -206,19 +226,19 @@ public class SistemaController {
                     ,registroSistemaDTO.getIdUserResponsible(),registroSistemaDTO.getIdUserResponsibleAlternate(),registroSistemaDTO.getUrlExternal(),
                     registroSistemaDTO.getIdStateCritical(),registroSistemaDTO.getUnitOrganizational(),registroSistemaDTO.getEstate());
             response.setStatus(1);
-            response.setMessage("El Sistema fue guardado de manera exitosa");
+            response.setMessage("El sistema fue guardado de manera exitosa.");
             //response.setBody(sistemaDto);
 
         }
         catch (IllegalArgumentException e) {
              response.setStatus(0);
              response.setMessage(e.getMessage());
-             return ResponseEntity.badRequest().body(response);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }catch (Exception e ){
-            log.error("ERROR - guardar Sistema ", e.getMessage());
+            log.error("ERROR - guardar Sistema", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al guardar el Sistema : "+ e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -274,7 +294,15 @@ public class SistemaController {
 
 
     @Operation(summary = "Actualizar Sistema", description = "Actualiza el Sistema en la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Sistema actualizado de manera exitosa.",
+            content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "404",description = "Recurso no encontrada con el Id proporcionado.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse( responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/sistema", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Validated
@@ -298,26 +326,27 @@ public class SistemaController {
                     registroSistemaDTO.getUrlExternal(),registroSistemaDTO.getIdStateCritical(),registroSistemaDTO.getUnitOrganizational(),registroSistemaDTO.getEstate());
 
             response.setStatus(1);
-            response.setMessage("El Sistema fue actualizado de manera exitosa");
+            response.setMessage("El sistema fue actualizado de manera exitosa.");
             //response.setBody(sistemaDto);
 
         }
         catch (IllegalArgumentException e) {
+            log.error("ERROR - Update Sistema", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         catch (ResourceNotFoundException e) {
-            log.error("ERROR - El sistema no existe: ", e);
+            log.error("ERROR - Update Sistema ", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
         } catch (Exception e) {
-            log.error("ERROR - actualizarSistema | ", e);
+            log.error("ERROR -Update Sistema ", e.getMessage());
             response.setStatus(0);
-            response.setMessage("Error al actualizar el Sistema: " + e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);

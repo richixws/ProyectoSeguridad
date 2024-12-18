@@ -1,7 +1,11 @@
 package pe.gob.bcrp.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
@@ -13,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.gob.bcrp.dto.*;
 import pe.gob.bcrp.dto.opcionDTO.OpcionDTO;
+import pe.gob.bcrp.dto.response.ModuloResponse;
 import pe.gob.bcrp.dto.response.OpcionResponse;
 import pe.gob.bcrp.dto.validacion.ValidationGroups;
 import pe.gob.bcrp.excepciones.ResourceNotFoundException;
@@ -43,7 +48,11 @@ public class OpcionController {
      * @return
      */
     @Operation(summary = "Listar Opciones", description = "Obtener la lista de todos las opciones de la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Lista de opcion obtenida exitosamente.",
+            content = { @Content(schema = @Schema(implementation = OpcionResponse.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "422", description = "No se pudo procesar la solicitud debido a un error interno.",content = @Content)
+    })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/opciones")
     public ResponseEntity<OpcionResponse> getAllOpciones(
@@ -64,7 +73,7 @@ public class OpcionController {
 
         }catch (Exception e){
             log.error("ERROR - getAllOpciones | requestURL=opciones{}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -74,9 +83,17 @@ public class OpcionController {
      * @return
      */
     @Operation(summary = "Guardar Opcion", description = "Guarda la Opcion en la base de datos")
-    @ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
+    @ApiResponses({@ApiResponse(responseCode = "201",description = "Opcion guardado de manera exitosa.",
+            content = {@Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {  @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }),
+            @ApiResponse(responseCode = "404",description = "Recurso no encontrado.",
+                    content = { @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json"  ) }),
+            @ApiResponse( responseCode = "422",description = "No se pudo procesar la solicitud debido a un error interno.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json") } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/opcion")
+    @JsonView(Views.Create.class)
     public  ResponseEntity<ResponseDTO<OpcionDTO>> saveOpcion(@Validated(ValidationGroups.OnCreate.class) @RequestBody OpcionDTO opcionDTO){
 
         log.info("INI - guardarOpcion | requestURL=opcion");
@@ -92,7 +109,10 @@ public class OpcionController {
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-
+        }catch (IllegalArgumentException e) {
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }catch (Exception e){
             log.error("ERROR - guardarEntidad | requestURL=entidadDto");
             response.setStatus(0);
@@ -103,9 +123,18 @@ public class OpcionController {
     }
 
     @Operation(summary = "Actualizar Opcion", description = "Actualiza la Opcion en la base de datos")
-    @ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "opcion actualizado de manera exitosa.",
+            content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
+            @ApiResponse( responseCode = "404",description = "Recurso no encontrada con el Id proporcionado.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
+            @ApiResponse( responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = {@Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ) })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/opcion/{optionId}")
+    @JsonView(Views.Update.class)
     public ResponseEntity<ResponseDTO<OpcionDTO>> updateOpcion(@Validated(ValidationGroups.OnUpdate.class) @RequestBody  OpcionDTO opcionDTO,
                                                                 @PathVariable("optionId") Integer idOpcion){
         log.info("INI - upodateOpcion | requestURL=opcion");
@@ -116,13 +145,16 @@ public class OpcionController {
             response.setMessage("La opcion fue actualizado exitosamente.");
 
         }catch (ResourceNotFoundException e) {
-            log.error("ERROR - update Opcion No encontrado" + e.getMessage());
+            log.error("ERROR - update Opcion No encontrado{}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-
+        }catch (IllegalArgumentException e) {
+            response.setStatus(0);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }catch (Exception e){
-            log.equals("ERROR - update Opcion | requestURL=opcion"+e.getMessage());
+            log.error("ERROR - update Opcion | requestURL=opcion{}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -136,7 +168,13 @@ public class OpcionController {
      * @return
      */
     @Operation(summary = "Eliminar Opcion", description = "Elimina la Opcion por el IdOpcion de la base de datos")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    //@ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @ApiResponses({@ApiResponse(responseCode = "200",description = "Opcion ha sido eliminada con éxito.",
+            content = { @Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" )} ),
+            @ApiResponse( responseCode = "404",description = "Recurso no existe o ya fue eliminada.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json" ) } ),
+            @ApiResponse(responseCode = "422",description = "Error interno al procesar la solicitud.",
+                    content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }) })
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/opcion/{optionId}")
     public ResponseEntity<ResponseDTO<OpcionDTO>> deleteOpcion(@PathVariable("optionId") Integer idOpcion){
@@ -153,7 +191,7 @@ public class OpcionController {
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         }catch (ResourceNotFoundException e){
-            log.error("ERROR - eliminarOpcion No encontrado "+e.getMessage());
+            log.error("ERROR - eliminar Opcion No encontrado {}", e.getMessage());
             response.setStatus(0);
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);

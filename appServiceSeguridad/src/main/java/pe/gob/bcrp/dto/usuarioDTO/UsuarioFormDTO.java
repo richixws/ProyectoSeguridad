@@ -1,6 +1,7 @@
 package pe.gob.bcrp.dto.usuarioDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import lombok.*;
 
 import java.io.Serializable;
@@ -39,4 +40,7 @@ public class UsuarioFormDTO implements Serializable {
 
     @JsonProperty("email")
     private String  correoElectronico;
+
+    @JsonProperty("deleted")
+    private boolean isDeleted;
 }
