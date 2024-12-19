@@ -2,6 +2,7 @@ package pe.gob.bcrp.services;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.web.multipart.MultipartFile;
+import pe.gob.bcrp.dto.mfaDTO.Response;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroCreateUsuarioDTO;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroUsuarioDTO;
 import pe.gob.bcrp.dto.UsuarioDTO;
@@ -44,7 +45,7 @@ public interface IUsuarioService {
  // void verify(String email,String otp);
   public Boolean regenerateOtp(String email);
 
-  public Boolean  validateOTP(String username, String otp);
+  public Response validateOTP(String username, Integer otp);
 
   boolean AddProfilesToUsuario(Integer idUsuario, Integer idRol);
   boolean AddProfileToUsuario(Integer idUsuario, Integer idPerfil);

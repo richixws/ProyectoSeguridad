@@ -19,10 +19,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
-import pe.gob.bcrp.dto.personaDTO.PersonaDTO;
+import pe.gob.bcrp.dto.mfaDTO.OtpResponse;
+import pe.gob.bcrp.dto.mfaDTO.Response;
 import pe.gob.bcrp.dto.personaDTO.ValidateDni;
 import pe.gob.bcrp.dto.personaDTO.ValidatePasaporte;
 import pe.gob.bcrp.dto.response.UsuarioResponse;
@@ -42,7 +42,6 @@ import pe.gob.bcrp.util.TotpUtils;
 import pe.gob.bcrp.util.Util;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
@@ -513,6 +512,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         //Usuario user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
        // String otp = totpUtils.generateOtp();
         String otp = generateOTP.generateOTP(user.getUsuario());
+        log.info("Otp: {}", otp);
         if (otp == null)
         {
             log.error("OTP generator is not working...");
@@ -537,19 +537,68 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
-    public Boolean validateOTP(String username, String otp) {
+    public Response validateOTP(String username, Integer otp) {
 
+        try{
         // get OTP from cache
         Integer cacheOTP = generateOTP.getOPTByKey(username);
-        if (cacheOTP!=null && cacheOTP.equals(Integer.parseInt(otp)))
-        {
-            generateOTP.clearOTPFromCache(username);
-            return true;
+
+
+        if (cacheOTP == null) {
+            return Response.builder()
+                    .statusCode(400)
+                    .responseMessage("No has enviado una OTP o ha caducado.")
+                    .build();
         }
-        return false;
+
+        Integer failedAttempts = generateOTP.getFailedAttempts(username);
+
+        if (failedAttempts == null) {
+            failedAttempts = 0; // Si no existe, inicializar en 0
+        }
 
 
+        // Validar que el OTP coincida
+        if (!cacheOTP.equals(otp)) {
+            failedAttempts++;
+
+            generateOTP.updateFailedAttempts(username, failedAttempts);
+
+            if (failedAttempts > 3) {
+
+                generateOTP.clearFailedAttempts(username);
+                generateOTP.clearOTPFromCache(username);
+
+                return Response.builder()
+                        .statusCode(403)
+                        .responseMessage("La cuenta está bloqueada debido a demasiados intentos fallidos.")
+                        .build();
+            }
+            return Response.builder()
+                    .statusCode(400)
+                    .responseMessage(" codigo invalido OTP")
+                    .build();
+        }
+
+
+        // Limpiar el OTP del caché después de validar
+        generateOTP.clearFailedAttempts(username);
+        generateOTP.clearOTPFromCache(username);
+
+        return Response.builder()
+                .statusCode(200)
+                .responseMessage("SUCCESS")
+                .otpResponse(OtpResponse.builder().isOtpValid(true).build())
+                .build();
+
+    } catch (Exception e) {
+        log.error("Error during OTP validation", e);
+        return Response.builder()
+                .statusCode(500)
+                .responseMessage("Internal server error")
+                .build();
     }
 
 
+    }
 }

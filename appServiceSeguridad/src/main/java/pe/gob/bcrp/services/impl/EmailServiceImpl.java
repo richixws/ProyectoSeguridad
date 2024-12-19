@@ -27,13 +27,13 @@ public class EmailServiceImpl implements IEmailService {
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
         mimeMessageHelper.setFrom("prueba@gmail.com","soporte");
         mimeMessageHelper.setTo(email);
-        String subject = "Aquí está su contraseña única (OTP): ¡caduca en 5 minutos!";
+        String subject = "Aquí está su contraseña única de acceso: ¡caduca en 3 minutos!";
         String content = "<p>Hola " + "</p>"
                 + "<p>Por razones de seguridad, debe utilizar la siguiente  "
                 + "Contraseña de un solo uso para iniciar sesión:</p>"
                 + "<p><b>" + otp + "</b></p>"
                 + "<br>"
-                + "<p>Nota: esta OTP expirará en 5 minutos.</p>";
+                + "<p>Nota: este codigo expirará en 3 minutos.</p>";
 
         mimeMessageHelper.setSubject(subject);
         mimeMessageHelper.setText(content,true);

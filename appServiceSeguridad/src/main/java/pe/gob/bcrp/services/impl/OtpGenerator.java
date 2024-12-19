@@ -5,20 +5,21 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.springframework.stereotype.Service;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class OtpGenerator {
 
-    private static final Integer EXPIRE_MIN = 5;
+    private static final Integer EXPIRE_MIN = 3;
     private LoadingCache<String, Integer> otpCache;
+    // Caché para almacenar los intentos fallidos
+    private LoadingCache<String, Integer> failedAttemptsCache;
 
     /**
      * Constructor configuration.
      */
-    public OtpGenerator()
-    {
+    public OtpGenerator(){
         super();
         otpCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(EXPIRE_MIN, TimeUnit.MINUTES)
@@ -26,6 +27,16 @@ public class OtpGenerator {
                     @Override
                     public Integer load(String s) throws Exception {
                         return 0;
+                    }
+                });
+
+        // Configuración del caché para los intentos fallidos
+        failedAttemptsCache = CacheBuilder.newBuilder()
+                .expireAfterWrite(EXPIRE_MIN, TimeUnit.MINUTES)
+                .build(new CacheLoader<String, Integer>() {
+                    @Override
+                    public Integer load(String s) {
+                        return 0; // Valor por defecto
                     }
                 });
     }
@@ -38,7 +49,9 @@ public class OtpGenerator {
      */
     public String generateOTP(String key)
     {
-        Random random = new Random();
+       // Random random = new Random();
+       // int OTP = 100000 + random.nextInt(900000);
+        SecureRandom random = new SecureRandom();
         int OTP = 100000 + random.nextInt(900000);
         otpCache.put(key, OTP);
 
@@ -47,6 +60,9 @@ public class OtpGenerator {
         while (output.length() < 6) {
             output = "0" + output;
         }
+
+
+
         return output;
 
       // return OTP;
@@ -71,4 +87,28 @@ public class OtpGenerator {
     public void clearOTPFromCache(String key) {
         otpCache.invalidate(key);
     }
+
+    /**
+     * Obtener intentos fallidos por usuario.
+     */
+    public Integer getFailedAttempts(String username) {
+        return failedAttemptsCache.getIfPresent(username);
+    }
+
+    /**
+     * Actualizar los intentos fallidos.
+     */
+    public void updateFailedAttempts(String username, Integer attempts) {
+        failedAttemptsCache.put(username, attempts);
+    }
+
+    /**
+     * Limpiar intentos fallidos.
+     */
+    public void clearFailedAttempts(String username) {
+        failedAttemptsCache.invalidate(username);
+    }
+
+
+
 }

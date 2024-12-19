@@ -1,4 +1,4 @@
-BCRP_MSAUTHENTICA_API
+--BCRP_MSAUTHENTICA_API
 
 -- Secuencias para los IDs
 CREATE SEQUENCE seq_sw_persona START WITH 1 INCREMENT BY 1;
@@ -15,8 +15,35 @@ CREATE SEQUENCE seq_sw_modulo START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE seq_sw_parametros START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE seq_sw_auditoria START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE seq_sw_files START WITH 1 INCREMENT BY 1;
-
 CREATE SEQUENCE seq_sw_documento_identidad START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE seq_sw_area START WITH 1 INCREMENT BY 1;
+
+
+
+
+CREATE TABLE SW_AREA(
+
+    id_area NUMBER(10) DEFAULT seq_sw_area.NEXTVAL NOT NULL,
+	nombre_area VARCHAR2(100) NOT NULL,
+	descripcion_area VARCHAR2(250) NOT NULL,
+	id_sistema NUMBER(10) NOT NULL,
+	is_deleted NUMBER(1) DEFAULT 0 NOT NULL ,
+	estado NUMBER(1) DEFAULT 1 NOT NULL ,
+	
+	hora_creacion TIMESTAMP NULL, -- Mapea LocalDateTime a TIMESTAMP en Oracle
+    hora_eliminacion TIMESTAMP NULL, -- Permitir nulos para la eliminación
+    hora_actualizacion TIMESTAMP NULL, -- Permitir nulos para la actualización
+    usuario_creacion VARCHAR2(50) NULL, -- Limitar la longitud a 50 caracteres
+    usuario_eliminacion VARCHAR2(50) NULL, -- Permitir nulos para la eliminación
+    usuario_actualizacion VARCHAR2(50) NULL, -- Permitir nulos para la actualización
+    
+    CONSTRAINT PK_SW_AREA PRIMARY KEY (id_area),
+    CONSTRAINT FK_SW_AREA_SISTEMA FOREIGN KEY (id_sistema) REFERENCES SW_SISTEMA (id_sistema)
+    
+);
+
+
 
 -- Creación de tablas
 CREATE TABLE SW_PERSONA (
@@ -38,7 +65,7 @@ CREATE TABLE SW_PERSONA (
     usuario_actualizacion VARCHAR2(50) NULL, -- Permitir nulos para la actualización
     
     CONSTRAINT PK_SW_PERSONA PRIMARY KEY (id_persona)
-   -- CONSTRAINT FK_SW_PERSONA_DOCUMENTO FOREIGN KEY (id_documento) REFERENCES SW_DOCUMENTO_IDENTIDAD (id_documento)
+    CONSTRAINT FK_SW_PERSONA_DOCUMENTO FOREIGN KEY (id_documento) REFERENCES SW_DOCUMENTO_IDENTIDAD (id_documento)
 );
 
 CREATE TABLE SW_SISTEMA (
