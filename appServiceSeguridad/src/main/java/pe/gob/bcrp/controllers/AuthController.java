@@ -50,6 +50,7 @@ public class AuthController {
         this.passwordEncode = passwordEncode;
         this.keycloakRestService = keycloakRestService;
         this.jwtService = jwtService;
+        this.jwtValidationService=jwtValidationService;
     }
 
 
