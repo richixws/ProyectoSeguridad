@@ -47,6 +47,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Log4j2
@@ -76,6 +77,21 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     private IPerfilRepository perfilRepository;
     private IPerfilUsuarioRepository perfilUsuarioRepository;
+
+    @Override
+    public List<DocumentoIdentidadDTO> getAllDocumentosUsuarios() {
+        try {
+            log.info("INI - getAllDocumentoUsuarios");
+            List<DocumentoIdentidad> listDocumentos=documentoIdentidadRepository.findByGrupoDocumento(1);
+            return listDocumentos.stream()
+                    .map(documento -> modelMapper.map(documento, DocumentoIdentidadDTO.class))
+                    .collect(Collectors.toList());
+
+        }catch (Exception e){
+            log.error("ERROR - getAllDocumentoUsuarios() {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     @Cacheable(value = "usuarios", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #nombres,#tipoDocumento,#numeroDocumento,#idSistema, #ambito}")

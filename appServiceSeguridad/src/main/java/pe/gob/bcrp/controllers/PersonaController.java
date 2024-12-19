@@ -37,7 +37,6 @@ public class PersonaController {
     }
 
     @Operation(summary = "Listar Personas", description = "Obtener la lista de todos las personas de la base de datos")
-    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @ApiResponses({@ApiResponse(responseCode = "200",description = "Lista las personas obtenidos exitosamente.",
             content = { @Content(schema = @Schema(implementation = PersonaResponse.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "422", description = "No se pudo procesar la solicitud debido a un error interno.",content = @Content)
@@ -61,7 +60,6 @@ public class PersonaController {
     }
 
     @Operation(summary = "Guardar Persona", description = "Guarda la persona en la base de datos")
-    //@ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
     @ApiResponses({@ApiResponse(responseCode = "201",description = "Perfil guardado de manera exitosa.",
             content = {@Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
             @ApiResponse( responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
@@ -101,7 +99,6 @@ public class PersonaController {
     }
 
     @Operation(summary = "Actualizar Persona", description = "Actualiza la Persona en la base de datos")
-    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "persona actualizado de manera exitosa.",
             content = { @Content( schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) } ),
             @ApiResponse(responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",

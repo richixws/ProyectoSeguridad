@@ -2,6 +2,7 @@ package pe.gob.bcrp.services;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.web.multipart.MultipartFile;
+import pe.gob.bcrp.dto.DocumentoIdentidadDTO;
 import pe.gob.bcrp.dto.mfaDTO.Response;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroCreateUsuarioDTO;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroUsuarioDTO;
@@ -13,6 +14,7 @@ import java.util.List;
 
 public interface IUsuarioService {
 
+    public List<DocumentoIdentidadDTO> getAllDocumentosUsuarios();
   public UsuarioResponse getAllUsuarios(Integer pageNumber,
                                         Integer pageSize,
                                         String sortBy,

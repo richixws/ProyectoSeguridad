@@ -21,6 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pe.gob.bcrp.dto.DocumentoIdentidadDTO;
 import pe.gob.bcrp.dto.Views;
 import pe.gob.bcrp.dto.response.SistemaResponse;
 import pe.gob.bcrp.dto.usuarioDTO.RegistroCreateUsuarioDTO;
@@ -48,6 +49,20 @@ public class UsuarioController {
 
     public UsuarioController( IUsuarioService usuarioService ) {
         this.usuarioService = usuarioService;
+    }
+
+    @Hidden
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/usuario/documentos")
+    public ResponseEntity<List<DocumentoIdentidadDTO>> findAllDocumentoUsuarios(){
+        log.info("INI - findAllDocumentoUsuarios | requestURL=usuarios");
+        try {
+            List<DocumentoIdentidadDTO> listDocumentos=usuarioService.getAllDocumentosUsuarios();
+            return new ResponseEntity<>(listDocumentos, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("ERROR - listarDocumentoUsuarios| requestURL=usuarios/documentos");
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
     }
 
 
