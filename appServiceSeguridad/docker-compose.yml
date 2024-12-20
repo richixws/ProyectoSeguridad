@@ -21,7 +21,6 @@ services:
       ORACLE_SID: bcrdesa
       BD_USERNAME: bcrp_msauthentica_api
       BD_PASSWORD: bcrp_msauthentica_api
-
       KEYCLOAK_HOST: 172.30.107.211
       KEYCLOAK_PORT: 443
       KEYCLOAK_REALM: demo

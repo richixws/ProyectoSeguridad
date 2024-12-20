@@ -24,7 +24,7 @@ public class EmailServiceImpl implements IEmailService {
     public void sendOtpEmail(String email, String otp)  throws UnsupportedEncodingException, MessagingException {
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,true, "UTF-8");
         mimeMessageHelper.setFrom("prueba@gmail.com","soporte");
         mimeMessageHelper.setTo(email);
         String subject = "Aquí está su contraseña única de acceso: ¡caduca en 3 minutos!";

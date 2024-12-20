@@ -45,7 +45,7 @@ public interface IUsuarioService {
   public UsuarioDTO buscarPorUsuarioLogin(String usuario );
 
  // void verify(String email,String otp);
-  public Boolean regenerateOtp(String email);
+  public Response regenerateOtp(String email);
 
   public Response validateOTP(String username, Integer otp);
 

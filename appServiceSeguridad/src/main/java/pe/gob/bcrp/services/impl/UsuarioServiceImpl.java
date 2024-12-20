@@ -516,14 +516,12 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
 
     @Override
-    public Boolean regenerateOtp(String email) {
+    public Response regenerateOtp(String email) {
+        log.error("INFO service - regenerateOtp");
+        try {
 
-        Persona persona = personaRepository.findByCorreo(email)
-                .orElseThrow(() -> new RuntimeException("No user found with this email: " + email));
-
-        Usuario user = usuarioRepository.findByPersona(persona)
-                .orElseThrow(() -> new RuntimeException("User not found for the given email"));
-
+        Persona persona = personaRepository.findByCorreo(email).orElseThrow(() -> new RuntimeException("No hay usuario con el email " + email));
+        Usuario user = usuarioRepository.findByPersona(persona) .orElseThrow(() -> new RuntimeException("Usuario no encontrado para el tipo de persona"));
 
         //Usuario user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
        // String otp = totpUtils.generateOtp();
@@ -532,24 +530,34 @@ public class UsuarioServiceImpl implements IUsuarioService {
         if (otp == null)
         {
             log.error("OTP generator is not working...");
-            return false;
+            return Response.builder()
+                    .statusCode(400)
+                    .responseMessage("no se genero codigo verificador correctamente.")
+                    .build();
         }
 
         log.info("Generated OTP: {}", otp);
 
         try {
+
             emailService.sendOtpEmail(email, otp);
+
+            return Response.builder()
+                    .statusCode(200)
+                    .responseMessage("SUCCESS")
+                    .otpResponse(OtpResponse.builder().isOtpValid(true).build())
+                    .build();
+
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to send otp please try again");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-       //user.setOtp(otp);
-       // user.setOtpGeneratedTime(LocalDateTime.now());
-       // Usuario userResp=usuarioRepository.save(user);
 
-        return true;
-        //return "Email sent... please verify account within 1 minute";
+
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override

@@ -95,9 +95,11 @@ public class AuthController {
             String nombre = this.keycloakRestService.extractNameFromToken(jwt.getAccess_token());
           // String correo = this.keycloakRestService.extractEmailFromToken(jwt.getAccess_token());
 
-            boolean estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());
-            if(estadoOtp){
-                log.info("se envio en codigo verificador");
+            Response estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());
+            if(estadoOtp.getStatusCode()==200){
+                log.info("se envio en codigo verificador al correo " +usuarioDTO.getPersona().getCorreo());
+            }else{
+                log.info("Error - codigo verificador no enviado al correo "+usuarioDTO.getPersona().getCorreo());
             }
 
             // Validar el token
@@ -263,8 +265,21 @@ public class AuthController {
 
     @Hidden
     @PutMapping("oauth/regenerate-otp")
-    public ResponseEntity<Boolean> regenerateOtp(@RequestParam String email) {
-        return new ResponseEntity<>(usuariosService.regenerateOtp(email), HttpStatus.OK);
+    public ResponseEntity<?> regenerateOtp(@RequestParam  String email) {
+        log.info("INI - regenerateOtp | requestURL=email");
+        Response response=new Response();
+        try {
+
+            response=usuariosService.regenerateOtp(email);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        }catch (Exception e ){
+            log.error("ERROR - regenerateOtp",e.getMessage());
+            response.setStatusCode(403);
+            response.setResponseMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.FORBIDDEN);
+
+        }
     }
 
     @Hidden
