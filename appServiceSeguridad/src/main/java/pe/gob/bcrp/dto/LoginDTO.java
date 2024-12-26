@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 @Data
 public class LoginDTO {
-    @NotEmpty(message = "Usuario no puede ser vacio")
-    private String usuario;
-    @NotEmpty(message = "Password no puede ser vacio")
+    @NotEmpty(message = "Usuario no puede ser vacio.")
+    private String username;
+    @NotEmpty(message = "Contarseña no puede ser vacio.")
     private String password;
     //captcha
     /**@NotEmpty(message = "Captcha no puede ser vacio")

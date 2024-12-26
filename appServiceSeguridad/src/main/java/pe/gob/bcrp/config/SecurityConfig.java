@@ -10,6 +10,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pe.gob.bcrp.jwt.TokenValidationFilter;
@@ -75,6 +77,16 @@ public class SecurityConfig {
        // String issuerUri = "http://localhost:8080/realms/ejemplo1";
         return JwtDecoders.fromIssuerLocation(keycloakIssuerUrl);
     }
+
+    // Validacion para certificado ssl
+   /** @Bean
+    public JwtDecoder jwtDecoder() {
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri("https://localhost:8443/realms/demo/protocol/openid-connect/certs")
+                .build();
+        jwtDecoder.setJwtValidator(jwt -> JwtValidators.createDefaultWithIssuer("https://localhost:8443/realms/demo").validate(jwt));
+        return jwtDecoder;
+    }**/
+
 
 
     @Autowired

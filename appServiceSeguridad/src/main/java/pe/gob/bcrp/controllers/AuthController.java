@@ -84,7 +84,7 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }  **/
 
-           UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsuario());
+           UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsername());
 
             if (usuarioDTO == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Las credenciales ingresadas no son válidas"));
@@ -93,7 +93,7 @@ public class AuthController {
 
 
 
-            String login = this.keycloakRestService.login(dto.getUsuario(), dto.getPassword());
+            String login = this.keycloakRestService.login(dto.getUsername(), dto.getPassword());
             JwtDTO jwt =new ObjectMapper().readValue(login, JwtDTO.class);
 
             // Decodificar el payload del token para obtener el nombre

@@ -62,7 +62,7 @@ public class PersonaController {
 
     @Operation(summary = "Guardar Persona", description = "Guarda la persona en la base de datos")
     //@ApiResponse(responseCode = "201",description = "HTTP Status 201 CREATED")
-    @ApiResponses({@ApiResponse(responseCode = "201",description = "Perfil guardado de manera exitosa.",
+    @ApiResponses({@ApiResponse(responseCode = "201",description = "Persona guardado de manera exitosa.",
             content = {@Content(schema = @Schema(implementation = ResponseDTO.class),mediaType = "application/json") } ),
             @ApiResponse( responseCode = "400",description = "Solicitud inválida, argumentos no válidos.",
                     content = {  @Content(schema = @Schema(implementation = ResponseDTO.class), mediaType = "application/json" ) }),
