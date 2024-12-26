@@ -19,10 +19,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import pe.gob.bcrp.dto.*;
-import pe.gob.bcrp.dto.personaDTO.PersonaDTO;
+import pe.gob.bcrp.dto.mfaDTO.OtpResponse;
+import pe.gob.bcrp.dto.mfaDTO.Response;
 import pe.gob.bcrp.dto.personaDTO.ValidateDni;
 import pe.gob.bcrp.dto.personaDTO.ValidatePasaporte;
 import pe.gob.bcrp.dto.response.UsuarioResponse;
@@ -42,12 +42,12 @@ import pe.gob.bcrp.util.TotpUtils;
 import pe.gob.bcrp.util.Util;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Log4j2
@@ -77,6 +77,21 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     private IPerfilRepository perfilRepository;
     private IPerfilUsuarioRepository perfilUsuarioRepository;
+
+    @Override
+    public List<DocumentoIdentidadDTO> getAllDocumentosUsuarios() {
+        try {
+            log.info("INI - getAllDocumentoUsuarios");
+            List<DocumentoIdentidad> listDocumentos=documentoIdentidadRepository.findByGrupoDocumento(1);
+            return listDocumentos.stream()
+                    .map(documento -> modelMapper.map(documento, DocumentoIdentidadDTO.class))
+                    .collect(Collectors.toList());
+
+        }catch (Exception e){
+            log.error("ERROR - getAllDocumentoUsuarios() {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     @Cacheable(value = "usuarios", key = "{#pageNumber, #pageSize, #sortBy, #sortOrder, #nombres,#tipoDocumento,#numeroDocumento,#idSistema, #ambito}")
@@ -501,55 +516,113 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
 
     @Override
-    public Boolean regenerateOtp(String email) {
+    public Response regenerateOtp(String email) {
+        log.error("INFO service - regenerateOtp");
+        try {
 
-        Persona persona = personaRepository.findByCorreo(email)
-                .orElseThrow(() -> new RuntimeException("No user found with this email: " + email));
-
-        Usuario user = usuarioRepository.findByPersona(persona)
-                .orElseThrow(() -> new RuntimeException("User not found for the given email"));
-
+        Persona persona = personaRepository.findByCorreo(email).orElseThrow(() -> new RuntimeException("No hay usuario con el email " + email));
+        Usuario user = usuarioRepository.findByPersona(persona) .orElseThrow(() -> new RuntimeException("Usuario no encontrado para el tipo de persona"));
 
         //Usuario user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
        // String otp = totpUtils.generateOtp();
         String otp = generateOTP.generateOTP(user.getUsuario());
+        log.info("Otp: {}", otp);
         if (otp == null)
         {
             log.error("OTP generator is not working...");
-            return false;
+            return Response.builder()
+                    .statusCode(400)
+                    .responseMessage("no se genero codigo verificador correctamente.")
+                    .build();
         }
 
         log.info("Generated OTP: {}", otp);
 
         try {
+
             emailService.sendOtpEmail(email, otp);
+
+            return Response.builder()
+                    .statusCode(200)
+                    .responseMessage("SUCCESS")
+                    .otpResponse(OtpResponse.builder().isOtpValid(true).build())
+                    .build();
+
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to send otp please try again");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-       //user.setOtp(otp);
-       // user.setOtpGeneratedTime(LocalDateTime.now());
-       // Usuario userResp=usuarioRepository.save(user);
 
-        return true;
-        //return "Email sent... please verify account within 1 minute";
+
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
-    public Boolean validateOTP(String username, String otp) {
+    public Response validateOTP(String username, Integer otp) {
 
+        try{
         // get OTP from cache
         Integer cacheOTP = generateOTP.getOPTByKey(username);
-        if (cacheOTP!=null && cacheOTP.equals(Integer.parseInt(otp)))
-        {
-            generateOTP.clearOTPFromCache(username);
-            return true;
+
+
+        if (cacheOTP == null) {
+            return Response.builder()
+                    .statusCode(400)
+                    .responseMessage("No has enviado una OTP o ha caducado.")
+                    .build();
         }
-        return false;
+
+        Integer failedAttempts = generateOTP.getFailedAttempts(username);
+
+        if (failedAttempts == null) {
+            failedAttempts = 0; // Si no existe, inicializar en 0
+        }
 
 
+        // Validar que el OTP coincida
+        if (!cacheOTP.equals(otp)) {
+            failedAttempts++;
+
+            generateOTP.updateFailedAttempts(username, failedAttempts);
+
+            if (failedAttempts > 3) {
+
+                generateOTP.clearFailedAttempts(username);
+                generateOTP.clearOTPFromCache(username);
+
+                return Response.builder()
+                        .statusCode(403)
+                        .responseMessage("La cuenta está bloqueada debido a demasiados intentos fallidos.")
+                        .build();
+            }
+            return Response.builder()
+                    .statusCode(400)
+                    .responseMessage(" codigo invalido OTP")
+                    .build();
+        }
+
+
+        // Limpiar el OTP del caché después de validar
+        generateOTP.clearFailedAttempts(username);
+        generateOTP.clearOTPFromCache(username);
+
+        return Response.builder()
+                .statusCode(200)
+                .responseMessage("SUCCESS")
+                .otpResponse(OtpResponse.builder().isOtpValid(true).build())
+                .build();
+
+    } catch (Exception e) {
+        log.error("Error during OTP validation", e);
+        return Response.builder()
+                .statusCode(500)
+                .responseMessage("Internal server error")
+                .build();
     }
 
 
+    }
 }

@@ -5,24 +5,21 @@ import cn.apiclub.captcha.Captcha;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import pe.gob.bcrp.dto.*;
+import pe.gob.bcrp.dto.mfaDTO.OtpVerificationDTO;
+import pe.gob.bcrp.dto.mfaDTO.Response;
 import pe.gob.bcrp.dto.response.CaptchaResponse;
 import pe.gob.bcrp.dto.response.TokenResponse;
-import pe.gob.bcrp.entities.Persona;
-import pe.gob.bcrp.entities.Usuario;
 import pe.gob.bcrp.excepciones.SeguridadAPIException;
 import pe.gob.bcrp.jwt.JwtService;
 import pe.gob.bcrp.jwt.JwtValidationService;
@@ -55,11 +52,9 @@ public class AuthController {
 
 
     @Operation(summary = "Login REST API", description = "Permite autenticar un usuario mediante sus credenciales y devuelve un token JWT con información adicional")
-    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
-
     @ApiResponses({ @ApiResponse(responseCode = "200",description = "Autenticación exitosa, devuelve el token JWT."),
                              @ApiResponse(responseCode = "401",description = "Credenciales inválidas o token no válido." ),
-                   @ApiResponse( responseCode = "422",description = "Error interno en el sistema." )
+                    @ApiResponse( responseCode = "422",description = "Error interno en el sistema." )
     })
     @PostMapping(value = "oauth/login")
     public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
@@ -98,12 +93,14 @@ public class AuthController {
 
             // Decodificar el payload del token para obtener el nombre
             String nombre = this.keycloakRestService.extractNameFromToken(jwt.getAccess_token());
+          // String correo = this.keycloakRestService.extractEmailFromToken(jwt.getAccess_token());
 
-
-            /**boolean estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());
-            if(estadoOtp){
-                log.info("se envio en codigo verificador");
-            }**/
+            Response estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());
+            if(estadoOtp.getStatusCode()==200){
+                log.info("se envio en codigo verificador al correo " +usuarioDTO.getPersona().getCorreo());
+            }else{
+                log.info("Error - codigo verificador no enviado al correo "+usuarioDTO.getPersona().getCorreo());
+            }
 
             // Validar el token
            /**if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
@@ -268,25 +265,55 @@ public class AuthController {
 
     @Hidden
     @PutMapping("oauth/regenerate-otp")
-    public ResponseEntity<Boolean> regenerateOtp(@RequestParam String email) {
-        return new ResponseEntity<>(usuariosService.regenerateOtp(email), HttpStatus.OK);
+    public ResponseEntity<?> regenerateOtp(@RequestParam  String email) {
+        log.info("INI - regenerateOtp | requestURL=email");
+        Response response=new Response();
+        try {
+
+            response=usuariosService.regenerateOtp(email);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        }catch (Exception e ){
+            log.error("ERROR - regenerateOtp",e.getMessage());
+            response.setStatusCode(403);
+            response.setResponseMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.FORBIDDEN);
+
+        }
     }
 
     @Hidden
     @PostMapping(value = "oauth/verify-otp")
-    public ResponseEntity<?> verifyOtp(@RequestBody @Valid OtpVerificationDTO  dto) {
+    public ResponseEntity<?> verifyOtp(@RequestBody @Valid OtpVerificationDTO dto) {
         log.info("INI - verifyOtp | requestURL=verify-otp");
 
         String username = dto.getUsername();
-        String otp = dto.getOtp();
+        Integer otp = dto.getOtp();
 
-        boolean isOtpValid = usuariosService.validateOTP(username, otp);
-        if (!isOtpValid) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message","Código inválido o expirado"));
+        //boolean isOtpValid = usuariosService.validateOTP(username, otp);
+        Response mfaResponse= usuariosService.validateOTP(username,otp);
+
+
+        switch (mfaResponse.getStatusCode()) {
+            case 200:
+                return ResponseEntity.ok(Map.of(
+                        "message", mfaResponse.getResponseMessage(),
+                        "isOtpValid", mfaResponse.getOtpResponse().isOtpValid()
+                ));
+
+            case 400:
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                        "message", mfaResponse.getResponseMessage()
+                ));
+            case 403:
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message",mfaResponse.getResponseMessage()));
+
+            case 500:
+            default:
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                        "message", mfaResponse.getResponseMessage()
+                ));
         }
-
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message","Verificacion Correcta"));
-
     }
 
 }

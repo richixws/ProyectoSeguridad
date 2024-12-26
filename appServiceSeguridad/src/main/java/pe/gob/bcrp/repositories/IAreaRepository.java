@@ -1,5 +1,5 @@
 package pe.gob.bcrp.repositories;
-/**
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +21,4 @@ public interface IAreaRepository extends JpaRepository<Area, Integer> {
     boolean existsByNombreAreaIgnoreCaseAndIdAreaNot(String nombre,Integer idSistema);
 
     Optional<Area> findByNombreAreaContainingIgnoreCase(String nombreArea);
-}**/
+}

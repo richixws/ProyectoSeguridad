@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import pe.gob.bcrp.dto.JwtDTO;
 
 import java.io.DataInput;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.HashMap;
@@ -162,6 +163,60 @@ public class KeycloakRestService {
             throw e;
         }
     }
+
+    /**
+     * Decodificar el correo del usuario del payload del token JWT.
+     *
+     * @param token JWT
+     * @return Correo del usuario o null si no se encuentra
+     */
+
+    public String extractEmailFromToken(String token) throws Exception {
+        try {
+            // Dividir el token en sus partes
+            String[] parts = token.split("\\.");
+            if (parts.length < 2) {
+                throw new IllegalArgumentException("JWT no tiene el formato adecuado");
+            }
+
+            // Decodificar el payload (segunda parte)
+            String payload = new String(Base64.getDecoder().decode(parts[1]));
+
+            // Convertir el payload JSON a un mapa
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> claims = objectMapper.readValue(payload, Map.class);
+
+            // Retornar el valor del claim "email" (o el campo correspondiente)
+            return (String) claims.get("email");
+        } catch (Exception e) {
+            log.error("Error al decodificar el token JWT", e);
+            throw e;
+        }
+    }
+
+    public String extractUsernameFromToken(String token) throws Exception {
+        try {
+            // Dividir el token en sus partes
+            String[] parts = token.split("\\.");
+            if (parts.length < 2) {
+                throw new IllegalArgumentException("JWT no tiene el formato adecuado");
+            }
+
+            // Decodificar el payload (segunda parte)
+            String payload = new String(Base64.getDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+
+            // Convertir el payload JSON a un mapa
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> claims = objectMapper.readValue(payload, Map.class);
+
+            // Retornar el valor del claim "username" (o el campo correspondiente)
+            return (String) claims.get("username");
+        } catch (Exception e) {
+            log.error("Error al decodificar el token JWT", e);
+            throw e;
+        }
+    }
+
 
 }
 
