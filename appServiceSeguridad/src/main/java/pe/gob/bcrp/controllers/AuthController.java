@@ -20,6 +20,7 @@ import pe.gob.bcrp.dto.mfaDTO.OtpVerificationDTO;
 import pe.gob.bcrp.dto.mfaDTO.Response;
 import pe.gob.bcrp.dto.response.CaptchaResponse;
 import pe.gob.bcrp.dto.response.TokenResponse;
+import pe.gob.bcrp.excepciones.ResourceNotFoundException;
 import pe.gob.bcrp.excepciones.SeguridadAPIException;
 import pe.gob.bcrp.jwt.JwtService;
 import pe.gob.bcrp.jwt.JwtValidationService;
@@ -93,13 +94,13 @@ public class AuthController {
 
             // Decodificar el payload del token para obtener el nombre
             String nombre = this.keycloakRestService.extractNameFromToken(jwt.getAccess_token());
-          // String correo = this.keycloakRestService.extractEmailFromToken(jwt.getAccess_token());
+            //String correo = this.keycloakRestService.extractEmailFromToken(jwt.getAccess_token());
 
-            Response estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());
+            Response estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());  //usuarioDTO.getPersona().getCorreo()
             if(estadoOtp.getStatusCode()==200){
-                log.info("se envio en codigo verificador al correo " +usuarioDTO.getPersona().getCorreo());
+                log.info("se envio en codigo verificador al correo {}", usuarioDTO.getPersona().getCorreo());
             }else{
-                log.info("Error - codigo verificador no enviado al correo "+usuarioDTO.getPersona().getCorreo());
+                log.info("Error - codigo verificador no enviado al correo {}", usuarioDTO.getPersona().getCorreo());
             }
 
             // Validar el token
@@ -129,7 +130,10 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                         .body(Map.of("message", "Ocurrió un error en el sistema"));
             }
-        } catch (Exception e) {
+        }catch (ResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message",e.getMessage()));
+        }
+        catch (Exception e) {
             log.error("Error en el login", e);
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body(Map.of("message", "Ocurrió un error interno en el sistema"));

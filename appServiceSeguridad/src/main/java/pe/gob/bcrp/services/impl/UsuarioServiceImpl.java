@@ -520,42 +520,41 @@ public class UsuarioServiceImpl implements IUsuarioService {
         log.error("INFO service - regenerateOtp");
         try {
 
-        Persona persona = personaRepository.findByCorreo(email).orElseThrow(() -> new RuntimeException("No hay usuario con el email " + email));
-        Usuario user = usuarioRepository.findByPersona(persona) .orElseThrow(() -> new RuntimeException("Usuario no encontrado para el tipo de persona"));
+        Persona persona = personaRepository.findByCorreo(email).orElseThrow(() -> new ResourceNotFoundException("El correo para el usuario es incorrecto para el envio de codigo verificacion."));
+        Usuario user = usuarioRepository.findByPersona(persona) .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado para el tipo de persona al enviar codigo verificacion."));
 
         //Usuario user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
        // String otp = totpUtils.generateOtp();
         String otp = generateOTP.generateOTP(user.getUsuario());
         log.info("Otp: {}", otp);
-        if (otp == null)
-        {
+        if (otp == null) {
             log.error("OTP generator is not working...");
             return Response.builder()
                     .statusCode(400)
                     .responseMessage("no se genero codigo verificador correctamente.")
                     .build();
         }
-
         log.info("Generated OTP: {}", otp);
 
-        try {
+            try {
 
-            emailService.sendOtpEmail(email, otp);
+                emailService.sendOtpEmail(email, otp);
 
-            return Response.builder()
-                    .statusCode(200)
-                    .responseMessage("SUCCESS")
-                    .otpResponse(OtpResponse.builder().isOtpValid(true).build())
-                    .build();
+                return Response.builder()
+                        .statusCode(200)
+                        .responseMessage("SUCCESS")
+                        .otpResponse(OtpResponse.builder().isOtpValid(true).build())
+                        .build();
 
-        } catch (MessagingException e) {
-            throw new RuntimeException("Unable to send otp please try again");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            } catch (MessagingException e) {
+                throw new RuntimeException("Unable to send otp please try again");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
         }
-
-
-        }catch (Exception e){
+            catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }
     }

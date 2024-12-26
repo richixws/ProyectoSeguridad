@@ -1,5 +1,5 @@
 package pe.gob.bcrp.services.impl;
-
+/**
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -176,4 +176,4 @@ public class AreaServiceImpl implements IAreaService {
         return estado;
     }
 
-}
+}**/
