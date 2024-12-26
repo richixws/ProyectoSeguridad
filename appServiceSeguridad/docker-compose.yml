@@ -35,6 +35,10 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       ALLOWED_CORS_ORIGINS: http://172.30.107.212:4300
+      SMTP_MAIL_HOST: smtp.gmail.com
+      SMTP_MAIL_PORT: 587
+      SMTP_MAIL_USERNAME: rwongsol@gmail.com
+      SMTP_MAIL_PASSWORD: nmg xsae eunf nbqg
     depends_on:
       - redis
 

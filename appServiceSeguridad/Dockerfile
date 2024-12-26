@@ -1,6 +1,6 @@
 # Usar una imagen base de Eclipse Temurin con Alpine
-FROM eclipse-temurin:17-alpine
-
+#FROM eclipse-temurin:17-alpine
+FROM openjdk:17-jdk-alpine
 # Etiquetas para metadatos
 LABEL maintainer="bcrp.gob.pe"
 

@@ -94,9 +94,11 @@ public class AuthController {
 
             // Decodificar el payload del token para obtener el nombre
             String nombre = this.keycloakRestService.extractNameFromToken(jwt.getAccess_token());
-            //String correo = this.keycloakRestService.extractEmailFromToken(jwt.getAccess_token());
+           // String correo = this.keycloakRestService.extractEmailFromToken(jwt.getAccess_token());
+           // String username = this.keycloakRestService.extractUsernameFromToken(jwt.getAccess_token());
 
             Response estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());  //usuarioDTO.getPersona().getCorreo()
+            //Response estadoOtp= usuariosService.regenerateOtp(correo);  //usuarioDTO.getPersona().getCorreo()
             if(estadoOtp.getStatusCode()==200){
                 log.info("se envio en codigo verificador al correo {}", usuarioDTO.getPersona().getCorreo());
             }else{
