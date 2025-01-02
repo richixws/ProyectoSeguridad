@@ -128,6 +128,7 @@ public class JwtValidationService {
             if (!redisTokenService.isTokenActive(username)) {
                 responseMsg.put("message", "No hay tokens activos para este usuario.");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseMsg);
+
             }
 
 
@@ -157,10 +158,10 @@ public class JwtValidationService {
                 );
                 return ResponseEntity.status(HttpStatus.OK).body(newTokens);
             } else {
-                throw new RuntimeException("Failed to refresh token");
+                throw new RuntimeException("Fallo al refrescar el refresh token.");
             }
-        } catch (JWTDecodeException e) {
-            throw new RuntimeException("Invalid refresh token", e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Invalido refresh token", e);
         }
 
     }

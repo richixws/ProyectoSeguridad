@@ -5,6 +5,9 @@ import cn.apiclub.captcha.Captcha;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +15,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.*;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -52,15 +56,46 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "Login REST API", description = "Permite autenticar un usuario mediante sus credenciales y devuelve un token JWT con información adicional")
-    @ApiResponses({ @ApiResponse(responseCode = "200",description = "Autenticación exitosa, devuelve el token JWT."),
-                             @ApiResponse(responseCode = "401",description = "Credenciales inválidas o token no válido." ),
-                    @ApiResponse( responseCode = "422",description = "Error interno en el sistema." )
+    @Operation(summary = "Login REST API",description = "Permite autenticar un usuario mediante sus credenciales")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Autenticación exitosa",
+                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseTokenDTO.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "data": {
+                        "name": "",
+                        "access_token": "",
+                        "expires_in": "",
+                        "refresh_token": "",
+                        "refresh_expires_in": ""
+                      },
+                      "message": "Autenticación exitosa"
+                    }
+                    """))),
+                    @ApiResponse(responseCode = "401", description = "Credenciales inválidas",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseTokenDTO.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "message": "Las credenciales ingresadas no son válidas"
+                    }"""))),
+                    @ApiResponse(responseCode = "422", description = "Error interno",
+                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseTokenDTO.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "message": "Ocurrió un error interno en el sistema"
+                    }"""))),
+                   @ApiResponse(responseCode = "400", description = "Solicitud invalida",
+                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseTokenDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "message": "Solicitud invalida de autenticación."
+                    }""")))
     })
+
     @PostMapping(value = "oauth/login")
-    public ResponseEntity<?> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
+    public ResponseEntity<ResponseTokenDTO> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
 
         log.info("INI - login | requestURL=login");
+        ResponseTokenDTO responseToken = new ResponseTokenDTO();
 
         try {
 
@@ -83,25 +118,26 @@ public class AuthController {
            UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsername());
 
             if (usuarioDTO == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Las credenciales ingresadas no son válidas"));
+               // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Las credenciales ingresadas no son válidas"));
+                responseToken.setMessage("Las credenciales ingresadas no son válidas.");
+                return new ResponseEntity<>(responseToken,HttpStatus.UNAUTHORIZED);
             }
-
-
 
 
             String login = this.keycloakRestService.login(dto.getUsername(), dto.getPassword());
             JwtDTO jwt =new ObjectMapper().readValue(login, JwtDTO.class);
 
-            // Decodificar el payload del token para obtener el nombre
+            //Decodificar el payload del token para obtener el nombre
             String nombre = this.keycloakRestService.extractNameFromToken(jwt.getAccess_token());
             //String correo = this.keycloakRestService.extractEmailFromToken(jwt.getAccess_token());
 
-            Response estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());  //usuarioDTO.getPersona().getCorreo()
+            //Generar un nuevo codigo verificador
+            /**Response estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());  //usuarioDTO.getPersona().getCorreo()
             if(estadoOtp.getStatusCode()==200){
                 log.info("se envio en codigo verificador al correo {}", usuarioDTO.getPersona().getCorreo());
             }else{
                 log.info("Error - codigo verificador no enviado al correo {}", usuarioDTO.getPersona().getCorreo());
-            }
+            }**/
 
             // Validar el token
            /**if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
@@ -109,34 +145,41 @@ public class AuthController {
                         .body(Map.of("mensaje", "Token inválido"));
             }**/
 
-            Map<String, String> response = new HashMap<>();
-           // response.put("id", String.valueOf(usuarioDTO.getIdUsuario()));
-           // response.put("nombre", usuarioDTO.getPersona().getNombres().concat(" "+usuarioDTO.getPersona().getApellidoPaterno()));
-            response.put("name", nombre);
-            response.put("access_token", jwt.getAccess_token());
-            response.put("expires_in", String.valueOf(jwt.getExpires_in()));
-            response.put("refresh_token",jwt.getRefresh_token());
-            response.put("refresh_expires_in", String.valueOf(jwt.getRefresh_expires_in()));
-            return ResponseEntity.ok(response);
+            TokenJwtDTO tokenJwtDTO = new TokenJwtDTO();
+            tokenJwtDTO.setName(nombre);
+            tokenJwtDTO.setAccess_token(jwt.getAccess_token());
+            tokenJwtDTO.setExpires_in(jwt.getExpires_in());
+            tokenJwtDTO.setRefresh_token(jwt.getRefresh_token());
+            tokenJwtDTO.setRefresh_expires_in(jwt.getRefresh_expires_in());
+
+            responseToken.setData(tokenJwtDTO);
+            responseToken.setMessage("Autenticación exitosa.");
+            return  ResponseEntity.ok(responseToken);
 
 
         } catch (HttpClientErrorException e) {
             // Captura de error 401 o 400 para indicar credenciales inválidas
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("message", "Las credenciales ingresadas no son válidas"));
+                log.error("credenciales válidas", e.getMessage());
+                //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Las credenciales ingresadas no son válidas"));
+                responseToken.setMessage("Las credenciales ingresadas no son válidas.");
+                responseToken.setData(null);
+                return new ResponseEntity<>(responseToken,HttpStatus.UNAUTHORIZED);
             } else {
-                log.error("Error en la solicitud de autenticación", e);
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                        .body(Map.of("message", "Ocurrió un error en el sistema"));
+                log.error("Error en la solicitud de autenticación.", e);
+                //return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Map.of("message", "Ocurrió un error en el sistema"));
+                responseToken.setMessage("Ocurrió un error en el sistema.");
+                return new ResponseEntity<>(responseToken,HttpStatus.UNPROCESSABLE_ENTITY);
             }
         }catch (ResourceNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message",e.getMessage()));
+            log.error("Error Not Found", e.getMessage());
+            responseToken.setMessage(e.getMessage());
+            return new ResponseEntity<>(responseToken,HttpStatus.NOT_FOUND);
         }
         catch (Exception e) {
             log.error("Error en el login", e);
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .body(Map.of("message", "Ocurrió un error interno en el sistema"));
+            responseToken.setMessage("Ocurrió un error interno en el sistema");
+            return new ResponseEntity<>(responseToken,HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }
@@ -174,28 +217,79 @@ public class AuthController {
     }
 
     @Operation(summary = "Refresh Token REST API", description = "Obtener nuevo token de acceso")
-    //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Token refrescado correctamente, devuelve el token JWT."),
-            @ApiResponse(responseCode = "403", description = "Forbidden. No se ha proporcionado un refresh_token."),
-            @ApiResponse(responseCode = "422", description = "Ocurrió un error al procesar la solicitud.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Autenticación exitosa",
+            content = @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseTokenDTO.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "data": {
+                        "access_token": "",
+                        "expires_in": "",
+                        "refresh_token": "",
+                        "refresh_expires_in": ""
+                      },
+                      "message": "Token refrescado correctamente."
+                    }
+                    """))),
+            @ApiResponse(responseCode = "400", description = "Solicitud invalida refreshToken",
+                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseTokenDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "message": "Solicitud invalida de refreshToken."
+                    }"""))),
+            @ApiResponse(responseCode = "422", description = "Error interno",
+                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseTokenDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "message": "Ocurrió un error al procesar la solicitud."
+                    }"""))),
+            @ApiResponse(responseCode = "403", description = "Forbidden. No se ha proporcionado un refresh_token.",
+                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseTokenDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "message": "El refresh_token no está presente o es inválido."
+                    }""")))
     })
+
+
     @PostMapping("oauth/refreshToken")
-    public ResponseEntity<TokenResponse> refreshToken(@RequestParam("refresh_token") RefreshTokenRequest refresh_token,@RequestParam("username") String username) {
+    public ResponseEntity<ResponseTokenDTO> refreshToken(@RequestParam("refresh_token") RefreshTokenRequest refresh_token,@RequestParam("username") String username) {
 
         log.info("INI - refreshToken");
+        ResponseTokenDTO responseToken = new ResponseTokenDTO();
+
         try {
             //String refreshToken = request.get("refresh_token");
             String refreshToken = refresh_token.getRefresh_token();
             if(refreshToken ==null || refreshToken.isEmpty()){
-                log.error("El refresh_token no está presente o es inválido.");
-                return new ResponseEntity<TokenResponse>(HttpStatus.FORBIDDEN);
+                responseToken.setMessage("El refreshToken no está presente o es inválido.");
+                return new ResponseEntity<>(responseToken,HttpStatus.FORBIDDEN);
             }
             ResponseEntity newTokens = jwtValidationService.refreshAccessToken(refreshToken,username);
-            return newTokens;
-        } catch (Exception e) {
+
+            if(newTokens.getStatusCode()==HttpStatus.UNAUTHORIZED){
+                Map<String, String> errorBody = (Map<String, String>) newTokens.getBody();
+                responseToken.setMessage(errorBody != null ? errorBody.getOrDefault("message", "No autorizado.") : "No autorizado.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseToken);
+            }
+
+            TokenResponse tokenResponse = (TokenResponse) newTokens.getBody();
+
+            responseToken.setMessage("Token refrescado correctamente.");
+            responseToken.setData(tokenResponse);
+            return new ResponseEntity<>(responseToken,HttpStatus.OK);
+        }
+
+        catch (RuntimeException e){
+            log.error("Error al refrescar el token: ", e.getMessage());
+            responseToken.setMessage(e.getMessage());
+            responseToken.setData(null);
+            return new ResponseEntity<>(responseToken,HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        catch (Exception e) {
             log.error("Error al intentar refrescar el token: ", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null);
+            responseToken.setMessage("Ocurrió un error al intentar refrescar el token.");
+            responseToken.setData(null);
+            return new ResponseEntity<>(responseToken,HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }
@@ -203,33 +297,66 @@ public class AuthController {
 
     @Operation(summary = "Cerrar Sesion REST API", description = "cerrar la sesion de acceso")
     //@ApiResponse( responseCode = "200", description = "HTTP Status 200 SUCCESS")
-    @ApiResponses(value = {
+   /** @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Sesión cerrada correctamente."),
             @ApiResponse(responseCode = "403", description = "Forbidden. El refresh_token ha expirado o está ausente."),
             @ApiResponse(responseCode = "422", description = "Ocurrió un error al intentar cerrar sesión.")
+    })**/
+
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Logout exitoso",
+            content = @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseTokenDTO.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "message": "Logout exitoso."
+                    }
+                    """))),
+            @ApiResponse(responseCode = "400", description = "Solicitud invalida logout.",
+                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseTokenDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "message": "Solicitud invalida."
+                    }"""))),
+            @ApiResponse(responseCode = "401", description = "Token no esta activo.",
+                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseTokenDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "message": "Token no esta activo."
+                    }"""))),
+
+            @ApiResponse(responseCode = "422", description = "Error de solicitud de sistema.",
+                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseTokenDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "message": "Ocurrió un error al procesar la solicitud."
+                    }""")))
     })
     @PostMapping("oauth/logout")
     public ResponseEntity<?> cerrarSesion(@RequestParam("refresh_token") String refreshToken,@RequestParam("username") String username) {
 
         log.error("INI - logout");
+        ResponseTokenDTO responseToken = new ResponseTokenDTO();
         try {
             if (refreshToken == null || refreshToken.isEmpty()) {
-                return new ResponseEntity<>("\n" +
-                        "El token de actualización expiró o faltaba. Por favor, haz una nueva solicitud de inicio de sesión.",HttpStatus.FORBIDDEN);
+               // return new ResponseEntity<>("\n" + "El token de actualización expiró o faltaba. Por favor, haz una nueva solicitud de inicio de sesión.",HttpStatus.FORBIDDEN);
+                responseToken.setMessage("El token de actualización expiró o faltaba. Por favor, haz una nueva solicitud de inicio de sesión.");
+                return new ResponseEntity<>(responseToken,HttpStatus.FORBIDDEN);
+
             }
 
             try {
                 // Llamar a Keycloak para revocar el refresh token
                 ResponseEntity<?> estado = keycloakRestService.logout(refreshToken,username);
+
                 return estado;
 
             } catch (Exception e) {
-                log.error("Error during logout", e.getMessage());
-                return new ResponseEntity<>("Se produjo un error al intentar cerrar sesión.", HttpStatus.UNPROCESSABLE_ENTITY);
+                responseToken.setMessage("\"Se produjo un error al intentar cerrar sesión.");
+                return  new ResponseEntity<>(responseToken,HttpStatus.UNPROCESSABLE_ENTITY);
             }
         } catch (Exception e) {
             log.error("Error during logout", e.getMessage());
-            throw new RuntimeException(e);
+            responseToken.setMessage("Error durante el cierre de sesión.");
+            return new ResponseEntity<>(responseToken,HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }
