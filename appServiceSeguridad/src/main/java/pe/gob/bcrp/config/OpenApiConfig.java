@@ -22,17 +22,23 @@ public class OpenApiConfig {
         // Datos de los servidores
         //http://localhost:8081/v3/api-docs
         //http://localhost:8081/swagger-ui/index.html
+        Server localServer = new Server();
+        localServer.setUrl("http://localhost:8081");
+        localServer.setDescription("URL de prueba local");
+
+
         Server devServer = new Server();
         devServer.setUrl("http://172.30.107.212:1025");
         devServer.setDescription("URL de pruebas desarrollo");
+
+        Server qaServer = new Server();
+        qaServer.setUrl("http://172.30.107.213:1025");
+        qaServer.setDescription("URL de pruebas desarrollo");
 
         Server prodServer = new Server();
         prodServer.setUrl("http://172.30.107.212:1025");
         prodServer.setDescription("URL del servidor de producción");
 
-        Server localServer = new Server();
-        localServer.setUrl("http://localhost:8081");
-        localServer.setDescription("URL de prueba local");
 
         // Datos de contacto
         Contact contact = new Contact();
@@ -67,7 +73,7 @@ public class OpenApiConfig {
         // Integración de la configuración
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(devServer, prodServer,localServer))
+                .servers(List.of(devServer, prodServer,localServer,qaServer))
                 .addSecurityItem(securityRequirement)
                 .components(components);
     }
