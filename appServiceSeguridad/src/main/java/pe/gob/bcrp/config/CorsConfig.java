@@ -21,8 +21,8 @@ public class CorsConfig {
 public CorsFilter corsFilter() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowCredentials(true);
-    //configuration.addAllowedOrigin(allowedOrigins);
-    configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split("\\s*,\\s*")));
+    configuration.addAllowedOrigin(allowedOrigins);
+    //configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split("\\s*,\\s*")));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));// Replace with your frontend URL
     configuration.addAllowedHeader("*");
     //configuration.addAllowedMethod("*");
