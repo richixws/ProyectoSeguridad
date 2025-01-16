@@ -9,11 +9,11 @@ public class LoginDTO {
     @NotEmpty(message = "contraseña no puede ser vacio.")
     private String password;
     //captcha
-    /**@NotEmpty(message = "Captcha no puede ser vacio")
+    @NotEmpty(message = "Captcha no puede ser vacio")
     private String captcha;
     @NotEmpty(message = "HiddenCaptcha no puede ser vacio")
     private String hiddenCaptcha;
     @NotEmpty(message = "TokenUuid no puede ser vacio")
-    private String tokenUuid;**/
+    private String tokenUuid;
 
 }

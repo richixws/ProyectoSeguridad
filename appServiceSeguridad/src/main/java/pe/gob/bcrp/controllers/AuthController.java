@@ -92,28 +92,33 @@ public class AuthController {
     })
 
     @PostMapping(value = "oauth/login")
-    public ResponseEntity<ResponseTokenDTO> login(@RequestBody  @Valid LoginDTO dto) throws Exception {
+    public ResponseEntity<ResponseTokenDTO> login(@RequestBody  @Valid LoginDTO dto, HttpSession session) throws Exception {
 
         log.info("INI - login | requestURL=login");
         ResponseTokenDTO responseToken = new ResponseTokenDTO();
 
         try {
 
-           /** String tokenUuid = (String) session.getAttribute("uuid");
+            String tokenUuid = (String) session.getAttribute("uuid");
             if(tokenUuid == null){
-                Map<String, String> response = Map.of("mensaje", "Por favor generar un nuevo captcha");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                //Map<String, String> response = Map.of("mensaje", "Por favor generar un nuevo captcha");
+                responseToken.setMessage("Por favor generar un nuevo captcha");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseToken);
             }
 
             if(!dto.getCaptcha().equals(dto.getHiddenCaptcha())){
-                Map<String, String> response = Map.of("mensaje", "Captcha inválido");
+               // Map<String, String> response = Map.of("mensaje", "Captcha inválido");
                 session.invalidate();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+               // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                responseToken.setMessage("Captcha inválido");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseToken);
             } else if(!dto.getTokenUuid().equals(tokenUuid)){
-                Map<String, String> response = Map.of("mensaje", "Token captcha inválido");
+                //Map<String, String> response = Map.of("mensaje", "Token captcha inválido");
                 session.invalidate();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }  **/
+                //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                responseToken.setMessage("Token captcha inválido");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseToken);
+            }
 
            UsuarioDTO usuarioDTO =this.usuariosService.buscarPorUsuarioLogin(dto.getUsername());
 
@@ -132,12 +137,12 @@ public class AuthController {
             //String correo = this.keycloakRestService.extractEmailFromToken(jwt.getAccess_token());
 
             //Generar un nuevo codigo verificador
-            /**Response estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());  //usuarioDTO.getPersona().getCorreo()
+            Response estadoOtp= usuariosService.regenerateOtp(usuarioDTO.getPersona().getCorreo());  //usuarioDTO.getPersona().getCorreo()
             if(estadoOtp.getStatusCode()==200){
                 log.info("se envio en codigo verificador al correo {}", usuarioDTO.getPersona().getCorreo());
             }else{
                 log.info("Error - codigo verificador no enviado al correo {}", usuarioDTO.getPersona().getCorreo());
-            }**/
+            }
 
             // Validar el token
            /**if (!jwtValidationService.validateToken(jwt.getAccess_token())) {
@@ -333,7 +338,7 @@ public class AuthController {
     @PostMapping("oauth/logout")
     public ResponseEntity<?> cerrarSesion(@RequestParam("refresh_token") String refreshToken,@RequestParam("username") String username) {
 
-        log.error("INI - logout");
+        log.info("INI - logout");
         ResponseTokenDTO responseToken = new ResponseTokenDTO();
         try {
             if (refreshToken == null || refreshToken.isEmpty()) {
@@ -368,7 +373,7 @@ public class AuthController {
     @GetMapping("oauth/captcha")
     public ResponseEntity<CaptchaResponse> getCaptcha(HttpSession session) {
 
-        log.error("INI - getCaptcha");
+        log.info("INI - getCaptcha");
         Captcha captcha = CaptchaServiceGenerate.createCaptcha(240, 70);
         String encodedCaptcha = CaptchaServiceGenerate.encodeCaptcha(captcha);
 
@@ -382,7 +387,7 @@ public class AuthController {
         CaptchaResponse response = new CaptchaResponse();
         response.setCaptchaImage(encodedCaptcha);
         response.setHiddenCaptcha(String.valueOf(resultadoOperacion));
-        response.setTokenUuid(session.getAttribute("uuid").toString());
+        response.setTokenUuid(uuid);
 
         return ResponseEntity.ok(response);
     }
